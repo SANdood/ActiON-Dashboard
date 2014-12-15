@@ -15,8 +15,8 @@ definition(
     author: "Alex Malikov",
     description: "ActiON Dashboard, a SmartThings web client.",
     category: "Convenience",
-    iconUrl: "https://action-dashboard.github.io/ActiON4/web/icon.png",
-    iconX2Url: "https://action-dashboard.github.io/ActiON4/web/icon.png",
+    iconUrl: "http://action-dashboard.github.io/icon.png",
+    iconX2Url: "http://action-dashboard.github.io/icon.png",
     oauth: true)
 
 
@@ -264,15 +264,15 @@ def head() {
 <meta name="viewport" content="width=device-width" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-<link rel="icon" sizes="192x192" href="https://action-dashboard.github.io/ActiON4/web/icon.png">
-<link rel="apple-touch-icon" href="https://action-dashboard.github.io/ActiON4/web/icon.png">
+<link rel="icon" sizes="192x192" href="https://action-dashboard.github.io/icon.png">
+<link rel="apple-touch-icon" href="https://action-dashboard.github.io/icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <title>${app.label ?: location.name}</title>
 
 <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css" />
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.3.2/css/weather-icons.min.css" />
-<link href="https://625alex.github.io/ActiON-Dashboard/style.min.js?v=1" rel="stylesheet">
+<link href="https://625alex.github.io/ActiON-Dashboard/style.min.css?v=1" rel="stylesheet">
 <link href='https://fonts.googleapis.com/css?family=Mallanna' rel='stylesheet' type='text/css'>
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
