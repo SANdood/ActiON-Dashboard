@@ -1,0 +1,152 @@
+<!DOCTYPE html><html><head>
+<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.3.2/css/weather-icons.min.css" />
+<link href="style.css?v=1" rel="stylesheet">
+<link href='https://fonts.googleapis.com/css?family=Gruppo' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Cantarell|Anaheim|Mallanna|Text+Me+One|Roboto:400,300' rel='stylesheet' type='text/css'>
+
+<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+<script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
+<script src="https://action-dashboard.github.io/ActiON4/web/freewall.js?v=1" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/coolclock/2.1.4/coolclock.min.js" type="text/javascript"></script>
+<script src="https://action-dashboard.github.io/ActiON4/web/script.js?v=1" type="text/javascript"></script>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<link rel="icon" sizes="192x192" href="https://action-dashboard.github.io/ActiON4/web/icon.png">
+<link rel="apple-touch-icon" href="https://action-dashboard.github.io/ActiON4/web/icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<title>D4</title>
+<script>var stateTS = 1418551239100;</script>
+</head><body style='background-color:black'>
+<div class="tiles">
+<div id="analog-clock" class="clock tile clickable h2 w2"><div class="title">December 14</div><div class="icon" style="margin-top:-90px;"><canvas id="clockid" class="CoolClock:st:90"></canvas></div><div class="footer">Sunday</div></div>
+<div class="mode tile w2 menu " data-mode="Home-Night" data-popup="mode-popup">
+	<div class="title">Mode</div>
+	<div data-role="popup" id="mode-popup" data-overlay-theme="b">
+		<ul data-role="listview" data-inset="true" style="min-width:210px;">
+			<li data-icon="false">Home</li>
+<li data-icon="false">Away-Night</li>
+<li data-icon="false">Home-Day</li>
+<li data-icon="false">Away</li>
+<li data-icon="false">Away-Day</li>
+<li data-icon="false">Night</li>
+<li data-icon="false">Home-Night</li>
+		</ul>
+    </div>
+	<div class="icon Home"><i class="fa fa-home"></i></div>
+	<div class="icon Night"><i class="fa fa-moon-o"></i></div>
+	<div class="icon Away"><i class="fa fa-sign-out"></i></div>
+	<div class="icon small text mode-name" id="mode-name">Home-Night</div>
+</div>
+
+<div class="hello-home tile menu" data-rel="popup" data-popup="hello-home-popup">
+	<div class="title">Hello, Home!</div>
+	<div class="icon"><i class="fa fa-comment-o"></i></div>
+	<div data-role="popup" id="hello-home-popup" data-overlay-theme="b">
+		<ul data-role="listview" data-inset="true" style="min-width:210px;">
+			<li data-icon="false">Good Morning!</li>
+<li data-icon="false">Good Night!</li>
+<li data-icon="false">Goodbye!</li>
+<li data-icon="false">Pretend To Be At Home 1</li>
+<li data-icon="false">Pretend To Be At Home 2</li>
+<li data-icon="false">Welcome Back!</li>
+		</ul>
+	</div>
+</div>
+
+<div class="weather tile w2" data-type="weather" data-device="7ee73fe9-5fdc-4523-894d-d0488de66cb0" data-weather='{"tile":"device","active":"inactive","type":"weather","device":"7ee73fe9-5fdc-4523-894d-d0488de66cb0","city":"Saint Albert, AB","weather":"Clear","feelsLike":"-3","temperature":-3,"localSunrise":"8:44 AM","localSunset":"4:14 PM","percentPrecip":"0","humidity":84,"weatherIcon":"nt_clear","icon":"wi-stars"}'></div>
+<div class="holiday tile inactive" data-active="inactive" data-type="holiday" data-device="218bbec5-0504-410d-b86d-148d6aba102a" data-value="off" data-level="null" data-is-value="false"><div class="title">Christmas Tree</div></div>
+
+<div class="music tile w2 active" data-type="music" data-device="a3510cd4-b03d-4fdc-9dcc-eed7f90fc879" data-level="7">
+<div class="title">Sonos</div>
+<div class="icon text active">
+	<i class="fa fa-fw fa-step-backward backward"></i>&nbsp;&nbsp;
+	<i class="fa fa-fw fa-pause pause"></i>&nbsp;&nbsp;
+	<i class="fa fa-fw fa-step-forward forward"></i>
+</div>
+<div class="icon text inactive">
+	<i class="fa fa-fw fa-step-backward backward"></i>&nbsp;&nbsp;
+	<i class="fa fa-fw fa-play play"></i>&nbsp;&nbsp;
+	<i class="fa fa-fw fa-step-forward forward"></i>
+</div>
+</div>
+
+
+<div class="thermostat tile w2" data-type="thermostat" data-device="a3510cd4" data-popup="thermostat-a3510cd4">
+<div class="title">Nest</div>
+<div class="icon">21&deg;</div>
+
+<div class="footer"><i class="fa fa-fw fa-ellipsis-v"></i>22&deg; | mode: auto | fan: auto</div>
+
+<div data-role="popup" class="popup" id="thermostat-a3510cd4" data-device="xxyyzz" style="max-width:280px;" data-dismissible="false" data-overlay-theme="b">
+<div class="spinHeat" style="margin-bottom:5px">
+<input type="text" data-role="spinbox" name="heat" id="spinHeat" value="22.5" min="10" max="99" step="0.5" class="spinbox"/>
+</div>
+<div class="spinCold">
+<input type="text" data-role="spinbox" name="cold" id="spinCold" value="19.5" min="10" max="99" step="0.5" class="spinbox"/>
+</div>
+
+<form>
+<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true" data-theme="c">
+	<legend>Mode</legend>
+	<input name="radio-choice-h-2" id="radio-choice-h-2c" value="auto" type="radio">
+	<label for="radio-choice-h-2c">Auto</label>
+	
+	<input name="radio-choice-h-2" id="radio-choice-h-2a" value="off" checked="checked" type="radio">
+	<label for="radio-choice-h-2a"><i class="fa fa-fw fa-power-off"></i></label>
+	
+	<input name="radio-choice-h-2" id="radio-choice-h-2b" value="heat" type="radio">
+	<label for="radio-choice-h-2b"><i class="fa fa-fw fa-fire"></i></label>
+	
+	<input name="radio-choice-h-2" id="radio-choice-h-2d" value="cold" type="radio">
+	<label for="radio-choice-h-2d"><i class="fa fa-fw wi wi-snowflake-cold"></i></label>
+</fieldset>
+</form>
+
+<form>
+<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true" data-theme="c">
+	<legend>Fan</legend>
+	<input name="radio-choice-h-2" id="radio-choice-h-2g" value="auto" type="radio">
+	<label for="radio-choice-h-2g">Auto</label>
+	
+	<input name="radio-choice-h-2" id="radio-choice-h-2e" value="on" checked="checked" type="radio">
+	<label for="radio-choice-h-2e">On</label>
+	
+	<input name="radio-choice-h-2" id="radio-choice-h-2f" value="circulate" type="radio">
+	<label for="radio-choice-h-2f">Circulate</label>
+	
+</fieldset>
+</form>
+
+<div style="text-align:center">
+<a href="#" data-rel="back"><i class="fa fa-fw fa-times"></i></a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#" data-rel="back"><i class="fa fa-fw fa-check"></i></a>
+</div>	
+</div>
+</div>
+
+
+
+<div class="lock tile inactive" data-active="inactive" data-type="lock" data-device="a3510cd4" data-value="locked" data-level="null" data-is-value="false"><div class="title">Front Door</div></div>
+<div class="switch tile inactive" data-active="inactive" data-type="switch" data-device="7a030ab4" data-value="off" data-level="null" data-is-value="false"><div class="title">Living Room</div></div>
+<div class="dimmer tile inactive" data-active="inactive" data-type="dimmer" data-device="7a030ab4" data-value="off" data-level="6" data-is-value="false"><div class="title">Living Room</div></div>
+<div class="momentary tile active" data-active="active" data-type="momentary" data-device="89fc6930" data-value="null" data-level="null" data-is-value="false"><div class="title">Momentary</div></div>
+<div class="contact tile inactive" data-active="inactive" data-type="contact" data-device="2189f278" data-value="closed" data-level="null" data-is-value="false"><div class="title">Garage Door</div></div>
+<div class="presence tile active" data-active="active" data-type="presence" data-device="1fb2c0c6-7f87" data-value="present" data-level="null" data-is-value="false"><div class="title">A360</div></div>
+<div class="motion tile inactive" data-active="inactive" data-type="motion" data-device="7ce4a9d3-4e37" data-value="null" data-level="null" data-is-value="false"><div class="title">Motion Sensor</div></div>
+<div class="camera tile active" data-active="active" data-type="camera" data-device="002d1727-8387" data-value="null" data-level="null" data-is-value="false"><div class="title">Dropcam</div></div>
+<div class="video tile h2 w2" data-link-i="1"><div class="title">Kitchen</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><param name="movie" value="https://www.dropcam.com/e/29ffd6d1108?autoplay=true"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="https://www.dropcam.com/e/29ff71fc124f4908?autoplay=true" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="240" height="164" wmode="opaque"></embed></object></div></div>
+<div class="temperature tile inactive" data-active="inactive" data-type="temperature" data-device="7ee73fe9" data-value="-3&deg;" data-level="null" data-is-value="true"><div class="title">Outside</div></div>
+<div class="humidity tile inactive" data-active="inactive" data-type="humidity" data-device="7ee73fe9" data-value="84%" data-level="null" data-is-value="true"><div class="title">Outside</div></div>
+<div class="water tile inactive" data-active="inactive" data-type="water" data-device="42590870" data-value="null" data-level="null" data-is-value="false"><div class="title">Basement</div></div>
+<div class="battery tile inactive" data-active="inactive" data-type="battery" data-device="a3510cd4" data-value="80%" data-level="null" data-is-value="true"><div class="title">Front Door</div></div>
+<div class="power tile null" data-active="null" data-type="power" data-device="f1" data-value="62W" data-level="null" data-is-value="true"><div class="title">Fridge</div></div>
+<div class="energy tile null" data-active="null" data-type="energy" data-device="f2" data-value="52kWh" data-level="null" data-is-value="true"><div class="title">Fridge</div></div>
+<div class="link tile" data-link-i="1"><div class="title">Link</div><div class="icon"><a href="http://google.com" data-ajax="false" target="_blank" style="color:white"><i class="fa fa-link"></i></a></div></div>
+<div class="refresh tile clickable"><div class="title">Refresh</div><div class="footer">Updated 3:11 AM</div></div></div>
+<div data-role="popup" id="wtfcloud-popup2" data-overlay-theme="b" class="wtfcloud"><div class="icon cloud" onclick="clearWTFCloud()"><i class="fa fa-cloud"></i></div><div class="icon message" onclick="clearWTFCloud()"><i class="fa fa-question"></i><i class="fa fa-exclamation"></i><i class='fa fa-refresh'></i></div></div></body></html>
