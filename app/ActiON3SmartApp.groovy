@@ -6,7 +6,7 @@
  *  Once the dashboard url is generated, it could be used in any modern browser.
  *  There is no need to install SmartThings Mobile application on the device that will run the dashboard.
  *
- *  http://github.com/625alex/ActiON-Dashboard
+ *  http://action-dashboard.github.io/
  *
  *  Donations accepted via PayPal at alex.smart.things@gmail.com
  *
@@ -29,8 +29,8 @@ definition(
     author: "Alex Malikov",
     description: "Self contained web dashboard.",
     category: "Convenience",
-    iconUrl: "https://action-dashboard.github.io/ActiON4/web/icon.png",
-    iconX2Url: "https://action-dashboard.github.io/ActiON4/web/icon.png",
+    iconUrl: "http://action-dashboard.github.io/icon.png",
+    iconX2Url: "http://action-dashboard.github.io/icon.png",
     oauth: true)
 
 
@@ -42,7 +42,7 @@ preferences {
             "There is no need to install SmartThings Mobile application on devices that will run ActiON Dashboard. \n" +
             "Tap SmartApp icon to print the ActiON Dashboard URL to the logs or SMS number specified in app preferences."
             paragraph "Version 3.0.4\n\n" +
-            "http://github.com/625alex/ActiON-Dashboard\n\n" +
+            "http://action-dashboard.github.io\n\n" +
             "Donations accepted via PayPal at alex.smart.things@gmail.com. \n" +
             "Copyright © 2014 Alex Malikov"
         }
