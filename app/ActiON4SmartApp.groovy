@@ -446,8 +446,6 @@ def allDeviceData() {
 	energy?.each{data << getDeviceData(it, "energy")}
 	power?.each{data << getDeviceData(it, "power")}
 	battery?.each{data << getDeviceData(it, "battery")}
-	data << [tile: "device", type: "power", name:"Fridge", device:"f1", value: "62W", isValue: true]
-	data << [tile: "device", type: "energy", name:"Fridge", device:"f2", value: "52kWh", isValue: true]
 	
 	(1..3).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], title: settings["linkTitle$it"] ?: "Link $it", i: it]}}
 	
