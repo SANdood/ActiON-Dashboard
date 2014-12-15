@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>ActiON-dashboard by 625alex</title>
+    <title>ActiON-Dashboard by 625alex</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -16,9 +16,9 @@
   </head>
   <body>
     <div class="wrapper">
-      <header class="without-description">
-        <h1>ActiON-dashboard</h1>
-        <p></p>
+      <header>
+        <h1>ActiON-Dashboard</h1>
+        <p>SmartThings web client</p>
         <p class="view"><a href="https://github.com/625alex/ActiON-Dashboard">View the Project on GitHub <small>625alex/ActiON-Dashboard</small></a></p>
         <ul>
           <li><a href="https://github.com/625alex/ActiON-Dashboard/zipball/master">Download <strong>ZIP File</strong></a></li>
@@ -28,7 +28,107 @@
       </header>
       <section>
         <h1>
-<a id="action-dashboard" class="anchor" href="#action-dashboard" aria-hidden="true"><span class="octicon octicon-link"></span></a>ActiON-Dashboard</h1>
+<a id="smartthings-action-dashboard" class="anchor" href="#smartthings-action-dashboard" aria-hidden="true"><span class="octicon octicon-link"></span></a>SmartThings ActiON Dashboard</h1>
+
+<p>If you like this app, please support the developer:<br> <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=A5K5L44TEF77U"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" alt="PayPal"> alex.smart.things@gmail.com</a></p>
+
+<h1></h1>
+
+<p>ActiON Dashboard is a web client for SmartThings. It is designed to run in any modern browser, regardless of operating system or screen size.</p>
+
+<p>ActiON Dashboard SmartApp easily installs in 2 minues. Create as many instances as you need and pick relevant devices for each dashboard.</p>
+
+<p>ActiON Dashboard has no dependency on the SmartThings Mobile app or third party services.</p>
+
+<p><a href="https://github.com/625alex/ActiON-Dashboard/blob/master/app/ActiON4SmartApp.groovy">Download SmartApp</a></p>
+
+<h1>
+<a id="uses" class="anchor" href="#uses" aria-hidden="true"><span class="octicon octicon-link"></span></a>Uses</h1>
+
+<ul>
+<li>Install as a native app to your smartphone to for a quick, user friendly access to your devices.</li>
+<li>Install on a wall-mounted tablet as a whole-house control panel.</li>
+<li>Create dashboards as needed for your family and friends and decide what they are allowed to view and control.</li>
+</ul>
+
+<h1>
+<a id="create-smartapp" class="anchor" href="#create-smartapp" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create SmartApp</h1>
+
+<ol>
+<li>Login to <a href="https://graph.api.smartthings.com/">https://graph.api.smartthings.com/</a>
+</li>
+<li>Click on My SmartApps <a href="https://graph.api.smartthings.com/ide/apps">https://graph.api.smartthings.com/ide/apps</a>
+</li>
+<li>Click on "+ New SmartApp" on the right side</li>
+<li>Click on "From Code" tab</li>
+<li>Paste the <a href="https://github.com/action-dashboard/action-dashboard.github.io/blob/master/ActiON4/app.groovy" target="_blank">SmartApp code</a>
+</li>
+<li>Click "Create" button on the bottom of the page</li>
+<li>Click "App Settings" button on top right of the page</li>
+<li>Click on "OAuth" link toward the bottom of the page</li>
+<li>Click on "Enable OAuth in Smart App"</li>
+<li>Click "Update" button</li>
+<li>Click on "Code" button on top right of the page</li>
+<li>Click "Publish" button then "For Me" option</li>
+</ol>
+
+<h1>
+<a id="install-app-via-smartthings-mobile-app-recommended-method" class="anchor" href="#install-app-via-smartthings-mobile-app-recommended-method" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install app via SmartThings Mobile app (recommended method)</h1>
+
+<ol>
+<li>Go to Dashboard of SmartThings Mobile app</li>
+<li>Tap (+) on the bottom of the app</li>
+<li>Swipe all the way to the right to My Apps</li>
+<li>Pick the app that you created</li>
+<li>Follow through configuration of the SmartApp</li>
+<li>Don't forget to click "Done"</li>
+</ol>
+
+<p>To obtain the URL of your ActiON Dashboard</p>
+
+<ol>
+<li>Open logs at <a href="https://graph.api.smartthings.com/ide/logs">https://graph.api.smartthings.com/ide/logs</a> </li>
+<li>Go to My Apps section in SmartThings Mobile app</li>
+<li>Tap the icon of ActiON SmartApp</li>
+<li>The ActiON Dashboard URL will be printed in the logs</li>
+</ol>
+
+<h1>
+<a id="install-app-via-smartthings-ide" class="anchor" href="#install-app-via-smartthings-ide" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install app via SmartThings IDE</h1>
+
+<ol>
+<li>Login to <a href="https://graph.api.smartthings.com/">https://graph.api.smartthings.com/</a>
+</li>
+<li>Click on My SmartApps <a href="https://graph.api.smartthings.com/ide/apps">https://graph.api.smartthings.com/ide/apps</a>
+</li>
+<li>Click on the name of the app you want to install</li>
+<li>Pick location in the drop-down on top right</li>
+<li>Click "Set Location" button</li>
+<li>Follow through configuration of the SmartApp, don't forget to get through all pages if there are more than one.</li>
+<li>Don't forget to click "Done"</li>
+</ol>
+
+<p>To obtain the URL of your ActiON Dashboard</p>
+
+<ol>
+<li>Open logs in another tab at <a href="https://graph.api.smartthings.com/ide/logs">https://graph.api.smartthings.com/ide/logs</a>
+</li>
+<li>Back in the tab that had the SmartApp details, click "Trigger Now" button on right side under Preferences</li>
+<li>The ActiON Dashboard URL will be printed in the logs</li>
+</ol>
+
+<h1>
+<a id="android-and-ios-native-apps" class="anchor" href="#android-and-ios-native-apps" aria-hidden="true"><span class="octicon octicon-link"></span></a>Android and iOS native apps</h1>
+
+<p>To install Action Dashboard as a native app, open the URL in Safari on iOS or Chrome on Android device, then add shortcut to the home screen. When the shortcut icon is tapped, the dashboard launches as a full screen native application (without toolbars).</p>
+
+<h1>
+<a id="oauth" class="anchor" href="#oauth" aria-hidden="true"><span class="octicon octicon-link"></span></a>OAuth</h1>
+
+<ul>
+<li>If you don’t want to expose the access_token, you can omit it from the URL. You will be prompted to login with your SmartThings account.</li>
+<li>If you need to invalidate the access_token, you can reset it via the SmartApp configuration, uninstall the SmartApp or change OAuth details in the App Settings (IDE).</li>
+</ul>
       </section>
     </div>
     <footer>
