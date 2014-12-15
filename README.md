@@ -10,7 +10,7 @@ ActiON Dashboard SmartApp easily installs in 2 minues. Create as many instances 
 
 ActiON Dashboard has no dependency on the SmartThings Mobile app or third party services.
 
-[Download SmartApp](https://github.com/action-dashboard/action-dashboard.github.io/blob/master/ActiON4/app.groovy)
+[Download SmartApp](https://github.com/625alex/ActiON-Dashboard/blob/master/app/ActiON4SmartApp.groovy)
 
 Uses
 ======
