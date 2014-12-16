@@ -74,3 +74,13 @@ OAuth
 =====
 * If you don’t want to expose the access_token, you can omit it from the URL. You will be prompted to login with your SmartThings account.
 * If you need to invalidate the access_token, you can reset it via the SmartApp configuration, uninstall the SmartApp or change OAuth details in the App Settings (IDE).
+
+Dropcam Stream
+=====
+In order to display a Dropcam stream, your camera must bu public. This is the only way to display a Dropcam stream.
+
+1. Login into your Dropcam account and select the camera that you want to add to the dashboard. Click on Sharing > Public. Click on "Make Public" button.
+* Copy content of "Embed Video" box to a text editor.
+* Inside the block of code there will be a URL that looks like 
+https://www.dropcam.com/e/1234abcd?autoplay=true
+* Copy this URL into your SmartApp.
