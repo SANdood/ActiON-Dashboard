@@ -179,9 +179,9 @@ def command() {
         log.debug "executing Hello Home '$value'"
     	location.helloHome.execute(command)
     } else if (type == "momentary") {
-    	momentaries?.find{it.id == id} device.push()
+    	momentaries?.find{it.id == id}?.push()
     } else if (type == "camera") {
-    	dcamera?.find{it.id == id}.take()
+    	camera?.find{it.id == id}.take()
     }
     
 	[status:"ok"]
