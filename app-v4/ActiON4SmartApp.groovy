@@ -74,12 +74,12 @@ preferences {
         
         section("Show Links") {
 			paragraph "Enter absolute URL starting with http..."
-        	input "linkTitle1", "text", title:"Title", required: false
-            input "linkUrl1", "text", title:"URL", required: false
-			input "linkTitle2", "text", title:"Title", required: false
-            input "linkUrl2", "text", title:"URL", required: false
-			input "linkTitle3", "text", title:"Title", required: false
-            input "linkUrl3", "text", title:"URL", required: false
+        	input "linkTitle1", "text", title:"Title 1", required: false
+            input "linkUrl1", "text", title:"URL 1", required: false
+			input "linkTitle2", "text", title:"Title 2", required: false
+            input "linkUrl2", "text", title:"URL 2", required: false
+			input "linkTitle3", "text", title:"Title 3", required: false
+            input "linkUrl3", "text", title:"URL 3", required: false
         }
 	}
 	
@@ -235,7 +235,7 @@ def getURL(e) {
 	if (!state.accessToken) {
     	try {
 			createAccessToken()
-			
+			log.debug "Creating new Access Token: $state.accessToken"
 			def url1 = "https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/ui"
 			def url2 = "?access_token=${state.accessToken}"
 			log.info "${title ?: location.name} ActiON Dashboard URL: $url1$url2"
@@ -247,7 +247,7 @@ def getURL(e) {
 			log.error "Did you forget to enable OAuth in SmartApp settings for ActiON Dashboard?"
 			log.error ex
 		}
-        log.debug "Creating new Access Token: $state.accessToken"
+        
     }
 }
 

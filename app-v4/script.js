@@ -19,12 +19,12 @@ $(function() {
 			animateClick($(this));
 			sendCommand("dimmer", $(this).attr("data-device"), "level", level);
 		};
-		$(this).attr("data-value", level);
+		$(this).attr("data-level", level);
     });
     
     $(".dimmer").click(function() {
 		$(this).toggleClass("active");
-    	sendCommand("dimmer", $(this).attr("data-device"), "toggle", $(this).attr("data-value"));
+    	sendCommand("dimmer", $(this).attr("data-device"), "toggle", $(this).attr("data-level"));
     });
 	
 	$(".mode, .hello-home, .thermostat").click(function() {
