@@ -235,19 +235,19 @@ def getURL(e) {
 	if (!state.accessToken) {
     	try {
 			createAccessToken()
+			
+			def url1 = "https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/ui"
+			def url2 = "?access_token=${state.accessToken}"
+			log.info "${title ?: location.name} ActiON Dashboard URL: $url1$url2"
+			if (phone) {
+				sendSmsMessage(phone, url1)
+				sendSmsMessage(phone, url2)
+			}
 		} catch (Exception ex) {
-			log.debug "Did you forget to enable OAuth in SmartApp settings for ActiON Dashboard?"
-			log.debug ex
+			log.error "Did you forget to enable OAuth in SmartApp settings for ActiON Dashboard?"
+			log.error ex
 		}
         log.debug "Creating new Access Token: $state.accessToken"
-    }
-	
-	def url1 = "https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/ui"
-    def url2 = "?access_token=${state.accessToken}"
-    log.debug "${title ?: location.name} ActiON Dashboard URL: $url1$url2"
-    if (phone) {
-        sendSmsMessage(phone, url1)
-        sendSmsMessage(phone, url2)
     }
 }
 
