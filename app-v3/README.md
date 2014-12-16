@@ -1,6 +1,11 @@
-SmartThings ActiON Dashboard
+SmartThings ActiON Dashboard v3
 ======
 
+You should only use this app if ActiON-Dashboard v4 is not working for you.
+
+https://github.com/625alex/ActiON-Dashboard
+
+======
 If you like this app, please support the developer:<br/> [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif) alex.smart.things@gmail.com](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A5K5L44TEF77U)
 
 ======
