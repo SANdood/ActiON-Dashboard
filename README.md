@@ -58,8 +58,7 @@ Install app via SmartThings IDE
 * Click on the name of the app you want to install
 * Pick location in the drop-down on top right
 * Click "Set Location" button
-* Follow through configuration of the SmartApp, don't forget to get through all pages if there are more than one.
-* Don't forget to click "Done"
+* Follow through 3 configuration steps of the SmartApp. Click "Next" button after each step and finally click "Done". Don't forget to get through all pages, don't click "Install" button too soon.
 
 To obtain the URL of your ActiON Dashboard
 
