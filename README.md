@@ -24,7 +24,7 @@ Create SmartApp
 * Click on My SmartApps https://graph.api.smartthings.com/ide/apps
 * Click on "+ New SmartApp" on the right side
 * Click on "From Code" tab
-* Paste the <a href="https://github.com/action-dashboard/action-dashboard.github.io/blob/master/ActiON4/app.groovy" target="_blank">SmartApp code</a>
+* Paste the <a href="https://github.com/625alex/ActiON-Dashboard/blob/master/app-v4/ActiON4SmartApp.groovy" target="_blank">SmartApp code</a>
 * Click "Create" button on the bottom of the page
 * Click "App Settings" button on top right of the page
 * Click on "OAuth" link toward the bottom of the page
