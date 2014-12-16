@@ -6,7 +6,7 @@ If you like this app, please support the developer:<br/> [![PayPal](https://www.
 ======
 ActiON Dashboard is a web client for SmartThings. It is designed to run in any modern browser, regardless of operating system or screen size.
 
-ActiON Dashboard SmartApp easily installs in 2 minues. Create as many instances as you need and pick relevant devices for each dashboard.
+ActiON Dashboard SmartApp easily installs in 2 minutes. Create as many instances as you need and pick relevant devices for each dashboard.
 
 ActiON Dashboard has no dependency on the SmartThings Mobile app or third party services.
 
@@ -77,7 +77,7 @@ OAuth
 
 Dropcam Stream
 =====
-In order to display a Dropcam stream, your camera must be public. This is the only way to display a Dropcam stream.
+In order to display a Dropcam stream, your camera must be public. This is the only way to display a Dropcam stream. This only works on Desktop browsers since Dropcam requires Flash.
 
 1. Login into your Dropcam account and select the camera that you want to add to the dashboard. Click on Sharing > Public. Click on "Make Public" button.
 * Copy content of "Embed Video" box to a text editor.
