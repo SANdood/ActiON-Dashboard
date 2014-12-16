@@ -278,7 +278,7 @@ def head() {
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 <script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/coolclock/2.1.4/coolclock.min.js" type="text/javascript"></script>
-<script src="https://625alex.github.io/ActiON-Dashboard/script.min.js?v=1" type="text/javascript"></script>
+<script src="https://625alex.github.io/ActiON-Dashboard/script.min.js?v=2" type="text/javascript"></script>
 
 <script>var stateTS = ${getStateTS()};</script>
 """
