@@ -77,7 +77,7 @@ OAuth
 
 Dropcam Stream
 =====
-In order to display a Dropcam stream, your camera must bu public. This is the only way to display a Dropcam stream.
+In order to display a Dropcam stream, your camera must be public. This is the only way to display a Dropcam stream.
 
 1. Login into your Dropcam account and select the camera that you want to add to the dashboard. Click on Sharing > Public. Click on "Make Public" button.
 * Copy content of "Embed Video" box to a text editor.
