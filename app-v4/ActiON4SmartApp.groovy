@@ -74,12 +74,12 @@ preferences {
         
         section("Show Links") {
 			paragraph "Enter absolute URL starting with http..."
-        	input "linkTitle1", "text", title:"Title", required: false
-            input "linkUrl1", "text", title:"URL", required: false
-			input "linkTitle2", "text", title:"Title", required: false
-            input "linkUrl2", "text", title:"URL", required: false
-			input "linkTitle3", "text", title:"Title", required: false
-            input "linkUrl3", "text", title:"URL", required: false
+        	input "linkTitle1", "text", title:"Title 1", required: false
+            input "linkUrl1", "text", title:"URL 1", required: false
+			input "linkTitle2", "text", title:"Title 2", required: false
+            input "linkUrl2", "text", title:"URL 2", required: false
+			input "linkTitle3", "text", title:"Title 3", required: false
+            input "linkUrl3", "text", title:"URL 3", required: false
         }
 	}
 	
@@ -179,9 +179,9 @@ def command() {
         log.debug "executing Hello Home '$value'"
     	location.helloHome.execute(command)
     } else if (type == "momentary") {
-    	momentaries?.find{it.id == id} device.push()
+    	momentaries?.find{it.id == id}?.push()
     } else if (type == "camera") {
-    	dcamera?.find{it.id == id}.take()
+    	camera?.find{it.id == id}.take()
     }
     
 	[status:"ok"]
@@ -235,20 +235,21 @@ def getURL(e) {
 	if (!state.accessToken) {
     	try {
 			createAccessToken()
-		} catch (Exception ex) {
-			log.debug "Did you forget to enable OAuth in SmartApp settings for ActiON Dashboard?"
-			log.debug ex
+			log.debug "Creating new Access Token: $state.accessToken"
+		} catch (ex) {
+			log.error "Did you forget to enable OAuth in SmartApp settings for ActiON Dashboard?"
+			log.error ex
 		}
-        log.debug "Creating new Access Token: $state.accessToken"
     }
-	
-	def url1 = "https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/ui"
-    def url2 = "?access_token=${state.accessToken}"
-    log.debug "${title ?: location.name} ActiON Dashboard URL: $url1$url2"
-    if (phone) {
-        sendSmsMessage(phone, url1)
-        sendSmsMessage(phone, url2)
-    }
+	if (state.accessToken) {
+		def url1 = "https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/ui"
+		def url2 = "?access_token=${state.accessToken}"
+		log.info "${title ?: location.name} ActiON Dashboard URL: $url1$url2"
+		if (phone) {
+			sendSmsMessage(phone, url1)
+			sendSmsMessage(phone, url2)
+		}
+	}
 }
 
 def scheduledWeatherRefresh() {
@@ -278,7 +279,7 @@ def head() {
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 <script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/coolclock/2.1.4/coolclock.min.js" type="text/javascript"></script>
-<script src="https://625alex.github.io/ActiON-Dashboard/script.min.js?v=1" type="text/javascript"></script>
+<script src="https://625alex.github.io/ActiON-Dashboard/script.min.js?v=2" type="text/javascript"></script>
 
 <script>var stateTS = ${getStateTS()};</script>
 """
@@ -376,7 +377,7 @@ def renderTile(data) {
 
 def getDeviceData(device, type) {[tile: "device",  active: isActive(device, type), type: type, device: device.id, name: device.displayName, value: getDeviceValue(device, type), level: getDeviceLevel(device, type), isValue: isValue(device, type)]}
 
-def getDeviceFieldMap() {[lock: "lock", holiday: "switch", "switch": "switch", dimmer: "switch", contact: "contact", presence: "presence", temperature: "temperature", humidity: "humidity", water: "water", power: "power", energy: "energy", battery: "battery"]}
+def getDeviceFieldMap() {[lock: "lock", holiday: "switch", "switch": "switch", dimmer: "switch", contact: "contact", presence: "presence", temperature: "temperature", humidity: "humidity", motion: "motion", water: "water", power: "power", energy: "energy", battery: "battery"]}
 
 def getActiveDeviceMap() {[lock: "unlocked", holiday: "on", "switch": "on", dimmer: "on", contact: "open", presence: "present", motion: "active", water: "wet"]}
 
