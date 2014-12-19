@@ -422,7 +422,7 @@ def allDeviceData() {
     else if (showClock == "Small Digital") data << [tile: "clock", size: 1, type: "d", date: getDate(), dow: getDOW()]
 	else if (showClock == "Large Digital") data << [tile: "clock", size: 2, type: "d", date: getDate(), dow: getDOW()]
 	
-	if (showMode && location.modes) data << [tile: "mode", mode: "$location.mode", isStandardMode: ("$location.mode" == "Home" || "$location.mode" == "Away" || "$location.mode" == "Night"), modes: location.modes.name]
+	if (showMode && location.modes) data << [tile: "mode", mode: "$location.mode", isStandardMode: ("$location.mode" == "Home" || "$location.mode" == "Away" || "$location.mode" == "Night"), modes: location?.modes?.name?.sort()]
 	
 	def phrases = location?.helloHome?.getPhrases()*.label?.sort()
 	if (showHelloHome && phrases) data << [tile: "helloHome", phrases: phrases]
