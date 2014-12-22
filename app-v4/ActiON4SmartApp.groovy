@@ -385,15 +385,24 @@ def isValue(device, type) {!(["momentary", "camera"] << getActiveDeviceMap().key
 
 def isActive(device, type) {
 	def field = getDeviceFieldMap()[type]
-	def value = device.respondsTo("currentValue") ? device.currentValue(field) : device.value
-	def active = value == getActiveDeviceMap()[type] ? "active" : "inactive"
-	active
+	def value = "n/a"
+	try {
+		value = device.respondsTo("currentValue") ? device.currentValue(field) : device.value
+	} catch (e) {
+		log.error "Device $device ($type) does not report $field properly. This is probably due to numerical value returned as text"
+	}
+	value == getActiveDeviceMap()[type] ? "active" : "inactive"
 }
 
 def getDeviceValue(device, type) {
 	def unitMap = [temperature: "°", humidity: "%", battery: "%", power: "W", energy: "kWh"]
 	def field = getDeviceFieldMap()[type]
-	def value = device.respondsTo("currentValue") ? device.currentValue(field) : device.value
+	def value = "n/a"
+	try {
+		device.respondsTo("currentValue") ? device.currentValue(field) : device.value
+	} catch (e) {
+		log.error "Device $device ($type) does not report $field properly. This is probably due to numerical value returned as text"
+	}
 	if (!isValue(device, type)) return value
 	else return "${roundNumber(value)}${unitMap[type] ?: ""}"
 }
