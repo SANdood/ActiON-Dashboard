@@ -399,7 +399,7 @@ def getDeviceValue(device, type) {
 	def field = getDeviceFieldMap()[type]
 	def value = "n/a"
 	try {
-		device.respondsTo("currentValue") ? device.currentValue(field) : device.value
+		value = device.respondsTo("currentValue") ? device.currentValue(field) : device.value
 	} catch (e) {
 		log.error "Device $device ($type) does not report $field properly. This is probably due to numerical value returned as text"
 	}
