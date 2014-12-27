@@ -407,7 +407,7 @@ def getDeviceValue(device, type) {
 	else return "${roundNumber(value)}${unitMap[type] ?: ""}"
 }
 
-def getDeviceLevel(device, type) {if (type == "dimmer" ||  type == "music") return "${device.currentValue("level") / 10.0}".toDouble().round()}
+def getDeviceLevel(device, type) {if (type == "dimmer" ||  type == "music") return "${device.currentValue("level") ?: 0 / 10.0}".toDouble().round()}
 
 def handler(e) {
 	log.debug "event happened $e.description"
