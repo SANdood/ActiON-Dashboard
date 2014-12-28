@@ -83,7 +83,7 @@ preferences {
         }
 	}
 	
-    page(name: "selectPreferences", title: "Preferences", install: true, uninstall: true) {
+    page(name: "selectPreferences", title: "Preferences", install: false, uninstall: true, nextPage: "viewURL") {
         section("Dashboard Preferences...") {
         	label title: "Title", required: false, defaultValue: "ActiON4"
         }
@@ -92,12 +92,24 @@ preferences {
         	paragraph "Activating this option will invalidate access token. The new ActiON Dashboard URL will be printed to the logs. Access token will keep resetting until this option is turned off."
         	input "resetOauth", "bool", title: "Reset AOuth Access Token?", defaultValue: false
         }
-        
-        section("Send text message to...") {
+    }
+	
+	page(name: "viewURL", title: "view url")
+}
+
+def viewURL() {
+	getURL(null)
+	dynamicPage(name: "viewURL", title: "ActiON Dashboard URL", install:true) {
+    	section("View URL for this ActiON Dashboard") {
+        	href url:"${generateURL("link").join()}", style:"embedded", required:false, title:"${app.label ?: location.name} Dashboard URL", description:"Tap to view, then click \"Done\""
+        }
+		
+		section("Send text message to...") {
         	paragraph "Optionally, send text message containing the ActiON Dashboard URL to phone number. The URL will be sent in two parts because it's too long."
             input "phone", "phone", title: "Which phone?", required: false
         }
     }
+	
 }
 
 mappings {
@@ -121,6 +133,12 @@ mappings {
 			GET: "ping",
 		]
     }
+	
+	path("/link") {
+		action: [
+			GET: "link",
+		]
+	}
 }
 
 def command() {
@@ -206,7 +224,7 @@ def initialize() {
 	updateStateTS()
 	
 	subscribe(location, handler)
-    subscribe(app, handler)
+    //subscribe(app, handler)
 	subscribe(holiday, "switch.on", handler, [filterEvents: false])
 	subscribe(holiday, "switch.off", handler, [filterEvents: false])
 	subscribe(holiday, "switch", handler, [filterEvents: false])
@@ -242,14 +260,16 @@ def getURL(e) {
 		}
     }
 	if (state.accessToken) {
-		def url1 = "https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/ui"
-		def url2 = "?access_token=${state.accessToken}"
-		log.info "${title ?: location.name} ActiON Dashboard URL: $url1$url2"
+		log.info "${title ?: location.name} ActiON Dashboard URL: ${generateURL("ui").join()}"
 		if (phone) {
-			sendSmsMessage(phone, url1)
-			sendSmsMessage(phone, url2)
+			sendSmsMessage(phone, generateURL("ui")[0])
+			sendSmsMessage(phone, generateURL("ui")[1])
 		}
 	}
+}
+
+def generateURL(path) {
+	["https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/$path", "?access_token=${state.accessToken}"]
 }
 
 def scheduledWeatherRefresh() {
@@ -467,3 +487,5 @@ def html() {render contentType: "text/html", data: "<!DOCTYPE html><html><head>$
 def renderTiles() {"""<div class="tiles">\n${allDeviceData()?.collect{renderTile(it)}.join("\n")}</div>"""}
 
 def renderWTFCloud() {"""<div data-role="popup" id="wtfcloud-popup" data-overlay-theme="b" class="wtfcloud"><div class="icon cloud" onclick="clearWTFCloud()"><i class="fa fa-cloud"></i></div><div class="icon message" onclick="clearWTFCloud()"><i class="fa fa-question"></i><i class="fa fa-exclamation"></i><i class='fa fa-refresh'></i></div></div>"""}
+
+def link() {render contentType: "text/html", data: """<!DOCTYPE html><html><head></head><body>${title ?: location.name} ActiON Dashboard URL:<br/><input type="text" value="${generateURL("ui").join()}" size="30"/><br/><br/>Copy URL above and click Done.</body></html>"""}
