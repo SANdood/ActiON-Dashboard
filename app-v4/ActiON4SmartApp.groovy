@@ -1,5 +1,5 @@
 /**
- *  ActiON Dashboard 4.0
+ *  ActiON Dashboard 4.1
  *
  *  Visit Home Page for more information:
  *  http://action-dashboard.github.io/
@@ -25,7 +25,7 @@ preferences {
     
         section("About") {
             paragraph "ActiON Dashboard, a SmartThings web client."
-            paragraph "Version 4.0\n\n" +
+            paragraph "Version 4.1\n\n" +
             "If you like this app, please support the developer via PayPal:\nalex.smart.things@gmail.com\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
@@ -134,9 +134,9 @@ def moreTiles() {
 }
 
 def authenticationPreferences() {
-	dynamicPage(name: "authenticationPreferences", title: "More Preferences...", install:false) {
+	dynamicPage(name: "authenticationPreferences", title: "Authentication...", install:false) {
 		section("Reset AOuth Access Token...") {
-        	paragraph "Activating this option will invalidate access token. The new ActiON Dashboard URL will be printed to the logs. Access token will keep resetting until this option is turned off."
+        	paragraph "Activating this option will invalidate access token."
         	input "resetOauth", "bool", title: "Reset AOuth Access Token?", defaultValue: false
         }
 	}
@@ -147,12 +147,9 @@ def viewURL() {
 		if (resetOauth) {
 			generateURL(null)
 			
-			section("AOuth Access Token") {
-				paragraph "You chose to reset AOuth Access Token in ActiON Dashboard preferences. \n\nClick \"Done\" to complete the setup. Then, configure the dashboard again setting \"Reset AOuth Access Token\" to \"OFF\""
-			}
-			
-			section("Reset Authentication...") {
-				href "authenticationPreferences", title:"Reset AOuth Access Token"
+			section("Reset AOuth Access Token...") {
+				paragraph "You chose to reset AOuth Access Token in ActiON Dashboard preferences."
+				href "authenticationPreferences", title:"Reset AOuth Access Token", description: "Tap to set this option to \"OFF\""
 			}
 		} else {
 			section("View URL for this ActiON Dashboard") {
@@ -320,7 +317,7 @@ def generateURL(path) {
 			createAccessToken()
 			log.debug "Creating new Access Token: $state.accessToken"
 		} catch (ex) {
-			log.error "Did you forget to enable OAuth in SmartApp settings for ActiON Dashboard?"
+			log.error "Did you forget to enable OAuth in SmartApp IDE settings for ActiON Dashboard?"
 			log.error ex
 		}
     }
