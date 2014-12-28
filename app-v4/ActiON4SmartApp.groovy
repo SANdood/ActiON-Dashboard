@@ -21,7 +21,7 @@ definition(
 
 
 preferences {
-	page(name: "selectDevices", title: "Devices", install: false, uninstall: true, nextPage: "selectPhrases") {
+	page(name: "selectDevices", title: "Devices", install: false, uninstall: true, nextPage: "viewURL") {
     
         section("About") {
             paragraph "ActiON Dashboard, a SmartThings web client."
@@ -30,17 +30,53 @@ preferences {
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
         }
-        
-    	section("Allow control of these things...") {
-            input "holiday", "capability.switch", title: "Which Holiday Lights?", multiple: true, required: false
-            input "switches", "capability.switch", title: "Which Switches?", multiple: true, required: false
-            input "dimmers", "capability.switchLevel", title: "Which Dimmers?", multiple: true, required: false
-            input "momentaries", "capability.momentary", title: "Which Momentary Switches?", multiple: true, required: false
-            input "locks", "capability.lock", title: "Which Locks?", multiple: true, required: false
-			input "camera", "capability.imageCapture", title: "Which Cameras?", multiple: true, required: false
-        }
+		
+		section("Things...") {
+			href "controlThings", title:"Control these things"
+		}
+		
+        section("Video Streams...") {
+			href "videoStreams", title:"Configure video streams"
+		}
+		
+		section("Shortcuts...") {
+			href "links", title:"Configure shortcuts"
+		}
+		
+		section("Preferences...") {
+			href "moreTiles", title:"Hello, Home!, Mode, Clock, Title, etc"
+		}
+		
+		section("Authentication...") {
+			href "authenticationPreferences", title:"Authentication"
+		}
+    }
+	
+	page(name: "controlThings", title: "controlThings")
+	
+	page(name: "videoStreams", title: "videoStreams")
+	
+	page(name: "links", title: "links")
+	
+	page(name: "moreTiles", title: "moreTiles")
+	
+	page(name: "authenticationPreferences", title: "authenticationPreferences")
+	
+	page(name: "viewURL", title: "viewURL")
+}
 
-        section("View state of these things...") {
+def controlThings() {
+	dynamicPage(name: "controlThings", title: "Control These Things", install:false) {
+		section("Allow control of these things...") {
+			input "holiday", "capability.switch", title: "Which Holiday Lights?", multiple: true, required: false
+			input "switches", "capability.switch", title: "Which Switches?", multiple: true, required: false
+			input "dimmers", "capability.switchLevel", title: "Which Dimmers?", multiple: true, required: false
+			input "momentaries", "capability.momentary", title: "Which Momentary Switches?", multiple: true, required: false
+			input "locks", "capability.lock", title: "Which Locks?", multiple: true, required: false
+			input "camera", "capability.imageCapture", title: "Which Cameras?", multiple: true, required: false
+		}
+		
+		section("View state of these things...") {
             input "contacts", "capability.contactSensor", title: "Which Contact?", multiple: true, required: false
             input "presence", "capability.presenceSensor", title: "Which Presence?", multiple: true, required: false
             input "temperature", "capability.temperatureMeasurement", title: "Which Temperature?", multiple: true, required: false
@@ -52,64 +88,83 @@ preferences {
             input "power", "capability.powerMeter", title: "Which Power Meters?", multiple: true, required: false
             input "weather", "device.smartweatherStationTile", title: "Which Weather?", multiple: true, required: false
         }
-    }
-    
-	page(name: "selectPhrases", title: "Tiles", install: false, uninstall: true, nextPage: "selectPreferences") {
-		section("Show...") {
-        	input "showMode", title: "Show Mode", "bool", required: true, defaultValue: true
-			input "showHelloHome", title: "Show Hello, Home! Actions", "bool", required: true, defaultValue: true
-            input "showClock", title: "Show Clock", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
-			input "roundNumbers", title: "Round Off Decimals", "bool", required: true, defaultValue:true
-        }
-        
-        section("Dropcam Video Streams") {
-			paragraph "Enter absolute URL starting with http..."
-        	input "dropcamStreamT1", "text", title:"Title 1", required: false
-            input "dropcamStreamUrl1", "text", title:"URL 1", required: false
-			input "dropcamStreamT2", "text", title:"Title 2", required: false
-            input "dropcamStreamUrl2", "text", title:"URL 2", required: false
-			input "dropcamStreamT3", "text", title:"Title 3 ", required: false
-            input "dropcamStreamUrl3", "text", title:"URL 3", required: false
-        }
-        
-        section("Show Links") {
-			paragraph "Enter absolute URL starting with http..."
-        	input "linkTitle1", "text", title:"Title 1", required: false
-            input "linkUrl1", "text", title:"URL 1", required: false
-			input "linkTitle2", "text", title:"Title 2", required: false
-            input "linkUrl2", "text", title:"URL 2", required: false
-			input "linkTitle3", "text", title:"Title 3", required: false
-            input "linkUrl3", "text", title:"URL 3", required: false
-        }
 	}
-	
-    page(name: "selectPreferences", title: "Preferences", install: false, uninstall: true, nextPage: "viewURL") {
-        section("Dashboard Preferences...") {
-        	label title: "Title", required: false, defaultValue: "ActiON4"
-        }
+}
+
+def videoStreams() {
+	dynamicPage(name: "videoStreams", title: "Video Streams", install:false) {
+		section("About") {
+			paragraph "Enter absolute URL of the stream starting with http..."
+			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
+		}
 		
-        section("Reset AOuth Access Token...") {
+		(1..5).each{
+			section("Dropcam Video Stream $it") {
+				input "dropcamStreamT$it", "text", title:"Title", required: false
+				input "dropcamStreamUrl$it", "text", title:"URL", required: false
+			}
+		}
+	}
+}
+
+def links() {
+	dynamicPage(name: "links", title: "Links", install:false) {
+		(1..5).each{
+			section("Link $it") {
+				input "linkTitle$it", "text", title:"Title", required: false
+				input "linkUrl$it", "text", title:"URL", required: false
+			}
+		}
+	}
+}
+
+def moreTiles() {
+	dynamicPage(name: "moreTiles", title: "More Tiles...", install:false) {
+		section("Show more tiles...") {
+			input "showMode", title: "Mode", "bool", required: true, defaultValue: true
+			input "showHelloHome", title: "Hello, Home! Actions", "bool", required: true, defaultValue: true
+			input "showClock", title: "Clock", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
+		}
+		
+		section("Preferences...") {
+			label title: "Title", required: false, defaultValue: "ActiON4"
+			input "roundNumbers", title: "Round Off Decimals", "bool", required: true, defaultValue:true
+		}
+	}
+}
+
+def authenticationPreferences() {
+	dynamicPage(name: "authenticationPreferences", title: "More Preferences...", install:false) {
+		section("Reset AOuth Access Token...") {
         	paragraph "Activating this option will invalidate access token. The new ActiON Dashboard URL will be printed to the logs. Access token will keep resetting until this option is turned off."
         	input "resetOauth", "bool", title: "Reset AOuth Access Token?", defaultValue: false
         }
-    }
-	
-	page(name: "viewURL", title: "view url")
+	}
 }
 
 def viewURL() {
-	getURL(null)
-	dynamicPage(name: "viewURL", title: "ActiON Dashboard URL", install:true) {
-    	section("View URL for this ActiON Dashboard") {
-        	href url:"${generateURL("link").join()}", style:"embedded", required:false, title:"${app.label ?: location.name} Dashboard URL", description:"Tap to view, then click \"Done\""
-        }
-		
-		section("Send text message to...") {
-        	paragraph "Optionally, send text message containing the ActiON Dashboard URL to phone number. The URL will be sent in two parts because it's too long."
-            input "phone", "phone", title: "Which phone?", required: false
-        }
+	dynamicPage(name: "viewURL", title: "ActiON Dashboard URL", install:!resetOauth, nextPage: resetOauth ? "viewURL" : null) {
+		if (resetOauth) {
+			generateURL(null)
+			
+			section("AOuth Access Token") {
+				paragraph "You chose to reset AOuth Access Token in ActiON Dashboard preferences. \n\nClick \"Done\" to complete the setup. Then, configure the dashboard again setting \"Reset AOuth Access Token\" to \"OFF\""
+			}
+			
+			section("Reset Authentication...") {
+				href "authenticationPreferences", title:"Reset AOuth Access Token"
+			}
+		} else {
+			section("View URL for this ActiON Dashboard") {
+				href url:"${generateURL("link").join()}", style:"embedded", required:false, title:"${app.label ?: location.name} Dashboard URL", description:"Tap to view, then click \"Done\""
+			}
+			
+			section("Send text message to...") {
+				paragraph "Optionally, send text message containing the ActiON Dashboard URL to this phone number. The URL will be sent in two parts because it's too long."
+				input "phone", "phone", title: "Which phone?", required: false
+			}
+		}
     }
-	
 }
 
 mappings {
@@ -217,14 +272,12 @@ def updated() {
 }
 
 def initialize() {
-	subscribe(app, getURL)
     scheduledWeatherRefresh()
-    getURL(null)
+    getURL("ui")
 	
 	updateStateTS()
 	
 	subscribe(location, handler)
-    //subscribe(app, handler)
 	subscribe(holiday, "switch.on", handler, [filterEvents: false])
 	subscribe(holiday, "switch.off", handler, [filterEvents: false])
 	subscribe(holiday, "switch", handler, [filterEvents: false])
@@ -244,8 +297,20 @@ def initialize() {
     subscribe(power, "power", handler, [filterEvents: false])
 }
 
-def getURL(e) {
-    if (resetOauth) {
+def getURL(path) {
+	generateURL(path)
+	if (state.accessToken) {
+		log.info "${title ?: location.name} ActiON Dashboard URL: ${generateURL("ui").join()}"
+		if (phone) {
+			sendSmsMessage(phone, generateURL(path)[0])
+			sendSmsMessage(phone, generateURL(path)[1])
+		}
+	}
+}
+
+def generateURL(path) {
+	log.debug "resetOauth: $resetOauth"
+	if (resetOauth) {
     	log.debug "Reseting Access Token"
     	state.accessToken = null
     }
@@ -259,16 +324,7 @@ def getURL(e) {
 			log.error ex
 		}
     }
-	if (state.accessToken) {
-		log.info "${title ?: location.name} ActiON Dashboard URL: ${generateURL("ui").join()}"
-		if (phone) {
-			sendSmsMessage(phone, generateURL("ui")[0])
-			sendSmsMessage(phone, generateURL("ui")[1])
-		}
-	}
-}
-
-def generateURL(path) {
+	
 	["https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/$path", "?access_token=${state.accessToken}"]
 }
 
@@ -467,7 +523,7 @@ def allDeviceData() {
 	presence?.each{data << getDeviceData(it, "presence")}
 	motion?.each{data << getDeviceData(it, "motion")}
 	camera?.each{data << getDeviceData(it, "camera")}
-	(1..3).each{if (settings["dropcamStreamUrl$it"]) {data << [tile: "video", link: settings["dropcamStreamUrl$it"], title: settings["dropcamStreamT$it"] ?: "Stream $it", i: it]}}
+	(1..5).each{if (settings["dropcamStreamUrl$it"]) {data << [tile: "video", link: settings["dropcamStreamUrl$it"], title: settings["dropcamStreamT$it"] ?: "Stream $it", i: it]}}
 	temperature?.each{data << getDeviceData(it, "temperature")}
 	humidity?.each{data << getDeviceData(it, "humidity")}
 	water?.each{data << getDeviceData(it, "water")}
@@ -475,7 +531,7 @@ def allDeviceData() {
 	power?.each{data << getDeviceData(it, "power")}
 	battery?.each{data << getDeviceData(it, "battery")}
 	
-	(1..3).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], title: settings["linkTitle$it"] ?: "Link $it", i: it]}}
+	(1..5).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], title: settings["linkTitle$it"] ?: "Link $it", i: it]}}
 	
 	data << [tile: "refresh", ts: getTS()]
 	
@@ -488,4 +544,4 @@ def renderTiles() {"""<div class="tiles">\n${allDeviceData()?.collect{renderTile
 
 def renderWTFCloud() {"""<div data-role="popup" id="wtfcloud-popup" data-overlay-theme="b" class="wtfcloud"><div class="icon cloud" onclick="clearWTFCloud()"><i class="fa fa-cloud"></i></div><div class="icon message" onclick="clearWTFCloud()"><i class="fa fa-question"></i><i class="fa fa-exclamation"></i><i class='fa fa-refresh'></i></div></div>"""}
 
-def link() {render contentType: "text/html", data: """<!DOCTYPE html><html><head></head><body>${title ?: location.name} ActiON Dashboard URL:<br/><input type="text" value="${generateURL("ui").join()}" size="30"/><br/><br/>Copy URL above and click Done.</body></html>"""}
+def link() {render contentType: "text/html", data: """<!DOCTYPE html><html><head></head><body>${title ?: location.name} ActiON Dashboard URL:<br/><textarea rows="9" cols="30" style="font-size:10px;">${generateURL("ui").join()}</textarea><br/><br/>Copy the URL above and click Done.<br/></body></html>"""}
