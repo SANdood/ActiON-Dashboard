@@ -18,13 +18,13 @@ Uses
 * Install on a wall-mounted tablet as a whole-house control panel.
 * Create dashboards as needed for your family and friends and decide what they are allowed to view and control.
 
-Create SmartApp
+Install SmartApp in the IDE
 ======
-1. Login to https://graph.api.smartthings.com/
-* Click on My SmartApps https://graph.api.smartthings.com/ide/apps
+1. Login to [IDE](https://graph.api.smartthings.com/)
+* Click on [My SmartApps]( https://graph.api.smartthings.com/ide/apps)
 * Click on "+ New SmartApp" on the right side
 * Click on "From Code" tab
-* Paste the <a href="https://github.com/625alex/ActiON-Dashboard/blob/master/app-v4/ActiON4SmartApp.groovy" target="_blank">SmartApp code</a>
+* Paste the [SmartApp code](https://github.com/625alex/ActiON-Dashboard/blob/master/app-v4/ActiON4SmartApp.groovy)
 * Click "Create" button on the bottom of the page
 * Click "App Settings" button on top right of the page
 * Click on "OAuth" link toward the bottom of the page
@@ -40,31 +40,22 @@ Install app via SmartThings Mobile app (recommended method)
 * Tap (+) on the bottom of the app
 * Swipe all the way to the right to My Apps
 * Pick the app that you created
-* Follow through configuration of the SmartApp
+* Follow through SmartApp preferences and copy the dashboard URL
 * Don't forget to click "Done"
-
-To obtain the URL of your ActiON Dashboard
-
-1. Open logs at https://graph.api.smartthings.com/ide/logs 
-* Go to My Apps section in SmartThings Mobile app
-* Tap the icon of ActiON SmartApp
-* The ActiON Dashboard URL will be printed in the logs
 
 Install app via SmartThings IDE
 ======
 
-1. Login to https://graph.api.smartthings.com/
-* Click on My SmartApps https://graph.api.smartthings.com/ide/apps
+1. Login to [IDE](https://graph.api.smartthings.com/)
+* Click on [My SmartApps]( https://graph.api.smartthings.com/ide/apps)
 * Click on the name of the app you want to install
 * Pick location in the drop-down on top right
 * Click "Set Location" button
-* Follow through 3 configuration steps of the SmartApp. Click "Next" button after each step and finally click "Done". Don't forget to get through all pages, don't click "Install" button too soon.
+* ***Don't click "Install" button***
+* Follow through SmartApp preferences. Click "Next" button finally click "Done".
+* Dashboard URL is printed in the logs
 
-To obtain the URL of your ActiON Dashboard
-
-1. Open logs in another tab at https://graph.api.smartthings.com/ide/logs
-* Back in the tab that had the SmartApp details, click "Trigger Now" button on right side under Preferences
-* The ActiON Dashboard URL will be printed in the logs
+Please not that I no longer support this feature. Installing via the IDE works, but people will have to figure it out on their own.
 
 Android and iOS native apps
 =====
@@ -73,7 +64,7 @@ To install Action Dashboard as a native app, open the URL in Safari on iOS or Ch
 OAuth
 =====
 * If you don’t want to expose the access_token, you can omit it from the URL. You will be prompted to login with your SmartThings account.
-* If you need to invalidate the access_token, you can reset it via the SmartApp configuration, uninstall the SmartApp or change OAuth details in the App Settings (IDE).
+* If you need to invalidate the access_token, you can reset it via the SmartApp preferences, uninstall the SmartApp or change OAuth details in the App Settings (IDE).
 
 Dropcam Stream
 =====
