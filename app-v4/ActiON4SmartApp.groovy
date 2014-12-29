@@ -32,7 +32,7 @@ preferences {
         }
 		
 		section("Things...") {
-			href "controlThings", title:"Control these things"
+			href "controlThings", title:"View and control these things"
 		}
 		
         section("Video Streams...") {
@@ -43,7 +43,7 @@ preferences {
 			href "links", title:"Configure shortcuts"
 		}
 		
-		section("Preferences...") {
+		section("More Tiles and Preferences...") {
 			href "moreTiles", title:"Hello, Home!, Mode, Clock, Title, etc"
 		}
 		
@@ -66,8 +66,8 @@ preferences {
 }
 
 def controlThings() {
-	dynamicPage(name: "controlThings", title: "Control These Things", install:false) {
-		section("Allow control of these things...") {
+	dynamicPage(name: "controlThings", title: "Things", install:false) {
+		section("Control these things...") {
 			input "holiday", "capability.switch", title: "Which Holiday Lights?", multiple: true, required: false
 			input "switches", "capability.switch", title: "Which Switches?", multiple: true, required: false
 			input "dimmers", "capability.switchLevel", title: "Which Dimmers?", multiple: true, required: false
@@ -108,7 +108,7 @@ def videoStreams() {
 }
 
 def links() {
-	dynamicPage(name: "links", title: "Links", install:false) {
+	dynamicPage(name: "links", title: "Shortcuts", install:false) {
 		(1..5).each{
 			section("Link $it") {
 				input "linkTitle$it", "text", title:"Title", required: false
@@ -119,7 +119,7 @@ def links() {
 }
 
 def moreTiles() {
-	dynamicPage(name: "moreTiles", title: "More Tiles...", install:false) {
+	dynamicPage(name: "moreTiles", title: "More Tiles and Preferences...", install:false) {
 		section("Show more tiles...") {
 			input "showMode", title: "Mode", "bool", required: true, defaultValue: true
 			input "showHelloHome", title: "Hello, Home! Actions", "bool", required: true, defaultValue: true
@@ -134,7 +134,7 @@ def moreTiles() {
 }
 
 def authenticationPreferences() {
-	dynamicPage(name: "authenticationPreferences", title: "Authentication...", install:false) {
+	dynamicPage(name: "authenticationPreferences", title: "Authentication", install:false) {
 		section("Reset AOuth Access Token...") {
         	paragraph "Activating this option will invalidate access token."
         	input "resetOauth", "bool", title: "Reset AOuth Access Token?", defaultValue: false
@@ -309,7 +309,7 @@ def generateURL(path) {
     	state.accessToken = null
     }
     
-	if (!state.accessToken) {
+	if (!resetOauth && !state.accessToken) {
     	try {
 			createAccessToken()
 			log.debug "Creating new Access Token: $state.accessToken"
