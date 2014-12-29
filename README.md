@@ -43,7 +43,7 @@ Install app via SmartThings Mobile app (recommended method)
 * Follow through SmartApp preferences and copy the dashboard URL
 * Don't forget to click "Done"
 
-Install app via SmartThings IDE
+Install app via SmartThings IDE (no longer supported)
 ======
 
 1. Login to [IDE](https://graph.api.smartthings.com/)
