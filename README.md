@@ -82,6 +82,7 @@ If you encountering errors during installation you either
 -	You didn’t enable OAuth when you installed the app in the IDE (see above).
 -	You tried to install via the IDE and clicked "Install" rather than "Done" (see above).
 -	You are upgrading from version 3 and you didn’t step through app preferences.
+
 If neither of these is applicable, please contact the developer.
 
 Tips and tricks
