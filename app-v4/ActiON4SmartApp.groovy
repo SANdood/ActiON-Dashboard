@@ -165,33 +165,30 @@ def viewURL() {
 }
 
 mappings {
-    path("/ui") {
-		action: [
-			GET: "html",
-		]
-	}
-    path("/command") {
-    	action: [
-			GET: "command",
-		]
+	if (params.access_token && params.access_token != state.accessToken) {
+        path("/ui") {action: [GET: "oauthError"]}
+        path("/command") {action: [GET: "oauthError"]}
+        path("/data") {action: [GET: "oauthError"]}
+        path("/ping") {action: [GET: "oauthError"]}
+        path("/link") {action: [GET: "oauthError"]}
+	} else if (!params.access_token) {
+		path("/ui") {action: [GET: "html"]}
+        path("/command") {action: [GET: "command"]}
+        path("/data") {action: [GET: "allDeviceData"]}
+        path("/ping") {action: [GET: "ping"]}
+        path("/link") {action: [GET: "viewLinkError"]}
+	} else {
+        path("/ui") {action: [GET: "html"]}
+        path("/command") {action: [GET: "command"]}
+        path("/data") {action: [GET: "allDeviceData"]}
+        path("/ping") {action: [GET: "ping"]}
+        path("/link") {action: [GET: "link"]}
     }
-	path("/data") {
-    	action: [
-			GET: "allDeviceData",
-		]
-    }
-	path("/ping") {
-    	action: [
-			GET: "ping",
-		]
-    }
-	
-	path("/link") {
-		action: [
-			GET: "link",
-		]
-	}
 }
+
+def oauthError() {[error: "OAuth token is invalid or access has been revoked"]}
+
+def viewLinkError() {[error: "You are not authorized to view OAuth access token"]}
 
 def command() {
 	log.debug "command received with params $params"
