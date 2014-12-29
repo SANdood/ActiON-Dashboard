@@ -98,10 +98,12 @@ def videoStreams() {
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
 		}
 		
-		(1..5).each{
+		(1..10).each{
+			def title = "dropcamStreamT$it"
+			def link = "dropcamStreamUrl$it"
 			section("Dropcam Video Stream $it") {
-				input "dropcamStreamT$it", "text", title:"Title", required: false
-				input "dropcamStreamUrl$it", "text", title:"URL", required: false
+				input title, "text", title:"Title", required: false
+				input link, "text", title:"URL", required: false
 			}
 		}
 	}
@@ -109,10 +111,13 @@ def videoStreams() {
 
 def links() {
 	dynamicPage(name: "links", title: "Shortcuts", install:false) {
-		(1..5).each{
+		(1..10).each{
+			def title = "linkTitle$it"
+			def link = "linkUrl$it"
+			log.debug "t: $t, l: $l"
 			section("Link $it") {
-				input "linkTitle$it", "text", title:"Title", required: false
-				input "linkUrl$it", "text", title:"URL", required: false
+				input title, "text", title:"Title", required: false
+				input link, "text", title:"URL", required: false
 			}
 		}
 	}
@@ -517,7 +522,7 @@ def allDeviceData() {
 	presence?.each{data << getDeviceData(it, "presence")}
 	motion?.each{data << getDeviceData(it, "motion")}
 	camera?.each{data << getDeviceData(it, "camera")}
-	(1..5).each{if (settings["dropcamStreamUrl$it"]) {data << [tile: "video", link: settings["dropcamStreamUrl$it"], title: settings["dropcamStreamT$it"] ?: "Stream $it", i: it]}}
+	(1..10).each{if (settings["dropcamStreamUrl$it"]) {data << [tile: "video", link: settings["dropcamStreamUrl$it"], title: settings["dropcamStreamT$it"] ?: "Stream $it", i: it]}}
 	temperature?.each{data << getDeviceData(it, "temperature")}
 	humidity?.each{data << getDeviceData(it, "humidity")}
 	water?.each{data << getDeviceData(it, "water")}
@@ -525,7 +530,7 @@ def allDeviceData() {
 	power?.each{data << getDeviceData(it, "power")}
 	battery?.each{data << getDeviceData(it, "battery")}
 	
-	(1..5).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], title: settings["linkTitle$it"] ?: "Link $it", i: it]}}
+	(1..10).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], title: settings["linkTitle$it"] ?: "Link $it", i: it]}}
 	
 	data << [tile: "refresh", ts: getTS()]
 	
