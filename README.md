@@ -75,3 +75,20 @@ In order to display a Dropcam stream, your camera must be public. This is the on
 * Inside the block of code there will be a URL that looks like 
 https://www.dropcam.com/e/1234abcd?autoplay=true
 * Copy this URL into your SmartApp.
+
+Troubleshooting
+=====
+If you encountering errors during installation you either
+-	You didn’t enable OAuth when you installed the app in the IDE (see above).
+-	You tried to install via the IDE and clicked "Install" rather than "Done" (see above).
+-	You are upgrading from version 3 and you didn’t step through app preferences.
+If neither of these is applicable, please contact the developer.
+
+Tips and tricks
+=====
+*	If you think your tiles are too small/big you can try to change this from the default target size of 120px. To do that, add "&t=120" at the end of your dashboard's URL and play with the value to see what works best for you. If you are using a desktop browser you can also use zoom in/out.
+*	There were feature requests for one switch control a group of switches.
+ *	This can be achieved with Big Switch app by ST. You can find it on your mobile app. Tap (+) > More > Convenience > Scroll to the bottom and find "The Big Switch" app. Then setup the master and slave switches.
+ *	If you want to create a virtual (master) switches, go to IDE > My Devices > New Device. Enter required fields and choose "On/Off Button Tile" in the type election box. Then you can use it as any other switch and put it on the dashboard.
+*	If you want multiple instances of the dashboard, install SmartApp only once in the IDE. Then, create as many instances as necessary in the ST Mobile App. Each instance has its own set of preferences.
+
