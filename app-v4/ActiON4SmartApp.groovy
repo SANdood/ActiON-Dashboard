@@ -1,5 +1,5 @@
 /**
- *  ActiON Dashboard 4.1
+ *  ActiON Dashboard 4.2
  *
  *  Visit Home Page for more information:
  *  http://action-dashboard.github.io/
@@ -7,6 +7,8 @@
  *  If you like this app, please support the developer via PayPal: alex.smart.things@gmail.com
  *
  *  Copyright © 2014 Alex Malikov
+ *
+ *  Support for Foscam and Generic MJPEG video streams by k3v0
  *
  */
 definition(
@@ -25,7 +27,7 @@ preferences {
     
         section("About") {
             paragraph "ActiON Dashboard, a SmartThings web client."
-            paragraph "Version 4.1\n\n" +
+            paragraph "Version 4.2\n\n" +
             "If you like this app, please support the developer via PayPal:\nalex.smart.things@gmail.com\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
@@ -36,7 +38,8 @@ preferences {
 		}
 		
         section("Video Streams...") {
-			href "videoStreams", title:"Configure video streams"
+			href "videoStreams", title:"Configure Dropcam video streams"
+			href "videoStreamsMJPEG", title:"Configure generic MJPEG video streams", description: "Foscam, Blue Iris, etc"
 		}
 		
 		section("Shortcuts...") {
@@ -55,6 +58,7 @@ preferences {
 	page(name: "controlThings", title: "controlThings")
 	
 	page(name: "videoStreams", title: "videoStreams")
+	page(name: "videoStreamsMJPEG", title: "videoStreamsMJPEG")
 	
 	page(name: "links", title: "links")
 	
@@ -95,13 +99,34 @@ def videoStreams() {
 	dynamicPage(name: "videoStreams", title: "Video Streams", install:false) {
 		section("About") {
 			paragraph "Enter absolute URL of the stream starting with http..."
-			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
+			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information..."
 		}
 		
 		(1..10).each{
 			def title = "dropcamStreamT$it"
 			def link = "dropcamStreamUrl$it"
 			section("Dropcam Video Stream $it") {
+				input title, "text", title:"Title", required: false
+				input link, "text", title:"URL", required: false
+			}
+		}
+	}
+}
+
+def videoStreamsMJPEG() {
+	dynamicPage(name: "videoStreamsMJPEG", title: "Generic MJPEG Video Streams", install:false) {
+		section("About") {
+			paragraph "Enter absolute URL starting with http..."
+			paragraph "For Foscam cameras use http://DOMAIN:PORT/videostream.cgi?&user=USERNAME&pwd=PASSWORD"
+			paragraph "For BlueIris cameras use http://blueirisserver/mjpg/CAMERASHORTNAME/video.mjpeg"
+			paragraph "Feel free to try other links for MJPEG Video Streams, your experience may vary.\n\nThere may be issues displaying these video streams using Chrome in iOS."
+			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information..."
+		}
+		
+		(1..10).each{
+			def title = "mjpegStreamTitile$it"
+			def link = "mjpegStreamUrl$it"
+			section("Generic MJPEG Video Stream $it") {
 				input title, "text", title:"Title", required: false
 				input link, "text", title:"URL", required: false
 			}
@@ -433,6 +458,8 @@ def renderTile(data) {
 		return """<div class="link tile" data-link-i="$data.i"><div class="title">$data.title</div><div class="icon"><a href="$data.link" data-ajax="false" style="color:white"><i class="fa fa-link"></i></a></div></div>"""
 	} else if (data.tile == "video") {
 		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.title</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><param name="movie" value="$data.link"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="$data.link" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="240" height="164" wmode="opaque"></embed></object></div></div>"""
+	} else if (data.tile == "genericMJPEGvideo") {
+		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.title</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><img src="$data.link" width="240" height="164"></object></div></div>"""
 	} else if (data.tile == "refresh") {
 		return """<div class="refresh tile clickable"><div class="title">Refresh</div><div class="footer">Updated $data.ts</div></div>"""
 	} else if (data.tile == "mode") {
@@ -523,6 +550,7 @@ def allDeviceData() {
 	motion?.each{data << getDeviceData(it, "motion")}
 	camera?.each{data << getDeviceData(it, "camera")}
 	(1..10).each{if (settings["dropcamStreamUrl$it"]) {data << [tile: "video", link: settings["dropcamStreamUrl$it"], title: settings["dropcamStreamT$it"] ?: "Stream $it", i: it]}}
+	(1..10).each{if (settings["mjpegStreamUrl$it"]) {data << [tile: "genericMJPEGvideo", link: settings["mjpegStreamUrl$it"], title: settings["mjpegStreamTitile$it"] ?: "Stream $it", i: it]}}
 	temperature?.each{data << getDeviceData(it, "temperature")}
 	humidity?.each{data << getDeviceData(it, "humidity")}
 	water?.each{data << getDeviceData(it, "water")}
@@ -537,10 +565,18 @@ def allDeviceData() {
 	data
 }
 
-def html() {render contentType: "text/html", data: "<!DOCTYPE html><html><head>${head()}</head><body style='background-color:black'>\n${renderTiles()}\n${renderWTFCloud()}</body></html>"}
+def html() {render contentType: "text/html", data: "<!DOCTYPE html><html><head>${head()}${customCSS()}</head><body style='background-color:black'>\n${renderTiles()}\n${renderWTFCloud()}</body></html>"}
 
 def renderTiles() {"""<div class="tiles">\n${allDeviceData()?.collect{renderTile(it)}.join("\n")}</div>"""}
 
 def renderWTFCloud() {"""<div data-role="popup" id="wtfcloud-popup" data-overlay-theme="b" class="wtfcloud"><div class="icon cloud" onclick="clearWTFCloud()"><i class="fa fa-cloud"></i></div><div class="icon message" onclick="clearWTFCloud()"><i class="fa fa-question"></i><i class="fa fa-exclamation"></i><i class='fa fa-refresh'></i></div></div>"""}
 
 def link() {render contentType: "text/html", data: """<!DOCTYPE html><html><head></head><body>${title ?: location.name} ActiON Dashboard URL:<br/><textarea rows="9" cols="30" style="font-size:10px;">${generateURL("ui").join()}</textarea><br/><br/>Copy the URL above and click Done.<br/></body></html>"""}
+
+def customCSS() {
+"""
+<style>
+
+</style>
+"""
+}
