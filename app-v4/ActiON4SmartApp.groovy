@@ -461,7 +461,7 @@ def getWeatherData(device) {
 
 def renderTile(data) {
 	if (data.type == "weather"){
-		return """<div class="weather tile w2" data-type="weather" data-device="$data.device" data-weather='${data.encodeAsJSON()}'>"""
+		return """<div class="weather tile w2" data-type="weather" data-device="$data.device" data-weather='${data.encodeAsJSON()}'></div>"""
 	} else if (data.type == "music") {
 		return """
 		<div class="music tile w2 $data.active ${data.mute ? "muted" : ""}" data-type="music" data-device="$data.device" data-level="$data.level" data-track-description="$data.trackDescription" data-mute="$data.mute">
@@ -563,6 +563,7 @@ def allDeviceData() {
 	
 	holiday?.each{data << getDeviceData(it, "holiday")}
 	locks?.each{data << getDeviceData(it, "lock")}
+	music?.each{data << getMusicPlayerData(it)}
 	switches?.each{data << getDeviceData(it, "switch")}
 	dimmers?.each{data << getDeviceData(it, "dimmer")}
 	momentaries?.each{data << getDeviceData(it, "momentary")}
@@ -578,7 +579,6 @@ def allDeviceData() {
 	energy?.each{data << getDeviceData(it, "energy")}
 	power?.each{data << getDeviceData(it, "power")}
 	battery?.each{data << getDeviceData(it, "battery")}
-	music?.each{data << getMusicPlayerData(it)}
 	
 	(1..10).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], title: settings["linkTitle$it"] ?: "Link $it", i: it]}}
 	
