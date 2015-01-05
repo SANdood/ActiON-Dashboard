@@ -142,6 +142,20 @@ box-shadow: 0px 4px 3px rgba(0,0,0,0.4), 0px 8px 13px rgba(0,0,0,0.1), 0px 18px 
     height: 9.5em;
 }
 
+/** music ****/
+
+.music .ui-slider.ui-mini{padding:0 10px 0 40px;}
+.music .footer {bottom: 14px; z-index:100}
+.music .full-width-slider {z-inndex:99}
+
+.music.muted .unmuted {display:none}
+.music:not(.muted) .muted {display:none}
+
+.music.active .play {display:none}
+.music:not(.active) .pause {display:none}
+
+.music i {cursor: pointer;}
+
 /**holiday**********/
 .holiday {background-color: #11772D;} /*green*/
 .holiday.active {background-color: #AB0F0B}

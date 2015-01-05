@@ -1,5 +1,5 @@
 /**
- *  ActiON Dashboard 4.2
+ *  ActiON Dashboard 4.3
  *
  *  Visit Home Page for more information:
  *  http://action-dashboard.github.io/
@@ -27,7 +27,7 @@ preferences {
     
         section("About") {
             paragraph "ActiON Dashboard, a SmartThings web client."
-            paragraph "Version 4.2\n\n" +
+            paragraph "Version 4.3\n\n" +
             "If you like this app, please support the developer via PayPal:\nalex.smart.things@gmail.com\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
@@ -56,16 +56,11 @@ preferences {
     }
 	
 	page(name: "controlThings", title: "controlThings")
-	
 	page(name: "videoStreams", title: "videoStreams")
 	page(name: "videoStreamsMJPEG", title: "videoStreamsMJPEG")
-	
 	page(name: "links", title: "links")
-	
 	page(name: "moreTiles", title: "moreTiles")
-	
 	page(name: "authenticationPreferences", title: "authenticationPreferences")
-	
 	page(name: "viewURL", title: "viewURL")
 }
 
@@ -78,6 +73,7 @@ def controlThings() {
 			input "momentaries", "capability.momentary", title: "Which Momentary Switches?", multiple: true, required: false
 			input "locks", "capability.lock", title: "Which Locks?", multiple: true, required: false
 			input "camera", "capability.imageCapture", title: "Which Cameras?", multiple: true, required: false
+			input "music", "capability.musicPlayer", title: "Which Music Players?", multiple: true, required: false
 		}
 		
 		section("View state of these things...") {
@@ -279,7 +275,16 @@ def command() {
     	momentaries?.find{it.id == id}?.push()
     } else if (type == "camera") {
     	camera?.find{it.id == id}.take()
-    }
+    } else if (type == "music") {
+		device = music?.find{it.id == id}
+		if (device) {
+			if (command == "level") {
+				device.setLevel(Math.min((value as Integer) * 10, 99))
+			} else {
+				device."$command"()
+			}
+		}
+	}
     
 	[status:"ok"]
 }
@@ -319,6 +324,11 @@ def initialize() {
     subscribe(battery, "battery", handler, [filterEvents: false])
     subscribe(energy, "energy", handler, [filterEvents: false])
     subscribe(power, "power", handler, [filterEvents: false])
+
+	subscribe(music, "status", handler, [filterEvents: false])
+	subscribe(music, "level", handler, [filterEvents: false])
+	subscribe(music, "trackDescription", handler, [filterEvents: false])
+	subscribe(music, "mute", handler, [filterEvents: false])
 }
 
 def getURL(path) {
@@ -451,7 +461,15 @@ def getWeatherData(device) {
 
 def renderTile(data) {
 	if (data.type == "weather"){
-		return """<div class="weather tile w2" data-type="weather" data-device="$data.device" data-weather='${data.encodeAsJSON()}'></div>"""
+		return """<div class="weather tile w2" data-type="weather" data-device="$data.device" data-weather='${data.encodeAsJSON()}'>"""
+	} else if (data.type == "music") {
+		return """
+		<div class="music tile w2 $data.active ${data.mute ? "muted" : ""}" data-type="music" data-device="$data.device" data-level="$data.level" data-track-description="$data.trackDescription" data-mute="$data.mute">
+			<div class="title"><span class="name">$data.name</span><br/><span class='title2 track'>$data.trackDescription</span></div>
+			<div class="icon text"><i class="fa fa-fw fa-backward back"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-pause pause"></i><i class="fa fa-fw fa-play play"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-forward forward"></i></div>
+			<div class="footer"><i class='fa fa-fw fa-volume-down unmuted'></i><i class='fa fa-fw fa-volume-off muted'></i></div>
+		</div>
+		"""
 	} else if (data.tile == "device") {
 		return """<div class="$data.type tile $data.active" data-active="$data.active" data-type="$data.type" data-device="$data.device" data-value="$data.value" data-level="$data.level" data-is-value="$data.isValue"><div class="title">$data.name</div></div>"""
 	} else if (data.tile == "link") {
@@ -476,6 +494,8 @@ def renderTile(data) {
 	
 	return ""
 }
+
+def getMusicPlayerData(device) {[tile: "device", type: "music", device: device.id, name: device.displayName, status: device.currentValue("status"), level: getDeviceLevel(device, "music"), trackDescription: device.currentValue("trackDescription"), mute: device.currentValue("mute") == "muted", active: device.currentValue("status") == "playing" ? "active" : ""]}
 
 def getDeviceData(device, type) {[tile: "device",  active: isActive(device, type), type: type, device: device.id, name: device.displayName, value: getDeviceValue(device, type), level: getDeviceLevel(device, type), isValue: isValue(device, type)]}
 
@@ -509,7 +529,8 @@ def getDeviceValue(device, type) {
 	else return "${roundNumber(value)}${unitMap[type] ?: ""}"
 }
 
-def getDeviceLevel(device, type) {if (type == "dimmer" ||  type == "music") return "${device.currentValue("level") ?: 0 / 10.0}".toDouble().round()}
+def getDeviceLevel(device, type) {
+if (type == "dimmer" ||  type == "music") return "${(device.currentValue("level") ?: 0) / 10.0}".toDouble().round() ?: 1}
 
 def handler(e) {
 	log.debug "event happened $e.description"
@@ -557,6 +578,7 @@ def allDeviceData() {
 	energy?.each{data << getDeviceData(it, "energy")}
 	power?.each{data << getDeviceData(it, "power")}
 	battery?.each{data << getDeviceData(it, "battery")}
+	music?.each{data << getMusicPlayerData(it)}
 	
 	(1..10).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], title: settings["linkTitle$it"] ?: "Link $it", i: it]}}
 	
