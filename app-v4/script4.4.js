@@ -140,7 +140,7 @@ function setIcons() {
 	$(".temperature").append("<div class='footer'><i class='fa fa-fw wi wi-thermometer'></i></div>");
 	$(".energy").append("<div class='footer'><i class='fa fa-fw wi wi-lightning'></i></div>");
 	$(".power").append("<div class='footer'><i class='fa fa-fw fa-bolt'></i></div>");
-	$(".battery").append("<div class='footer'><span class='batt'></span></div>");
+	$(".battery").append("<div class='footer'><i class='fa fa-fw batt'></i></div>");
 	
 	$(".tile[data-is-value=true]").each(function(){renderValue($(this))});
 }
