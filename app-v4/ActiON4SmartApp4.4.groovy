@@ -159,6 +159,7 @@ def preferences() {
 			input "roundNumbers", title: "Round Off Decimals", "bool", required: true, defaultValue:true
 			input "dropShadow", title: "Drop shadow", "bool", required: true, defaultValue: true
 			input "tileSize", title: "Tile Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Small", "Normal", "Large"]
+			input "fontSize", title: "Font Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Normal", "Larger", "Largest"]
 		}
 		
 		log.debug "preferences state $state"
@@ -441,6 +442,7 @@ var tileSize = ${getTSize()};
 .w2 {width: ${getTSize() * 2}px;}
 .h2 {height: ${getTSize() * 2}px;}
 ${!dropShadow ? ".icon, .icon * {text-shadow: none;} .ui-slider-handle.ui-btn.ui-shadow {box-shadow: none; -webkit-box-shadow: none; -moz-box-shadow: none;}" : ""}
+body {font-size: ${getFSize()}%;}
 </style>
 """
 }                                                              
@@ -511,6 +513,12 @@ def getTSize() {
 	if (tileSize == "Small") return 105
 	if (tileSize == "Large") return 150
 	120
+}
+
+def getFSize() {
+	if (fontSize == "Larger") return 120
+	if (fontSize == "Largest") return 150
+	100
 }
 
 def getTS() {
@@ -750,7 +758,9 @@ def list() {render contentType: "text/html", data: """<!DOCTYPE html><html><head
 def customCSS() {
 """
 <style>
+/*** Enter custom CSS here ***/
 
+/*****************************/
 </style>
 """
 }
