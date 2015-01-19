@@ -20,6 +20,7 @@
 .battery {background-color: #954469}
 .camera{background-color: #cddc39} /*lime*/
 .video {background-color:#8E8E8E} /*dropcam grey*/
+.blank.tile{background:none;}
 
 .dimmer .ui-slider-bg.ui-btn-active, .music .ui-slider-bg.ui-btn-active {background-color:grey;}
 .dimmer.active .ui-slider-bg.ui-btn-active {background-color:#81c784;}
@@ -104,44 +105,7 @@ box-shadow: 0px 4px 3px rgba(0,0,0,0.4), 0px 8px 13px rgba(0,0,0,0.1), 0px 18px 
 -moz-box-shadow: 0px 4px 3px rgba(0,0,0,0.4), 0px 8px 13px rgba(0,0,0,0.1), 0px 18px 23px rgba(0,0,0,0.1);
 }
 /*********/
-
-.batt {
-	font-size: 0.8px;
-    display: inline-block;
-    width: 4.5em;
-    height: 10em;
-    border: 1em solid white;
-    border-width: .5em 1em;
-    box-shadow: 0 0 0 0.5em white;
-    margin: 4em 1.5em 1.5em 4px;
-    position: relative;
-    background-color: white;
-    background-size: 100%;
-}
-
-.batt:before {
-    position: absolute;
-    top: -4.5em;
-    left: 0em;
-    display: block;
-    background: white;
-    width: 4.5em;
-    height: 1.5em;
-    content : "";
-    border-radius: 1em 1em 0 0;
-}
-.batt:after {
-    position: absolute;
-    top: 0em;
-    left: 0em;
-    display: block;
-    background: transparent;
-    width: 4.5em;
-    height: 0;
-    content : "";
-    height: 9.5em;
-}
-
+.batt {content : "";background-image: url("battery.png"); background-size: 16px 16px; background-repeat: no-repeat;}
 /** music ****/
 
 .music .ui-slider.ui-mini{padding:0 10px 0 40px;}
