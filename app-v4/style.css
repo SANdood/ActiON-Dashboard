@@ -105,7 +105,8 @@ box-shadow: 0px 4px 3px rgba(0,0,0,0.4), 0px 8px 13px rgba(0,0,0,0.1), 0px 18px 
 -moz-box-shadow: 0px 4px 3px rgba(0,0,0,0.4), 0px 8px 13px rgba(0,0,0,0.1), 0px 18px 23px rgba(0,0,0,0.1);
 }
 /*********/
-.batt {content : "";background-image: url("battery.png"); background-size: 16px 16px; background-repeat: no-repeat;}
+.batt {content : "";background-image: url("battery.png"); background-size: 16px 16px; background-repeat: no-repeat;background-position:center center;}
+.batt:before {content: "\0000a0"}
 /** music ****/
 
 .music .ui-slider.ui-mini{padding:0 10px 0 40px;}
