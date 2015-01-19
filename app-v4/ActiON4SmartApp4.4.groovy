@@ -157,6 +157,7 @@ def preferences() {
 		section("Preferences...") {
 			label title: "Title", required: false, defaultValue: "ActiON4"
 			input "roundNumbers", title: "Round Off Decimals", "bool", required: true, defaultValue:true
+			input "dropShadow", title: "Drop shadow", "bool", required: true, defaultValue: true
 			input "tileSize", title: "Tile Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Small", "Normal", "Large"]
 		}
 		
@@ -165,11 +166,6 @@ def preferences() {
 			section("Device Order") {
 				href url:"${generateURL("list").join()}", style:"embedded", required:false, title:"Device Order", description:"Tap to change, then click \"Done\""
 			}
-			
-			/*section("Preview Dashboard") {
-				paragraph "Please note that some fonts may not render properly due to limitations of the embedded browser."
-				href url:"${generateURL("ui").join()}", style:"embedded", required:false, title:"Preview", description:"Tap to view, then click \"Done\""
-			}*/
 		}
 		
 		section("Authentication...") {
@@ -206,11 +202,6 @@ def viewURL() {
 				paragraph "Optionally, send SMS containing the URL of this dashboard to a phone number. The URL will be sent in two parts because it's too long."
 				input "phone", "phone", title: "Which phone?", required: false
 			}
-			
-			/*section("Preview Dashboard") {
-				paragraph "Please note that some fonts may not render properly due to limitations of the embedded browser."
-				href url:"${generateURL("ui").join()}", style:"embedded", required:false, title:"Preview", description:"Tap to view, then click \"Done\""
-			}*/
 		}
     }
 }
@@ -450,6 +441,7 @@ var tileSize = ${getTSize()};
 .w2 {width: ${getTSize() * 2}px;}
 .h2 {height: ${getTSize() * 2}px;}
 .blank.tile{background:none;}
+${!dropShadow ? ".icon, .icon * {text-shadow: none;} .ui-slider-handle.ui-btn.ui-shadow {box-shadow: none; -webkit-box-shadow: none; -moz-box-shadow: none;}" : ""}
 </style>
 """
 }                                                              
