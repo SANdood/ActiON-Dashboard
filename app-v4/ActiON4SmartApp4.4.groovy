@@ -502,6 +502,7 @@ def headList() {
 <style>
 ul{list-style-type: none;padding-left:0;}
 * {color: white;font-size:20px;}
+.batt {background-size: 20px 20px;}
 .item {cursor:grab; padding:5px; margin:8px;border-radius:2px}
 .list {width: 75%; margin: 0 auto 60px auto;}
 .list i {margin-right:5px;}
@@ -643,7 +644,7 @@ def getListIcon(type) {
 		water: """<i class="fa fa-fw fa-tint"></i>""",
 		energy: """<i class="fa fa-fw wi wi-lightning"></i>""",
 		power: """<i class="fa fa-fw fa-bolt"></i>""",
-		battery: """<i class="fa fa-fw"></i>""",
+		battery: """<i class="fa fa-fw batt"></i>""",
 		link: """<i class="fa fa-fw fa-link"></i>""",
 		refresh: """<i class="fa fa-fw fa-refresh"></i>""",
 	]
