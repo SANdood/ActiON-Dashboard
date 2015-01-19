@@ -164,12 +164,12 @@ def preferences() {
 		
 		log.debug "preferences state $state"
 		if (state) {
-			section("Device Order") {
+			section() {
 				href url:"${generateURL("list").join()}", style:"embedded", required:false, title:"Device Order", description:"Tap to change, then click \"Done\""
 			}
 		}
 		
-		section("Authentication...") {
+		section() {
 			href "authenticationPreferences", title:"Authentication"
 		}
 	}
@@ -208,7 +208,6 @@ def viewURL() {
 }
 
 mappings {
-	log.debug "params.access_token: $params.access_token, state.accessToken: ${state?.accessToken}, params: $params"
 	if (params.access_token && params.access_token != state.accessToken) {
         path("/ui") {action: [GET: "oauthError"]}
         path("/command") {action: [GET: "oauthError"]}
@@ -321,15 +320,6 @@ def position() {
 	log.debug "state.sortOrder: $state.sortOrder"
 }
 
-def initialDataSort() {
-	state.sortedData = [:] as TreeMap
-	allDeviceData().eachWithIndex{o, i -> state.sortedData["${i * 10}"] = [type: o.type, device: o.device]}
-}
-
-def padWithZero(key) {
-	"$key".padLeft(5, 0);
-}
-
 def installed() {
 	log.debug "Installed with settings: ${settings}"
 	initialize()
@@ -400,7 +390,7 @@ def generateURL(path) {
 		}
 	}
 	
-	["https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/$path", "?access_token=${state?.accessToken}"]
+	["https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/$path", "?access_token=${state.accessToken}"]
 }
 
 def scheduledWeatherRefresh() {
