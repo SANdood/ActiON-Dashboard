@@ -1,5 +1,5 @@
 $(function() {
-	//$(".switch, .dimmer, .lock, .menu, .momentary, .link, .holiday, .camera, .music, .thermostat, .refresh").append("<i class='spinner fa fa-refresh fa-spin'></i>");
+	
 	$(".tile").append("<i class='spinner fa fa-refresh fa-spin'></i>");
 	
 	setIcons();
@@ -159,7 +159,7 @@ function renderValue(tile) {
 function renderWeather(tile) {
 	var data = JSON.parse(tile.attr("data-weather"));
 	tile.empty();
-	var content = "<div class='title'>" + data.city + "<br/><span class='title2'>" + data.weather + ", feels like " + data.feelsLike + "&deg;</span></div>\n\
+	var content = "<div class='title'>" + tile.attr("city") + "<br/><span class='title2'>" + data.weather + ", feels like " + data.feelsLike + "&deg;</span></div>\n\
 <div class='icon'><span class='text'>" + data.temperature + "&deg;</span><i class='wi " + data.icon + "'></i></span></div>\n\
 <div class='footer'>" + data.localSunrise + " <i class='fa fa-fw wi wi-horizon-alt'></i> " + data.localSunset + "</div>\n\
 <div class='footer right'>" + data.percentPrecip + "%<i class='fa fa-fw fa-umbrella'></i><br>" + data.humidity + "%<i class='fa fa-fw wi wi-sprinkles'></i></div>";

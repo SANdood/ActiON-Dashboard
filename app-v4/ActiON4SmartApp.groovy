@@ -578,7 +578,9 @@ def getWeatherData(device) {
 
 def renderTile(data) {
 	if (data.type == "weather"){
-		return """<div class="weather tile w2" data-type="weather" data-device="$data.device" data-weather='${data.encodeAsJSON()}'></div>"""
+		def city = data.city
+		data.remove("city")
+		return """<div class="weather tile w2" data-type="weather" data-device="$data.device" data-city="$city" data-weather='${data.encodeAsJSON()}'></div>"""
 	} else if (data.type == "music") {
 		return """
 		<div class="music tile w2 $data.active ${data.mute ? "muted" : ""}" data-type="music" data-device="$data.device" data-level="$data.level" data-track-description="$data.trackDescription" data-mute="$data.mute">
