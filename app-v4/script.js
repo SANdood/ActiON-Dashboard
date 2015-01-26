@@ -140,7 +140,7 @@ function setIcons() {
 	$(".temperature").append("<div class='footer'><i class='fa fa-fw wi wi-thermometer'></i></div>");
 	$(".energy").append("<div class='footer'><i class='fa fa-fw wi wi-lightning'></i></div>");
 	$(".power").append("<div class='footer'><i class='fa fa-fw fa-bolt'></i></div>");
-	$(".battery").append("<div class='footer'><span class='batt'></span></div>");
+	$(".battery").append("<div class='footer'><i class='fa fa-fw batt'></i></div>");
 	
 	$(".tile[data-is-value=true]").each(function(){renderValue($(this))});
 }
@@ -212,7 +212,7 @@ function updateTile(data) {
 		if (data.type == "music") {
 			if (data.trackDescription != tile.attr("data-track-description") || (data.mute + "") != tile.attr("data-mute")) spinner(tile);
 			tile.attr("data-track-description", data.trackDescription);
-			if (tile.data("data-mute") != (data.mute + "")) {tile.toggleClass("muted");}
+			if ((data.mute + "") != tile.attr("data-mute")) tile.toggleClass("muted");
 			tile.attr("data-mute", data.mute);
 			tile.find(".title .track").html(tile.attr("data-track-description"));
 		}
@@ -339,7 +339,7 @@ function checkTime(i) {
     return i;
 }
 
-var cellSize = getUrlParameter("t") || 120;
+var cellSize = getUrlParameter("t") || tileSize;
 var cellGutter = getUrlParameter("g") || 4;
 
 $(function() {

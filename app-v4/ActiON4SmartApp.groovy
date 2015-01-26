@@ -1,5 +1,5 @@
 /**
- *  ActiON Dashboard 4.3
+ *  ActiON Dashboard 4.4
  *
  *  Visit Home Page for more information:
  *  http://action-dashboard.github.io/
@@ -12,7 +12,7 @@
  *
  */
 definition(
-    name: "ActiON4",
+    name: "ActiON4.4",
     namespace: "625alex",
     author: "Alex Malikov",
     description: "ActiON Dashboard, a SmartThings web client.",
@@ -27,7 +27,7 @@ preferences {
     
         section("About") {
             paragraph "ActiON Dashboard, a SmartThings web client."
-            paragraph "Version 4.3\n\n" +
+            paragraph "Version 4.4\n\n" +
             "If you like this app, please support the developer via PayPal:\nalex.smart.things@gmail.com\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
@@ -47,11 +47,8 @@ preferences {
 		}
 		
 		section("More Tiles and Preferences...") {
-			href "moreTiles", title:"Hello, Home!, Mode, Clock, Title, etc"
-		}
-		
-		section("Authentication...") {
-			href "authenticationPreferences", title:"Authentication"
+			href "moreTiles", title:"Clock, Mode, Hello, Home!"
+			href "preferences", title: "Preferences"
 		}
     }
 	
@@ -60,6 +57,7 @@ preferences {
 	page(name: "videoStreamsMJPEG", title: "videoStreamsMJPEG")
 	page(name: "links", title: "links")
 	page(name: "moreTiles", title: "moreTiles")
+	page(name: "preferences", title: "preferences")
 	page(name: "authenticationPreferences", title: "authenticationPreferences")
 	page(name: "viewURL", title: "viewURL")
 }
@@ -145,16 +143,34 @@ def links() {
 }
 
 def moreTiles() {
-	dynamicPage(name: "moreTiles", title: "More Tiles and Preferences...", install:false) {
-		section("Show more tiles...") {
+	dynamicPage(name: "moreTiles", title: "More Tiles...", install:false) {
+		section() {
 			input "showMode", title: "Mode", "bool", required: true, defaultValue: true
 			input "showHelloHome", title: "Hello, Home! Actions", "bool", required: true, defaultValue: true
 			input "showClock", title: "Clock", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
 		}
-		
+	}
+}
+
+def preferences() {
+	dynamicPage(name: "preferences", title: "Preferences...", install:false) {
 		section("Preferences...") {
 			label title: "Title", required: false, defaultValue: "ActiON4"
 			input "roundNumbers", title: "Round Off Decimals", "bool", required: true, defaultValue:true
+			input "dropShadow", title: "Drop shadow", "bool", required: true, defaultValue: true
+			input "tileSize", title: "Tile Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Small", "Normal", "Large"]
+			input "fontSize", title: "Font Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Normal", "Larger", "Largest"]
+		}
+		
+		log.debug "preferences state $state"
+		if (state) {
+			section() {
+				href url:"${generateURL("list").join()}", style:"embedded", required:false, title:"Device Order", description:"Tap to change, then click \"Done\""
+			}
+		}
+		
+		section() {
+			href "authenticationPreferences", title:"Authentication"
 		}
 	}
 }
@@ -162,14 +178,14 @@ def moreTiles() {
 def authenticationPreferences() {
 	dynamicPage(name: "authenticationPreferences", title: "Authentication", install:false) {
 		section("Reset AOuth Access Token...") {
-        	paragraph "Activating this option will invalidate access token."
+        	paragraph "Activating this option will invalidate access token. Access to all authenticated instances of this dashboard will be permanently revoked."
         	input "resetOauth", "bool", title: "Reset AOuth Access Token?", defaultValue: false
         }
 	}
 }
 
 def viewURL() {
-	dynamicPage(name: "viewURL", title: "ActiON Dashboard URL", install:!resetOauth, nextPage: resetOauth ? "viewURL" : null) {
+	dynamicPage(name: "viewURL", title: "ActiON Dashboard", install:!resetOauth, nextPage: resetOauth ? "viewURL" : null) {
 		if (resetOauth) {
 			generateURL(null)
 			
@@ -178,12 +194,13 @@ def viewURL() {
 				href "authenticationPreferences", title:"Reset AOuth Access Token", description: "Tap to set this option to \"OFF\""
 			}
 		} else {
-			section("View URL for this ActiON Dashboard") {
-				href url:"${generateURL("link").join()}", style:"embedded", required:false, title:"${app.label ?: location.name} Dashboard URL", description:"Tap to view, then click \"Done\""
+			section() {
+				paragraph "Copy the URL below to any modern browser to view ${title ?: location.name} ActiON Dashboard. Add a shortcut to home screen of your mobile device to run as a native app."
+				href url:"${generateURL("link").join()}", style:"embedded", required:false, title:"URL", description:"Tap to view, then click \"Done\""
 			}
 			
-			section("Send text message to...") {
-				paragraph "Optionally, send text message containing the ActiON Dashboard URL to this phone number. The URL will be sent in two parts because it's too long."
+			section("Send URL via SMS...") {
+				paragraph "Optionally, send SMS containing the URL of this dashboard to a phone number. The URL will be sent in two parts because it's too long."
 				input "phone", "phone", title: "Which phone?", required: false
 			}
 		}
@@ -197,18 +214,24 @@ mappings {
         path("/data") {action: [GET: "oauthError"]}
         path("/ping") {action: [GET: "oauthError"]}
         path("/link") {action: [GET: "oauthError"]}
+        path("/list") {action: [GET: "oauthError"]}
+        path("/position") {action: [GET: "oauthError"]}
 	} else if (!params.access_token) {
 		path("/ui") {action: [GET: "html"]}
         path("/command") {action: [GET: "command"]}
         path("/data") {action: [GET: "allDeviceData"]}
         path("/ping") {action: [GET: "ping"]}
         path("/link") {action: [GET: "viewLinkError"]}
+        path("/list") {action: [GET: "list"]}
+		path("/position") {action: [GET: "position"]}
 	} else {
         path("/ui") {action: [GET: "html"]}
         path("/command") {action: [GET: "command"]}
         path("/data") {action: [GET: "allDeviceData"]}
         path("/ping") {action: [GET: "ping"]}
         path("/link") {action: [GET: "link"]}
+		path("/list") {action: [GET: "list"]}
+		path("/position") {action: [GET: "position"]}
     }
 }
 
@@ -289,6 +312,14 @@ def command() {
 	[status:"ok"]
 }
 
+def position() {
+	log.debug "command received with params $params"
+	def map = [:]
+	params?.list?.split("\\|~\\|").eachWithIndex{o, i -> map[o] = i}
+	state.sortOrder = map
+	log.debug "state.sortOrder: $state.sortOrder"
+}
+
 def installed() {
 	log.debug "Installed with settings: ${settings}"
 	initialize()
@@ -302,7 +333,7 @@ def updated() {
 
 def initialize() {
     scheduledWeatherRefresh()
-    getURL("ui")
+    sendURL_SMS("ui")
 	
 	updateStateTS()
 	
@@ -331,7 +362,7 @@ def initialize() {
 	subscribe(music, "mute", handler, [filterEvents: false])
 }
 
-def getURL(path) {
+def sendURL_SMS(path) {
 	generateURL(path)
 	if (state.accessToken) {
 		log.info "${title ?: location.name} ActiON Dashboard URL: ${generateURL("ui").join()}"
@@ -345,19 +376,19 @@ def getURL(path) {
 def generateURL(path) {
 	log.debug "resetOauth: $resetOauth"
 	if (resetOauth) {
-    	log.debug "Reseting Access Token"
-    	state.accessToken = null
-    }
-    
-	if (!resetOauth && !state.accessToken) {
-    	try {
+		log.debug "Reseting Access Token"
+		state.accessToken = null
+	}
+	
+	if (!resetOauth && !state.accessToken || resetOauth && !state.accessToken) {
+		try {
 			createAccessToken()
 			log.debug "Creating new Access Token: $state.accessToken"
 		} catch (ex) {
 			log.error "Did you forget to enable OAuth in SmartApp IDE settings for ActiON Dashboard?"
 			log.error ex
 		}
-    }
+	}
 	
 	["https://graph.api.smartthings.com/api/smartapps/installations/${app.id}/$path", "?access_token=${state.accessToken}"]
 }
@@ -372,7 +403,7 @@ def scheduledWeatherRefresh() {
 def head() {
 """
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <link rel="icon" sizes="192x192" href="https://action-dashboard.github.io/icon.png">
@@ -383,17 +414,103 @@ def head() {
 <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css" />
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.3.2/css/weather-icons.min.css" />
-<link href="https://625alex.github.io/ActiON-Dashboard/style.min.css?v=4" rel="stylesheet">
+<link href="https://625alex.github.io/ActiON-Dashboard/style.min.4.4.css?v=4" rel="stylesheet">
 <link href='https://fonts.googleapis.com/css?family=Mallanna' rel='stylesheet' type='text/css'>
+
+<script>
+var stateTS = ${getStateTS()};
+var tileSize = ${getTSize()};
+</script>
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 <script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/coolclock/2.1.4/coolclock.min.js" type="text/javascript"></script>
-<script src="https://625alex.github.io/ActiON-Dashboard/script.min.js?v=4" type="text/javascript"></script>
+<script src="https://625alex.github.io/ActiON-Dashboard/coolclock.min.js" type="text/javascript"></script>
+<script src="https://625alex.github.io/ActiON-Dashboard/script.min.4.4.js?v=4" type="text/javascript"></script>
 
-<script>var stateTS = ${getStateTS()};</script>
+<style>
+.tile {width: ${getTSize()}px; height: ${getTSize()}px;}
+.w2 {width: ${getTSize() * 2}px;}
+.h2 {height: ${getTSize() * 2}px;}
+${!dropShadow ? ".icon, .icon * {text-shadow: none;} .ui-slider-handle.ui-btn.ui-shadow {box-shadow: none; -webkit-box-shadow: none; -moz-box-shadow: none;}" : ""}
+body {font-size: ${getFSize()}%;}
+</style>
 """
 }                                                              
+
+def headList() {
+"""
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+<title>${app.label ?: location.name} Device Order</title>
+
+<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.3.2/css/weather-icons.min.css" />
+<link href="https://625alex.github.io/ActiON-Dashboard/style.min.4.4.css?v=4" rel="stylesheet">
+<link href='https://fonts.googleapis.com/css?family=Mallanna' rel='stylesheet' type='text/css'>
+
+<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js" type="text/javascript"></script>
+<script src="https://625alex.github.io/ActiON-Dashboard/jquery.ui.touch-punch.min.js" type="text/javascript"></script>
+
+<script>
+	\$(function() {
+		\$( ".list" ).sortable({
+			stop: function( event, ui ) {changeOrder();}
+		});
+		\$( ".list" ).disableSelection();
+	});
+
+	function changeOrder() {
+		var l = "";
+		\$( ".list li" ).each(function(index) {
+			l = l + \$(this).data("type") + "-" + \$(this).data("device") + "|~|";
+		});
+		var access_token = getUrlParameter("access_token");
+		var request = {list: l};
+		if (access_token) request["access_token"] = access_token;
+		
+		\$.get("position", request).done(function(data) {
+			if (data.status == "ok") {}
+		}).fail(function() {alert("error, please refresh")});
+	}
+	
+	function getUrlParameter(sParam)
+	{
+		var sPageURL = window.location.search.substring(1);
+		var sURLVariables = sPageURL.split('&');
+		for (var i = 0; i < sURLVariables.length; i++) 
+		{
+			var sParameterName = sURLVariables[i].split('=');
+			if (sParameterName[0] == sParam) 
+			{
+				return sParameterName[1];
+			}
+		}
+	}
+</script>
+<style>
+ul{list-style-type: none;padding-left:0;}
+* {color: white;font-size:20px;}
+.batt {background-size: 20px 20px;}
+.item {cursor:grab; padding:5px; margin:8px;border-radius:2px}
+.list {width: 75%; margin: 0 auto 60px auto;}
+.list i {margin-right:5px;}
+</style>
+"""
+}  
+
+def getTSize() {
+	if (tileSize == "Small") return 105
+	if (tileSize == "Large") return 150
+	120
+}
+
+def getFSize() {
+	if (fontSize == "Larger") return 120
+	if (fontSize == "Largest") return 150
+	100
+}
 
 def getTS() {
 	def tf = new java.text.SimpleDateFormat("h:mm a")
@@ -453,7 +570,7 @@ def roundNumber(num) {
 }
 
 def getWeatherData(device) {
-	def data = [tile:"device", active:"inactive", type: "weather", device: device.id]
+	def data = [tile:"device", active:"inactive", type: "weather", device: device.id, name: device.displayName]
     ["city", "weather", "feelsLike", "temperature", "localSunrise", "localSunset", "percentPrecip", "humidity", "weatherIcon"].each{data["$it"] = device?.currentValue("$it")}
     data.icon = ["chanceflurries":"wi-snow","chancerain":"wi-rain","chancesleet":"wi-rain-mix","chancesnow":"wi-snow","chancetstorms":"wi-storm-showers","clear":"wi-day-sunny","cloudy":"wi-cloudy","flurries":"wi-snow","fog":"wi-fog","hazy":"wi-dust","mostlycloudy":"wi-cloudy","mostlysunny":"wi-day-sunny","partlycloudy":"wi-day-cloudy","partlysunny":"wi-day-cloudy","rain":"wi-rai","sleet":"wi-rain-mix","snow":"wi-snow","sunny":"wi-day-sunny","tstorms":"wi-storm-showers","nt_chanceflurries":"wi-snow","nt_chancerain":"wi-rain","nt_chancesleet":"wi-rain-mix","nt_chancesnow":"wi-snow","nt_chancetstorms":"wi-storm-showers","nt_clear":"wi-stars","nt_cloudy":"wi-cloudy","nt_flurries":"wi-snow","nt_fog":"wi-fog","nt_hazy":"wi-dust","nt_mostlycloudy":"wi-night-cloudy","nt_mostlysunny":"wi-night-cloudy","nt_partlycloudy":"wi-night-cloudy","nt_partlysunny":"wi-night-cloudy","nt_sleet":"wi-rain-mix","nt_rain":"wi-rain","nt_snow":"wi-snow","nt_sunny":"wi-night-clear","nt_tstorms":"wi-storm-showers","wi-horizon":"wi-horizon"][data.weatherIcon]
 	data
@@ -473,17 +590,17 @@ def renderTile(data) {
 	} else if (data.tile == "device") {
 		return """<div class="$data.type tile $data.active" data-active="$data.active" data-type="$data.type" data-device="$data.device" data-value="$data.value" data-level="$data.level" data-is-value="$data.isValue"><div class="title">$data.name</div></div>"""
 	} else if (data.tile == "link") {
-		return """<div class="link tile" data-link-i="$data.i"><div class="title">$data.title</div><div class="icon"><a href="$data.link" data-ajax="false" style="color:white"><i class="fa fa-link"></i></a></div></div>"""
+		return """<div class="link tile" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon"><a href="$data.link" data-ajax="false" style="color:white"><i class="fa fa-link"></i></a></div></div>"""
 	} else if (data.tile == "video") {
-		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.title</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><param name="movie" value="$data.link"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="$data.link" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="240" height="164" wmode="opaque"></embed></object></div></div>"""
+		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><param name="movie" value="$data.link"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="$data.link" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="240" height="164" wmode="opaque"></embed></object></div></div>"""
 	} else if (data.tile == "genericMJPEGvideo") {
-		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.title</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><img src="$data.link" width="240" height="164"></object></div></div>"""
+		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><img src="$data.link" width="240" height="164"></object></div></div>"""
 	} else if (data.tile == "refresh") {
 		return """<div class="refresh tile clickable"><div class="title">Refresh</div><div class="footer">Updated $data.ts</div></div>"""
 	} else if (data.tile == "mode") {
 		return renderModeTile(data)
 	} else if (data.tile == "clock") {
-		if (data.type == "a") {
+		if (data.style == "a") {
 			return """<div id="analog-clock" class="clock tile clickable h$data.size w$data.size"><div class="title">$data.date</div><div class="icon" style="margin-top:-${data.size * 45}px;"><canvas id="clockid" class="CoolClock:st:${45 * data.size}"></canvas></div><div class="footer">$data.dow</div></div>"""
 		} else {
 			return """<div id="digital-clock" class="clock tile clickable w$data.size"><div class="title">$data.date</div><div class="icon ${data.size == 2 ? "" : "text"}" id="clock">*</div><div class="footer">$data.dow</div></div>"""
@@ -494,6 +611,38 @@ def renderTile(data) {
 	
 	return ""
 }
+
+def getListIcon(type) {
+	def icons = [
+		clock: """<i class="fa fa-fw fa-clock-o"></i>""",
+		mode: """<i class="fa fa-fw fa-gear"></i>""",
+		"hello-home": """<i class="fa fa-fw fa-comment-o"></i>""",
+		weather: """<i class="fa fa-fw fa-sun-o"></i>""",
+		holiday: """<i class="fa fa-fw fa-tree"></i>""",
+		lock: """<i class="fa fa-fw fa-lock"></i>""",
+		music: """<i class="fa fa-fw fa-music"></i>""",
+		"switch": """<i class="fa fa-fw fa-toggle-on"></i>""",
+		dimmer: """<i class="fa fa-fw fa-toggle-on"></i>""",
+		momentary: """<i class="fa fa-fw fa-circle-o"></i>""",
+		contact: """<i class="fa fa-fw fa-expand"></i>""",
+		presence: """<i class="fa fa-fw fa-map-marker"></i>""",
+		motion: """<i class="fa fa-fw fa-exchange"></i>""",
+		camera: """<i class="fa fa-fw fa-camera"></i>""",
+		video: """<i class="fa fa-fw fa-video-camera"></i>""",
+		temperature: """<i class="fa fa-fw wi wi-thermometer"></i>""",
+		humidity: """<i class="fa fa-fw wi wi-sprinkles"></i>""",
+		water: """<i class="fa fa-fw fa-tint"></i>""",
+		energy: """<i class="fa fa-fw wi wi-lightning"></i>""",
+		power: """<i class="fa fa-fw fa-bolt"></i>""",
+		battery: """<i class="fa fa-fw batt"></i>""",
+		link: """<i class="fa fa-fw fa-link"></i>""",
+		refresh: """<i class="fa fa-fw fa-refresh"></i>""",
+	]
+	
+	icons[type]
+}
+
+def renderListItem(data) {return """<li class="item $data.type" data-type="$data.type" data-device="$data.device" id="$data.type|$data.device">${getListIcon(data.type)}$data.name</li>"""}
 
 def getMusicPlayerData(device) {[tile: "device", type: "music", device: device.id, name: device.displayName, status: device.currentValue("status"), level: getDeviceLevel(device, "music"), trackDescription: device.currentValue("trackDescription"), mute: device.currentValue("mute") == "muted", active: device.currentValue("status") == "playing" ? "active" : ""]}
 
@@ -549,15 +698,15 @@ def ping() {
 def allDeviceData() {
 	def data = []
 	
-	if (showClock == "Small Analog") data << [tile: "clock", size: 1, type: "a", date: getDate(), dow: getDOW()]
-	else if (showClock == "Large Analog") data << [tile: "clock", size: 2, type: "a", date: getDate(), dow: getDOW()]
-    else if (showClock == "Small Digital") data << [tile: "clock", size: 1, type: "d", date: getDate(), dow: getDOW()]
-	else if (showClock == "Large Digital") data << [tile: "clock", size: 2, type: "d", date: getDate(), dow: getDOW()]
+	if (showClock == "Small Analog") data << [tile: "clock", size: 1, style: "a", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
+	else if (showClock == "Large Analog") data << [tile: "clock", size: 2, style: "a", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
+    else if (showClock == "Small Digital") data << [tile: "clock", size: 1, style: "d", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
+	else if (showClock == "Large Digital") data << [tile: "clock", size: 2, style: "d", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
 	
-	if (showMode && location.modes) data << [tile: "mode", mode: "$location.mode", isStandardMode: ("$location.mode" == "Home" || "$location.mode" == "Away" || "$location.mode" == "Night"), modes: location?.modes?.name?.sort()]
+	if (showMode && location.modes) data << [tile: "mode", mode: "$location.mode", isStandardMode: ("$location.mode" == "Home" || "$location.mode" == "Away" || "$location.mode" == "Night"), modes: location?.modes?.name?.sort(), name: "Mode", type: "mode"]
 	
 	def phrases = location?.helloHome?.getPhrases()*.label?.sort()
-	if (showHelloHome && phrases) data << [tile: "helloHome", phrases: phrases]
+	if (showHelloHome && phrases) data << [tile: "helloHome", phrases: phrases, name: "Hello, Home!", type: "hello-home"]
 	
 	weather?.each{data << getWeatherData(it)}
 	
@@ -571,8 +720,8 @@ def allDeviceData() {
 	presence?.each{data << getDeviceData(it, "presence")}
 	motion?.each{data << getDeviceData(it, "motion")}
 	camera?.each{data << getDeviceData(it, "camera")}
-	(1..10).each{if (settings["dropcamStreamUrl$it"]) {data << [tile: "video", link: settings["dropcamStreamUrl$it"], title: settings["dropcamStreamT$it"] ?: "Stream $it", i: it]}}
-	(1..10).each{if (settings["mjpegStreamUrl$it"]) {data << [tile: "genericMJPEGvideo", link: settings["mjpegStreamUrl$it"], title: settings["mjpegStreamTitile$it"] ?: "Stream $it", i: it]}}
+	(1..10).each{if (settings["dropcamStreamUrl$it"]) {data << [tile: "video", link: settings["dropcamStreamUrl$it"], name: settings["dropcamStreamT$it"] ?: "Stream $it", i: it, type: "video"]}}
+	(1..10).each{if (settings["mjpegStreamUrl$it"]) {data << [tile: "genericMJPEGvideo", link: settings["mjpegStreamUrl$it"], name: settings["mjpegStreamTitile$it"] ?: "Stream $it", i: it, type: "video"]}}
 	temperature?.each{data << getDeviceData(it, "temperature")}
 	humidity?.each{data << getDeviceData(it, "humidity")}
 	water?.each{data << getDeviceData(it, "water")}
@@ -580,25 +729,29 @@ def allDeviceData() {
 	power?.each{data << getDeviceData(it, "power")}
 	battery?.each{data << getDeviceData(it, "battery")}
 	
-	(1..10).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], title: settings["linkTitle$it"] ?: "Link $it", i: it]}}
+	(1..10).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], name: settings["linkTitle$it"] ?: "Link $it", i: it, type: "link"]}}
 	
-	data << [tile: "refresh", ts: getTS()]
+	data << [tile: "refresh", ts: getTS(), name: "Refresh", type: "refresh"]
 	
-	data
+	data.sort{state?.sortOrder?."$it.type-$it.device"}
 }
 
 def html() {render contentType: "text/html", data: "<!DOCTYPE html><html><head>${head()}${customCSS()}</head><body style='background-color:black'>\n${renderTiles()}\n${renderWTFCloud()}</body></html>"}
-
-def renderTiles() {"""<div class="tiles">\n${allDeviceData()?.collect{renderTile(it)}.join("\n")}</div>"""}
+def renderTiles() {"""<div class="tiles">\n${allDeviceData()?.collect{renderTile(it)}.join("\n")}<div class="blank tile"></div></div>"""}
 
 def renderWTFCloud() {"""<div data-role="popup" id="wtfcloud-popup" data-overlay-theme="b" class="wtfcloud"><div class="icon cloud" onclick="clearWTFCloud()"><i class="fa fa-cloud"></i></div><div class="icon message" onclick="clearWTFCloud()"><i class="fa fa-question"></i><i class="fa fa-exclamation"></i><i class='fa fa-refresh'></i></div></div>"""}
 
-def link() {render contentType: "text/html", data: """<!DOCTYPE html><html><head></head><body>${title ?: location.name} ActiON Dashboard URL:<br/><textarea rows="9" cols="30" style="font-size:10px;">${generateURL("ui").join()}</textarea><br/><br/>Copy the URL above and click Done.<br/></body></html>"""}
+def link() {render contentType: "text/html", data: """<!DOCTYPE html><html><head><meta charset="UTF-8" />
+<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /></head><body>${title ?: location.name} ActiON Dashboard URL:<br/><textarea rows="9" cols="30" style="font-size:10px;">${generateURL("ui").join()}</textarea><br/><br/>Copy the URL above and click Done.<br/></body></html>"""}
+
+def list() {render contentType: "text/html", data: """<!DOCTYPE html><html><head>${headList()}</head><body style='background-color:black; color: white'><ul class="list">\n${allDeviceData()?.collect{renderListItem(it)}.join("\n")}</ul></body></html>"""}
 
 def customCSS() {
 """
 <style>
+/*** Enter custom CSS here ***/
 
+/*****************************/
 </style>
 """
 }
