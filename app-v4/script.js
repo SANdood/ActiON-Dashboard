@@ -4,6 +4,14 @@ $(function() {
 	
 	setIcons();
 	
+	$(".refresh, .clock").click(function() {
+        refresh();
+	});
+    
+	startTime();
+	
+	if (readOnlyMode) {return false;}
+	
 	$(".switch, .dimmer, .momentary, .clock, .lock, .link, .holiday, .camera, .music i").click(function() {
 		animateClick($(this));
 	});
@@ -72,10 +80,6 @@ $(function() {
 		$("#" + $(this).attr("data-popup")).popup("open");
     });
     
-    $(".refresh, .clock").click(function() {
-        refresh();
-	});
-    
     $("#mode-popup li").click(function() {
     	$("#mode-popup").popup("close");
 		var tile = $(".mode");
@@ -99,8 +103,6 @@ $(function() {
 		animateClick($(".hello-home"));
 		sendCommand("helloHome", "helloHome", $(this).text());
     });
-	
-	startTime();
 });
 
 var fadeOn = 100;
@@ -147,7 +149,7 @@ function setIcons() {
 
 function renderSlider(tile) {
 	tile.find(".slider-container").remove();
-	tile.append("<div class='slider-container'><div class='full-width-slider'><input value='" + tile.attr("data-level") + "' min='1' max='10' type='range' step='1' data-mini='true' data-popup-enabled='true' data-disabled='false' data-highlight='true'></div></div>").find("input").slider()
+	tile.append("<div class='slider-container'><div class='full-width-slider'><input value='" + tile.attr("data-level") + "' min='1' max='10' type='range' step='1' data-mini='true' data-popup-enabled='true' data-disabled='" + readOnlyMode + "' data-highlight='true'></div></div>").find("input").slider()
 	$(".full-width-slider").click(function(e) {e.stopImmediatePropagation();});
 }
 

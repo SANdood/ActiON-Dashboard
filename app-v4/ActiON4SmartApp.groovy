@@ -1,5 +1,5 @@
 /**
- *  ActiON Dashboard 4.4
+ *  ActiON Dashboard 4.5
  *
  *  Visit Home Page for more information:
  *  http://action-dashboard.github.io/
@@ -12,7 +12,7 @@
  *
  */
 definition(
-    name: "ActiON4.4",
+    name: "ActiON4.5",
     namespace: "625alex",
     author: "Alex Malikov",
     description: "ActiON Dashboard, a SmartThings web client.",
@@ -27,7 +27,7 @@ preferences {
     
         section("About") {
             paragraph "ActiON Dashboard, a SmartThings web client."
-            paragraph "Version 4.4\n\n" +
+            paragraph "Version 4.5\n\n" +
             "If you like this app, please support the developer via PayPal:\nalex.smart.things@gmail.com\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
@@ -162,7 +162,6 @@ def preferences() {
 			input "fontSize", title: "Font Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Normal", "Larger", "Largest"]
 		}
 		
-		log.debug "preferences state $state"
 		if (state) {
 			section() {
 				href url:"${generateURL("list").join()}", style:"embedded", required:false, title:"Device Order", description:"Tap to change, then click \"Done\""
@@ -170,13 +169,17 @@ def preferences() {
 		}
 		
 		section() {
-			href "authenticationPreferences", title:"Authentication"
+			href "authenticationPreferences", title:"Access and Authentication"
 		}
 	}
 }
 
 def authenticationPreferences() {
-	dynamicPage(name: "authenticationPreferences", title: "Authentication", install:false) {
+	dynamicPage(name: "authenticationPreferences", title: "Access and Authentication", install:false) {
+		section() {
+			input "disableDashboard", "bool", title: "Disable temporarily (hide all tiles)?", defaultValue: false, required:false
+			input "readOnlyMode", "bool", title: "View only mode?", defaultValue: false, required:false
+		}
 		section("Reset AOuth Access Token...") {
         	paragraph "Activating this option will invalidate access token. Access to all authenticated instances of this dashboard will be permanently revoked."
         	input "resetOauth", "bool", title: "Reset AOuth Access Token?", defaultValue: false
@@ -242,6 +245,8 @@ def viewLinkError() {[error: "You are not authorized to view OAuth access token"
 def command() {
 	log.debug "command received with params $params"
     
+	if (disableDashboard || readOnlyMode) return [status: "disabled"]
+	
     def id = params.device
     def type = params.type
     def command = params.command
@@ -420,12 +425,14 @@ def head() {
 <script>
 var stateTS = ${getStateTS()};
 var tileSize = ${getTSize()};
+var readOnlyMode = ${readOnlyMode ?: false};
 </script>
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 <script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
 <script src="https://625alex.github.io/ActiON-Dashboard/coolclock.min.js" type="text/javascript"></script>
-<script src="https://625alex.github.io/ActiON-Dashboard/script.min.4.4.js?v=6" type="text/javascript"></script>
+<script src="https://625alex.github.io/ActiON-Dashboard/script.min.4.5.js?v=6" type="text/javascript"></script>
+
 
 <style>
 .tile {width: ${getTSize()}px; height: ${getTSize()}px;}
@@ -433,6 +440,7 @@ var tileSize = ${getTSize()};
 .h2 {height: ${getTSize() * 2}px;}
 ${!dropShadow ? ".icon, .icon * {text-shadow: none;} .ui-slider-handle.ui-btn.ui-shadow {box-shadow: none; -webkit-box-shadow: none; -moz-box-shadow: none;}" : ""}
 body {font-size: ${getFSize()}%;}
+${readOnlyMode ? """.tile, .music i {cursor: default} .clock, .refresh{cursor: pointer}""" : ""}
 </style>
 """
 }                                                              
@@ -698,6 +706,9 @@ def ping() {
 }
 
 def allDeviceData() {
+	def refresh = [tile: "refresh", ts: getTS(), name: "Refresh", type: "refresh"]
+	if (disableDashboard) return [refresh]
+	
 	def data = []
 	
 	if (showClock == "Small Analog") data << [tile: "clock", size: 1, style: "a", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
@@ -733,7 +744,7 @@ def allDeviceData() {
 	
 	(1..10).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], name: settings["linkTitle$it"] ?: "Link $it", i: it, type: "link"]}}
 	
-	data << [tile: "refresh", ts: getTS(), name: "Refresh", type: "refresh"]
+	data << refresh
 	
 	data.sort{state?.sortOrder?."$it.type-$it.device"}
 }
