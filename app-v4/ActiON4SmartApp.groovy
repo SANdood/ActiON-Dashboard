@@ -425,7 +425,7 @@ var tileSize = ${getTSize()};
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 <script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
 <script src="https://625alex.github.io/ActiON-Dashboard/coolclock.min.js" type="text/javascript"></script>
-<script src="https://625alex.github.io/ActiON-Dashboard/script.min.4.4.js?v=5" type="text/javascript"></script>
+<script src="https://625alex.github.io/ActiON-Dashboard/script.min.4.4.js?v=4" type="text/javascript"></script>
 
 <style>
 .tile {width: ${getTSize()}px; height: ${getTSize()}px;}
