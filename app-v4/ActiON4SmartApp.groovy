@@ -474,9 +474,7 @@ var smartAppVersion = "4.6";
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 <script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
-<script src="https://625alex.github.io/ActiON-Dashboard/coolclock.min.js" type="text/javascript"></script>
-<script src="https://625alex.github.io/ActiON-Dashboard/freewall.js?v=6" type="text/javascript"></script>
-<script src="https://625alex.github.io/ActiON-Dashboard/script.tmp.js?v=6" type="text/javascript"></script>
+<script src="https://625alex.github.io/ActiON-Dashboard/prod/script.4.6.0.min.js?u=0" type="text/javascript"></script>
 
 <style>
 .tile {width: ${getTSize()}px; height: ${getTSize()}px;}
