@@ -1,5 +1,5 @@
 /**
- *  ActiON Dashboard 4.6.0
+ *  ActiON Dashboard 4.6.1
  *
  *  Visit Home Page for more information:
  *  http://action-dashboard.github.io/
@@ -20,7 +20,7 @@
  *
  */
 definition(
-    name: "ActiON4.6.0",
+    name: "ActiON4.6.1",
     namespace: "625alex",
     author: "Alex Malikov",
     description: "ActiON Dashboard, a SmartThings web client.",
@@ -35,7 +35,7 @@ preferences {
     
         section("About") {
             paragraph "ActiON Dashboard, a SmartThings web client.\n\nYour home has a Home Page!™"
-            paragraph "Version 4.6.0\n\n" +
+            paragraph "Version 4.6.1\n\n" +
             "If you like this app, please support the developer via PayPal:\n\nalex.smart.things@gmail.com\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
@@ -758,10 +758,9 @@ def getHolidayIcon() {
 	def icons = [
 	"Valentine's" : [on : """<i class="active fa fa-fw fa-heart"></i>""", off : """<i class="inactive fa fa-fw fa-heart-o"></i>""", css: """.holiday {background-color: #FF82B2;} /*pink*/ .holiday.active {background-color: #A90000} .holiday.active .icon i {color:#EA001F}"""],
 	"Christmas" : [on: """<i class="active fa fa-fw fa-tree"></i>""", off: """<i class="inactive fa fa-fw fa-tree"></i>""", css: """.holiday {background-color: #11772D;} /*green*/ .holiday.active {background-color: #AB0F0B} .holiday.active .icon i {color:#11772D}"""],
-	null : [off : "<i class='inactive opaque fa fa-lightbulb-o'></i>", on : "<i class='active fa fa-lightbulb-o'></i>", css : "/*n/a*/"]
     ]
 	
-	icons[holidayType]
+	icons[holidayType] ?: [off : "<i class='inactive opaque fa fa-lightbulb-o'></i>", on : "<i class='active fa fa-lightbulb-o'></i>", css : ""]
 }
 
 def renderListItem(data) {return """<li class="item $data.type" data-type="$data.type" data-device="$data.device" id="$data.type|$data.device">${getListIcon(data.type)}$data.name</li>"""}
