@@ -6,11 +6,15 @@
  *
  *  If you like this app, please support the developer via PayPal: alex.smart.things@gmail.com
  *
- *  This software if free for Private Use.
+ *  This software if free for Private Use. You may use and modify the software without distributing it.
  *  
- *  Alex Malikov retains all rights and does not permit distribution, reproduction, or derivative work.
+ *  This software and derivatives may not be used for commercial purposes.
+ *  You may not modify, distribute or sublicense this software.
+ *  You may not grant a sublicense to modify and distribute this software to third parties not included in the license.
+ *
+ *  Software is provided without warranty and the software author/license owner cannot be held liable for damages.
+ *
  *  Copyright © 2014 Alex Malikov
- *	
  *
  *  Support for Foscam and Generic MJPEG video streams by k3v0
  *
@@ -27,12 +31,12 @@ definition(
 
 
 preferences {
-	page(name: "selectDevices", title: "Devices", install: false, uninstall: true, nextPage: "viewURL") {
+	page(name: "selectDevices", install: false, uninstall: true, nextPage: "viewURL") {
     
         section("About") {
-            paragraph "ActiON Dashboard, a SmartThings web client."
+            paragraph "ActiON Dashboard, a SmartThings web client.\n\nYour home has a Home Page!™"
             paragraph "Version 4.6.0\n\n" +
-            "If you like this app, please support the developer via PayPal:\nalex.smart.things@gmail.com\n\n" +
+            "If you like this app, please support the developer via PayPal:\n\nalex.smart.things@gmail.com\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
         }
@@ -52,7 +56,7 @@ preferences {
 		}
 		
 		section("More Tiles and Preferences...") {
-			href "moreTiles", title:"Clock, Mode, Hello, Home!"
+			href "moreTiles", title:"Clock, Mode, Hello Home!"
 			href "preferences", title: "Preferences"
 		}
     }
