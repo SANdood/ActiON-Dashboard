@@ -6,7 +6,11 @@
  *
  *  If you like this app, please support the developer via PayPal: alex.smart.things@gmail.com
  *
+ *  This software if free for Private Use.
+ *  
+ *  Alex Malikov retains all rights and does not permit distribution, reproduction, or derivative work.
  *  Copyright © 2014 Alex Malikov
+ *	
  *
  *  Support for Foscam and Generic MJPEG video streams by k3v0
  *
