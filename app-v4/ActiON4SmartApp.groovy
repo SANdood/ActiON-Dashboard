@@ -465,7 +465,7 @@ def head() {
 <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css" />
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.3.2/css/weather-icons.min.css" />
-<link href="https://625alex.github.io/ActiON-Dashboard/style.tmp.css?v=4" rel="stylesheet">
+<link href="https://625alex.github.io/ActiON-Dashboard/prod/style.4.6.0.min?u=0" rel="stylesheet">
 <link href='https://fonts.googleapis.com/css?family=Mallanna' rel='stylesheet' type='text/css'>
 
 <script>
