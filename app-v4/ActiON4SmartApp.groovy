@@ -1,5 +1,5 @@
 /**
- *  ActiON Dashboard 4.5
+ *  ActiON Dashboard 4.6.0
  *
  *  Visit Home Page for more information:
  *  http://action-dashboard.github.io/
@@ -12,7 +12,7 @@
  *
  */
 definition(
-    name: "ActiON4.5",
+    name: "ActiON4.6.0",
     namespace: "625alex",
     author: "Alex Malikov",
     description: "ActiON Dashboard, a SmartThings web client.",
@@ -27,7 +27,7 @@ preferences {
     
         section("About") {
             paragraph "ActiON Dashboard, a SmartThings web client."
-            paragraph "Version 4.5\n\n" +
+            paragraph "Version 4.6.0\n\n" +
             "If you like this app, please support the developer via PayPal:\nalex.smart.things@gmail.com\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
@@ -43,6 +43,7 @@ preferences {
 		}
 		
 		section("Shortcuts...") {
+			href "dashboards", title:"Link other dashboards"
 			href "links", title:"Configure shortcuts"
 		}
 		
@@ -55,6 +56,7 @@ preferences {
 	page(name: "controlThings", title: "controlThings")
 	page(name: "videoStreams", title: "videoStreams")
 	page(name: "videoStreamsMJPEG", title: "videoStreamsMJPEG")
+	page(name: "dashboards", title: "dashboards")
 	page(name: "links", title: "links")
 	page(name: "moreTiles", title: "moreTiles")
 	page(name: "preferences", title: "preferences")
@@ -63,9 +65,10 @@ preferences {
 }
 
 def controlThings() {
-	dynamicPage(name: "controlThings", title: "Things", install:false) {
+	dynamicPage(name: "controlThings", title: "Things", install: false) {
 		section("Control these things...") {
 			input "holiday", "capability.switch", title: "Which Holiday Lights?", multiple: true, required: false
+			input "lights", "capability.switch", title: "Which Lights?", multiple: true, required: false
 			input "switches", "capability.switch", title: "Which Switches?", multiple: true, required: false
 			input "dimmers", "capability.switchLevel", title: "Which Dimmers?", multiple: true, required: false
 			input "momentaries", "capability.momentary", title: "Which Momentary Switches?", multiple: true, required: false
@@ -90,7 +93,7 @@ def controlThings() {
 }
 
 def videoStreams() {
-	dynamicPage(name: "videoStreams", title: "Video Streams", install:false) {
+	dynamicPage(name: "videoStreams", title: "Video Streams", install: false) {
 		section("About") {
 			paragraph "Enter absolute URL of the stream starting with http..."
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information..."
@@ -108,7 +111,7 @@ def videoStreams() {
 }
 
 def videoStreamsMJPEG() {
-	dynamicPage(name: "videoStreamsMJPEG", title: "Generic MJPEG Video Streams", install:false) {
+	dynamicPage(name: "videoStreamsMJPEG", title: "Generic MJPEG Video Streams", install: false) {
 		section("About") {
 			paragraph "Enter absolute URL starting with http..."
 			paragraph "For Foscam cameras use http://DOMAIN:PORT/videostream.cgi?&user=USERNAME&pwd=PASSWORD"
@@ -129,7 +132,11 @@ def videoStreamsMJPEG() {
 }
 
 def links() {
-	dynamicPage(name: "links", title: "Shortcuts", install:false) {
+	dynamicPage(name: "links", title: "Shortcuts", install: false) {
+		section() {
+			paragraph "Enter absolute URL starting with http..."
+		}
+		
 		(1..10).each{
 			def title = "linkTitle$it"
 			def link = "linkUrl$it"
@@ -142,8 +149,25 @@ def links() {
 	}
 }
 
+def dashboards() {
+	dynamicPage(name: "dashboards", title: "Dashboards", install: false) {
+		section() {
+			paragraph "Enter absolute URL starting with https..."
+		}
+		(1..10).each{
+			def title = "dashboardTitle$it"
+			def link = "dashboardUrl$it"
+			log.debug "t: $t, l: $l"
+			section("Dashboard $it") {
+				input title, "text", title:"Title", required: false
+				input link, "text", title:"URL", required: false
+			}
+		}
+	}
+}
+
 def moreTiles() {
-	dynamicPage(name: "moreTiles", title: "More Tiles...", install:false) {
+	dynamicPage(name: "moreTiles", title: "More Tiles...", install: false) {
 		section() {
 			input "showMode", title: "Mode", "bool", required: true, defaultValue: true
 			input "showHelloHome", title: "Hello, Home! Actions", "bool", required: true, defaultValue: true
@@ -153,13 +177,14 @@ def moreTiles() {
 }
 
 def preferences() {
-	dynamicPage(name: "preferences", title: "Preferences...", install:false) {
+	dynamicPage(name: "preferences", title: "Preferences...", install: false) {
 		section("Preferences...") {
 			label title: "Title", required: false, defaultValue: "ActiON4"
 			input "roundNumbers", title: "Round Off Decimals", "bool", required: true, defaultValue:true
-			input "dropShadow", title: "Drop shadow", "bool", required: true, defaultValue: true
+			input "dropShadow", title: "Drop Shadow", "bool", required: true, defaultValue: true
 			input "tileSize", title: "Tile Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Small", "Normal", "Large"]
 			input "fontSize", title: "Font Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Normal", "Larger", "Largest"]
+			input "holidayType", title: "Holiday Lights Theme", "enum", multiple: false, required: true, defaultValue: "Christmas", options: ["Christmas", "Valentine's"]
 		}
 		
 		if (state) {
@@ -175,7 +200,7 @@ def preferences() {
 }
 
 def authenticationPreferences() {
-	dynamicPage(name: "authenticationPreferences", title: "Access and Authentication", install:false) {
+	dynamicPage(name: "authenticationPreferences", title: "Access and Authentication", install: false) {
 		section() {
 			input "disableDashboard", "bool", title: "Disable temporarily (hide all tiles)?", defaultValue: false, required:false
 			input "readOnlyMode", "bool", title: "View only mode?", defaultValue: false, required:false
@@ -256,6 +281,15 @@ def command() {
     
 	if (type == "switch") {
 		device = switches?.find{it.id == id}
+		if (device) {
+			if(device.currentValue('switch') == "on") {
+				device.off()
+			} else {
+				device.on()
+			}
+		}
+	} else if (type == "light") {
+		device = lights?.find{it.id == id}
 		if (device) {
 			if(device.currentValue('switch') == "on") {
 				device.off()
@@ -347,6 +381,10 @@ def initialize() {
 	subscribe(holiday, "switch.off", handler, [filterEvents: false])
 	subscribe(holiday, "switch", handler, [filterEvents: false])
 	subscribe(holiday, "level", handler, [filterEvents: false])
+	subscribe(lights, "switch.on", handler, [filterEvents: false])
+	subscribe(lights, "switch.off", handler, [filterEvents: false])
+	subscribe(lights, "switch", handler, [filterEvents: false])
+	subscribe(lights, "level", handler, [filterEvents: false])
     subscribe(switches, "switch", handler, [filterEvents: false])
     subscribe(dimmers, "level", handler, [filterEvents: false])
 	subscribe(dimmers, "switch", handler, [filterEvents: false])
@@ -419,20 +457,22 @@ def head() {
 <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css" />
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.3.2/css/weather-icons.min.css" />
-<link href="https://625alex.github.io/ActiON-Dashboard/style.min.4.4.css?v=4" rel="stylesheet">
+<link href="https://625alex.github.io/ActiON-Dashboard/style.tmp.css?v=4" rel="stylesheet">
 <link href='https://fonts.googleapis.com/css?family=Mallanna' rel='stylesheet' type='text/css'>
 
 <script>
 var stateTS = ${getStateTS()};
 var tileSize = ${getTSize()};
 var readOnlyMode = ${readOnlyMode ?: false};
+var icons = ${getTileIcons().encodeAsJSON()};
+var smartAppVersion = "4.6";
 </script>
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 <script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
 <script src="https://625alex.github.io/ActiON-Dashboard/coolclock.min.js" type="text/javascript"></script>
-<script src="https://625alex.github.io/ActiON-Dashboard/script.min.4.5.js?v=6" type="text/javascript"></script>
-
+<script src="https://625alex.github.io/ActiON-Dashboard/freewall.js?v=6" type="text/javascript"></script>
+<script src="https://625alex.github.io/ActiON-Dashboard/script.tmp.js?v=6" type="text/javascript"></script>
 
 <style>
 .tile {width: ${getTSize()}px; height: ${getTSize()}px;}
@@ -441,9 +481,37 @@ var readOnlyMode = ${readOnlyMode ?: false};
 ${!dropShadow ? ".icon, .icon * {text-shadow: none;} .ui-slider-handle.ui-btn.ui-shadow {box-shadow: none; -webkit-box-shadow: none; -moz-box-shadow: none;}" : ""}
 body {font-size: ${getFSize()}%;}
 ${readOnlyMode ? """.tile, .music i {cursor: default} .clock, .refresh{cursor: pointer}""" : ""}
+${getHolidayIcon().css}
 </style>
 """
 }                                                              
+
+def footer() {
+"""<script>
+\$(function() {
+  var wall = new freewall(".tiles");
+  wall.fitWidth();
+  
+  wall.reset({
+			draggable: false,
+			selector: '.tile',
+		animate: true,
+		gutterX:cellGutter,
+		gutterY:cellGutter,
+		cellW:cellSize,
+		cellH:cellSize,
+		fixSize:null,
+		onResize: function() {
+			wall.fitWidth();
+			wall.refresh();
+		}
+	});
+	wall.fitWidth();
+	// for scroll bar appear;
+	\$(window).trigger("resize");
+});
+</script>"""
+}
 
 def headList() {
 """
@@ -557,7 +625,6 @@ def renderHelloHomeTile(data) {
 """
 <div class="hello-home tile menu" data-rel="popup" data-popup="hello-home-popup">
 	<div class="title">Hello, Home!</div>
-	<div class="icon"><i class="fa fa-comment-o"></i></div>
 	<div data-role="popup" id="hello-home-popup" data-overlay-theme="b">
 		<ul data-role="listview" data-inset="true" style="min-width:210px;">
 			${data.phrases.collect{"""<li data-icon="false">$it</li>"""}.join("\n")}
@@ -600,7 +667,9 @@ def renderTile(data) {
 	} else if (data.tile == "device") {
 		return """<div class="$data.type tile $data.active" data-active="$data.active" data-type="$data.type" data-device="$data.device" data-value="$data.value" data-level="$data.level" data-is-value="$data.isValue"><div class="title">$data.name</div></div>"""
 	} else if (data.tile == "link") {
-		return """<div class="link tile" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon"><a href="$data.link" data-ajax="false" style="color:white"><i class="fa fa-link"></i></a></div></div>"""
+		return """<div class="link tile" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon"><a href="$data.link" data-ajax="false" style="color:white"><i class="fa fa-th"></i></a></div></div>"""
+	} else if (data.tile == "dashboard") {
+		return """<div class="dashboard tile" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon"><a href="$data.link" data-ajax="false" style="color:white"><i class="fa fa-link"></i></a></div></div>"""
 	} else if (data.tile == "video") {
 		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><param name="movie" value="$data.link"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="$data.link" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="240" height="164" wmode="opaque"></embed></object></div></div>"""
 	} else if (data.tile == "genericMJPEGvideo") {
@@ -622,34 +691,71 @@ def renderTile(data) {
 	return ""
 }
 
+def getTileIcons() {
+	[
+		dimmer : [off : "<i class='inactive fa fa-toggle-off'></i>", on : "<i class='active fa fa-toggle-on'></i>"],
+		switch : [off : "<i class='inactive fa fa-toggle-off'></i>", on : "<i class='active fa fa-toggle-on'></i>"],
+		light : [off : "<i class='inactive opaque fa fa-lightbulb-o'></i>", on : "<i class='active fa fa-lightbulb-o'></i>"],
+		lock : [locked : "<i class='inactive fa fa-lock'></i>", unlocked : "<i class='active fa fa-unlock-alt'></i>"],
+		motion : [active : "<i class='active fa fa-exchange'></i>", inactive: "<i class='inactive opaque fa fa-exchange'></i>"],
+		presence : [present : "<i class='active fa fa-map-marker'></i>", notPresent: "<i class='inactive opaque fa fa-map-marker'></i>"],
+		contact : [open : "<i class='active r45 fa fa-expand'></i>", closed: "<i class='inactive r45 fa fa-compress'></i>"],
+		water : [dry : "<i class='inactive fa fa-tint'></i>", wet: "<i class='active fa fa-tint'></i>"],
+		momentary : "<i class='fa fa-circle-o'></i>",
+		camera : "<i class='fa fa-camera'></i>",
+		refresh : "<i class='fa fa-refresh'></i>",
+		humidity : "<i class='fa fa-fw wi wi-sprinkles'></i>",
+		temperature : "<i class='fa fa-fw wi wi-thermometer'></i>",
+		energy : "<i class='fa fa-fw wi wi-lightning'></i>",
+		power : "<i class='fa fa-fw fa-bolt'></i>",
+		battery : "<i class='fa fa-fw batt'></i>",
+        helloHome : "<i class='fa fa-comment-o'></i>",
+        link : "<i class='fa fa-link'></i>",
+        dashboard : "<i class='fa fa-th'></i>",
+		holiday: getHolidayIcon()
+	]
+}
+
 def getListIcon(type) {
 	def icons = [
 		clock: """<i class="fa fa-fw fa-clock-o"></i>""",
 		mode: """<i class="fa fa-fw fa-gear"></i>""",
-		"hello-home": """<i class="fa fa-fw fa-comment-o"></i>""",
 		weather: """<i class="fa fa-fw fa-sun-o"></i>""",
-		holiday: """<i class="fa fa-fw fa-tree"></i>""",
-		lock: """<i class="fa fa-fw fa-lock"></i>""",
 		music: """<i class="fa fa-fw fa-music"></i>""",
-		"switch": """<i class="fa fa-fw fa-toggle-on"></i>""",
-		dimmer: """<i class="fa fa-fw fa-toggle-on"></i>""",
-		momentary: """<i class="fa fa-fw fa-circle-o"></i>""",
-		contact: """<i class="fa fa-fw fa-expand"></i>""",
-		presence: """<i class="fa fa-fw fa-map-marker"></i>""",
-		motion: """<i class="fa fa-fw fa-exchange"></i>""",
-		camera: """<i class="fa fa-fw fa-camera"></i>""",
 		video: """<i class="fa fa-fw fa-video-camera"></i>""",
-		temperature: """<i class="fa fa-fw wi wi-thermometer"></i>""",
-		humidity: """<i class="fa fa-fw wi wi-sprinkles"></i>""",
-		water: """<i class="fa fa-fw fa-tint"></i>""",
-		energy: """<i class="fa fa-fw wi wi-lightning"></i>""",
-		power: """<i class="fa fa-fw fa-bolt"></i>""",
-		battery: """<i class="fa fa-fw batt"></i>""",
-		link: """<i class="fa fa-fw fa-link"></i>""",
-		refresh: """<i class="fa fa-fw fa-refresh"></i>""",
+		"hello-home": getTileIcons().helloHome,
+		lock: getTileIcons().lock.locked,
+		switch: getTileIcons().switch.on,
+		light: getTileIcons().light.on,
+		holiday: getTileIcons().holiday.on,
+		dimmer: getTileIcons().dimmer.on,
+		momentary: getTileIcons().momentary,
+		contact: getTileIcons().contact.open,
+		presence: getTileIcons().presence.present,
+		motion: getTileIcons().motion.active,
+		camera: getTileIcons().camera,
+		temperature: getTileIcons().temperature,
+		humidity: getTileIcons().humidity,
+		water: getTileIcons().humidity,
+		energy: getTileIcons().energy,
+		power: getTileIcons().power,
+		battery: getTileIcons().battery,
+		link: getTileIcons().link,
+		dashboard: getTileIcons().dashboard,
+		refresh: getTileIcons().refresh,
 	]
 	
 	icons[type]
+}
+
+def getHolidayIcon() {
+	def icons = [
+	"Valentine's" : [on : """<i class="active fa fa-fw fa-heart"></i>""", off : """<i class="inactive fa fa-fw fa-heart-o"></i>""", css: """.holiday {background-color: #FF82B2;} /*pink*/ .holiday.active {background-color: #A90000} .holiday.active .icon i {color:#EA001F}"""],
+	"Christmas" : [on: """<i class="active fa fa-fw fa-tree"></i>""", off: """<i class="inactive fa fa-fw fa-tree"></i>""", css: """.holiday {background-color: #11772D;} /*green*/ .holiday.active {background-color: #AB0F0B} .holiday.active .icon i {color:#11772D}"""],
+	null : [off : "<i class='inactive opaque fa fa-lightbulb-o'></i>", on : "<i class='active fa fa-lightbulb-o'></i>", css : "/*n/a*/"]
+    ]
+	
+	icons[holidayType]
 }
 
 def renderListItem(data) {return """<li class="item $data.type" data-type="$data.type" data-device="$data.device" id="$data.type|$data.device">${getListIcon(data.type)}$data.name</li>"""}
@@ -658,9 +764,9 @@ def getMusicPlayerData(device) {[tile: "device", type: "music", device: device.i
 
 def getDeviceData(device, type) {[tile: "device",  active: isActive(device, type), type: type, device: device.id, name: device.displayName, value: getDeviceValue(device, type), level: getDeviceLevel(device, type), isValue: isValue(device, type)]}
 
-def getDeviceFieldMap() {[lock: "lock", holiday: "switch", "switch": "switch", dimmer: "switch", contact: "contact", presence: "presence", temperature: "temperature", humidity: "humidity", motion: "motion", water: "water", power: "power", energy: "energy", battery: "battery"]}
+def getDeviceFieldMap() {[lock: "lock", holiday: "switch", light: "switch", "switch": "switch", dimmer: "switch", contact: "contact", presence: "presence", temperature: "temperature", humidity: "humidity", motion: "motion", water: "water", power: "power", energy: "energy", battery: "battery"]}
 
-def getActiveDeviceMap() {[lock: "unlocked", holiday: "on", "switch": "on", dimmer: "on", contact: "open", presence: "present", motion: "active", water: "wet"]}
+def getActiveDeviceMap() {[lock: "unlocked", holiday: "on", light: "on", "switch": "on", dimmer: "on", contact: "open", presence: "present", motion: "active", water: "wet"]}
 
 def isValue(device, type) {!(["momentary", "camera"] << getActiveDeviceMap().keySet()).flatten().contains(type)}
 
@@ -724,6 +830,7 @@ def allDeviceData() {
 	weather?.each{data << getWeatherData(it)}
 	
 	holiday?.each{data << getDeviceData(it, "holiday")}
+	lights?.each{data << getDeviceData(it, "light")}
 	locks?.each{data << getDeviceData(it, "lock")}
 	music?.each{data << getMusicPlayerData(it)}
 	switches?.each{data << getDeviceData(it, "switch")}
@@ -743,13 +850,14 @@ def allDeviceData() {
 	battery?.each{data << getDeviceData(it, "battery")}
 	
 	(1..10).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], name: settings["linkTitle$it"] ?: "Link $it", i: it, type: "link"]}}
+	(1..10).each{if (settings["dashboardUrl$it"]) {data << [tile: "dashboard", link: settings["dashboardUrl$it"], name: settings["dashboardTitle$it"] ?: "Dashboard $it", i: it, type: "link"]}}
 	
 	data << refresh
 	
 	data.sort{state?.sortOrder?."$it.type-$it.device"}
 }
 
-def html() {render contentType: "text/html", data: "<!DOCTYPE html><html><head>${head()}${customCSS()}</head><body style='background-color:black'>\n${renderTiles()}\n${renderWTFCloud()}</body></html>"}
+def html() {render contentType: "text/html", data: "<!DOCTYPE html><html><head>${head()}${customCSS()}</head><body style='background-color:black'>\n${renderTiles()}\n${renderWTFCloud()}${footer()}</body></html>"}
 def renderTiles() {"""<div class="tiles">\n${allDeviceData()?.collect{renderTile(it)}.join("\n")}<div class="blank tile"></div></div>"""}
 
 def renderWTFCloud() {"""<div data-role="popup" id="wtfcloud-popup" data-overlay-theme="b" class="wtfcloud"><div class="icon cloud" onclick="clearWTFCloud()"><i class="fa fa-cloud"></i></div><div class="icon message" onclick="clearWTFCloud()"><i class="fa fa-question"></i><i class="fa fa-exclamation"></i><i class='fa fa-refresh'></i></div></div>"""}
@@ -762,9 +870,9 @@ def list() {render contentType: "text/html", data: """<!DOCTYPE html><html><head
 def customCSS() {
 """
 <style>
-/*** Enter custom CSS here ***/
+/*** Custonm CSS Start ***/
 
-/*****************************/
+/*** Custonm CSS End *****/
 </style>
 """
 }
