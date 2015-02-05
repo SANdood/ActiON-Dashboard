@@ -1,5 +1,7 @@
-SmartThings ActiON Dashboard
+ActiON Dashboard, a SmartThings web client
 ======
+**Your home has a Home Page!™**
+
 
 If you like this app, please support the developer:<br/> [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif) alex.smart.things@gmail.com](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A5K5L44TEF77U)
 
@@ -17,6 +19,8 @@ Uses
 * Install as a native app on your smartphone for a quick, user friendly access to your devices.
 * Install on a wall-mounted tablet as a whole-house control panel.
 * Create dashboards, as needed, for your family and friends and decide what they are allowed to view and control.
+
+(sample.png)
 
 Install SmartApp in the IDE
 ======
@@ -78,3 +82,15 @@ Tips and tricks
 *	Since the app is designed to scale across a range of screen sizes, you get to define only linear order, the tiles will wrap to the next line depending on available space. If you want certain tile to appear on certain row/column for a particular screen size, just count the position considering sizes of other tiles.
 *	If you want to change the style, I added a block of code for your custom CSS overrides. Add your style within customCSS() method. I will always keep it at the end of the SmartApp.
 *	To add weather tile, do to IDE > My Devices, add SmartWeather Tile. It will be listed as one of your devices and you could pick it when you configure preferences of ActiON Dashboard.
+
+License
+=====
+This software if free for Private Use. You may use and modify the software without distributing it.
+
+This software and derivatives may not be used for commercial purposes.
+You may not modify, distribute or sublicense this software.
+You may not grant a sublicense to modify and distribute this software to third parties.
+
+Software is provided without warranty and the software author/license owner cannot be held liable for damages.
+
+Copyright © 2014 Alex Malikov
