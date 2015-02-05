@@ -37,21 +37,22 @@ Install SmartApp in the IDE
 * Click on "Code" button on top right of the page
 * Click "Publish" button then "For Me" option
 
-Install app via SmartThings Mobile app (recommended method)
+Install dashboard instances via SmartThings Mobile
 ======
 
-1. Go to Dashboard of SmartThings Mobile app
+1. Go to Dashboard of SmartThings Mobile App
 * Tap (+) on the bottom of the app
 * Swipe all the way to the right to My Apps
 * Pick the app that you created
 * Follow through SmartApp preferences and copy the dashboard URL
 * Don't forget to click "Done"
+* To create multiple instances of the dashboard, install SmartApp only once in the IDE. Then, create as many instances as necessary in the SmartThings Mobile App. Each instance has its own set of preferences.
 
 Android and iOS native apps
 =====
 To install ActiON Dashboard as a native app, open the URL in Safari on iOS or Chrome on Android device, then add shortcut to the home screen. When the shortcut icon is tapped, the dashboard launches as a full screen native application (without tool bars).
 
-OAuth
+Authentication
 =====
 * If you don’t want to expose the access_token, you can omit it from the URL. You will be prompted to login with your SmartThings account.
 * If you need to invalidate the access_token, you can reset it via the SmartApp preferences. Go to SmartThings Mobile App > My Apps > tap the instance you want to change > Preferences
