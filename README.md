@@ -20,7 +20,7 @@ Uses
 * Install on a wall-mounted tablet as a whole-house control panel.
 * Create dashboards, as needed, for your family and friends and decide what they are allowed to view and control.
 
-(sample.png)
+(https://raw.githubusercontent.com/625alex/ActiON-Dashboard/gh-pages/sample.png)
 
 Install SmartApp in the IDE
 ======
