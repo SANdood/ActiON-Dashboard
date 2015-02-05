@@ -4,7 +4,7 @@
 .presence {background-color: #3f51b5;}/*indigo*/
 .lock {background-color: #f44336;/*red*/}
 .hello-home {background-color: #9c27b0;}/*purple*/
-.switch, .dimmer, .momentary {background-color: #4caf50;} /*green*/
+.switch, .dimmer, .momentary, .light {background-color: #4caf50;} /*green*/
 .contact {background-color: #e91e63;}/*pink*/
 .refresh {background-color: #607d8b;} /*blue gray*/
 .temperature {background-color: #ff6f00;} /*amber 900*/
@@ -21,6 +21,7 @@
 .camera{background-color: #cddc39} /*lime*/
 .video {background-color:#8E8E8E} /*dropcam grey*/
 .blank.tile{background:none;}
+.dashboard {background-color: #FE0002;} /* red */
 
 .dimmer .ui-slider-bg.ui-btn-active, .music .ui-slider-bg.ui-btn-active {background-color:grey;}
 .dimmer.active .ui-slider-bg.ui-btn-active {background-color:#81c784;}
@@ -29,7 +30,7 @@
 body {background-color: #1d1d1d!important;}
 .tile {border-radius:2px;color:white}
 .tiles {margin:2px;}
-.switch, .dimmer, .momentary, .clock, .lock, .refresh, .link, .menu, .thermostat, .music i, .holiday, .camera {cursor: pointer;}
+.switch, .dimmer, .momentary, .clock, .lock, .refresh, .link, .dashboard, .menu, .thermostat, .music i, .holiday, .camera, .light {cursor: pointer;}
 .tiles {overflow:hidden}
 .tile {width: 120px; height: 120px;}
 .w2 {width: 240px;}
@@ -59,6 +60,11 @@ html body .spinCold .ui-group-theme-a .ui-btn, .ui-page-theme-a .ui-btn{border:0
 /* tiles *************************/
 .title {font-size:0.9em;line-height:1em;height:2em;overflow:ellipsis;position:absolute;top:5px;left:5px}
 .title2 {font-size: 12px}
+
+/** icons **/
+.tile.active .icon i.inactive {display:none}
+.tile:not(.active) .icon i.active {display:none}
+
 .icon {font-size:3em;line-height:3em;width:100%;margin-top: -1.5em;position: absolute;text-align: center;top: 50%;white-space:nowrap;}
 .icon.text {font-size:1.8em;line-height:2em;width:100%;margin-top: -1em;}
 
@@ -69,9 +75,6 @@ html body .spinCold .ui-group-theme-a .ui-btn, .ui-page-theme-a .ui-btn{border:0
 .footer i {font-size:16px}
 .spinner {bottom: 5px;right:5px;color: white;font-size: 10px;line-height:10px;position: absolute; display:none}
 .opaque {opacity: 0.3;}
-
-.tile.active .icon.inactive {display:none}
-.tile:not(.active) .icon.active {display:none}
 
 .mode:not(.Home) .icon.Home {display:none}
 .mode.Home .icon.text{display:none}
@@ -120,8 +123,3 @@ box-shadow: 0px 4px 3px rgba(0,0,0,0.4), 0px 8px 13px rgba(0,0,0,0.1), 0px 18px 
 .music:not(.active) .pause {display:none}
 
 .music i {cursor: pointer;}
-
-/**holiday**********/
-.holiday {background-color: #11772D;} /*green*/
-.holiday.active {background-color: #AB0F0B}
-.holiday.active .icon i {color:#11772D}

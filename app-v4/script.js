@@ -1,3 +1,5 @@
+var scriptVersion = "4.6.0";
+
 $(function() {
 	
 	$(".tile").append("<i class='spinner fa fa-refresh fa-spin'></i>");
@@ -12,11 +14,18 @@ $(function() {
 	
 	if (readOnlyMode) {return false;}
 	
-	$(".switch, .dimmer, .momentary, .clock, .lock, .link, .holiday, .camera, .music i").click(function() {
+	$(".switch, .dimmer, .momentary, .clock, .lock, .link, .holiday, .camera, .music i, .light").click(function() {
 		animateClick($(this));
 	});
 	
-	$(".switch, .lock, .momentary, .holiday, .camera").click(function() {
+	$(".dashboard").click(function(e) {
+		animateClick($(this));
+		e.stopImmediatePropagation();
+		$(".refresh .icon").addClass("fa-spin");
+		window.location = $(this).find("a").attr("href");
+	});
+	
+	$(".switch, .light, .lock, .momentary, .holiday, .camera").click(function() {
 		$(this).closest(".tile").toggleClass("active");
         sendCommand($(this).attr("data-type"), $(this).attr("data-device"), "toggle");
 	});
@@ -118,31 +127,32 @@ function spinner(element) {
 }
 
 function setIcons() {
-	$(".switch, .dimmer").append("<div class='icon inactive'><i class='fa fa-toggle-off'></i></div>").append("<div class='icon active'><i class='fa fa-toggle-on'></i></div>");
-	
-	$(".lock").append("<div class='icon inactive'><i class='fa fa-lock'></i></div>").append("<div class='icon active'><i class='fa fa-unlock-alt'></i></div>");
-	
-	$(".motion").append("<div class='icon inactive'><i class='fa opaque fa-exchange'></i></div>").append("<div class='icon active'><i class='fa fa-exchange'></i></div>");
-	
-	$(".presence").append("<div class='icon inactive'><i class='fa opaque fa-map-marker'></i></div>").append("<div class='icon active'><i class='fa fa-map-marker'></i></div>");
-	
-	$(".contact").append("<div class='icon inactive'><i class='r45 fa fa-compress'></i></div>").append("<div class='icon active'><i class='r45 fa fa-expand'></i></div>");
-	$(".water").append("<div class='icon inactive'><i class='fa opaque fa-tint'></i></div>").append("<div class='icon active'><i class='fa fa-tint'></i></div>");
-	
-	$(".momentary").append("<div class='icon'><i class='fa fa-circle-o'></i></div>");
-	$(".camera").append("<div class='icon'><i class='fa fa-camera'></i></div>");
-	$(".holiday").append("<div class='icon'><i class='fa fa-tree'></i></div>");
-	$(".refresh").append("<div class='icon'><i class='fa fa-refresh'></i></div>");
+	$(".switch").append("<div class='icon'>" + icons.switch.on + icons.switch.off + "</div>");
+	$(".dimmer").append("<div class='icon'>" + icons.dimmer.on + icons.dimmer.off + "</div>");
+	$(".light").append("<div class='icon'>" + icons.light.on + icons.light.off + "</div>");
+	$(".holiday").append("<div class='icon'>" + icons.holiday.on + icons.holiday.off + "</div>");
+	$(".lock").append("<div class='icon'>" + icons.lock.locked + icons.lock.unlocked + "</div>");
+	$(".motion").append("<div class='icon'>" + icons.motion.active + icons.motion.inactive + "</div>");
+	$(".presence").append("<div class='icon'>" + icons.presence.present + icons.presence.notPresent + "</div>");
+	$(".contact").append("<div class='icon'>" + icons.contact.open + icons.contact.closed + "</div>");
+	$(".water").append("<div class='icon'>" + icons.water.dry + icons.water.wet + "</div>");
 
-	$(".dimmer").each(function(){renderSlider($(this))});
-	$(".music").each(function(){renderSlider($(this))});
+	$(".dimmer, .music").each(function(){renderSlider($(this))});
 	$(".weather").each(function(){renderWeather($(this))});
 	
-	$(".humidity").append("<div class='footer'><i class='fa fa-fw wi wi-sprinkles'></i></div>");
-	$(".temperature").append("<div class='footer'><i class='fa fa-fw wi wi-thermometer'></i></div>");
-	$(".energy").append("<div class='footer'><i class='fa fa-fw wi wi-lightning'></i></div>");
-	$(".power").append("<div class='footer'><i class='fa fa-fw fa-bolt'></i></div>");
-	$(".battery").append("<div class='footer'><i class='fa fa-fw batt'></i></div>");
+	$(".momentary").append("<div class='icon'>" + icons.momentary + "</div>");
+	$(".camera").append("<div class='icon'>" + icons.camera + "</div>");
+	$(".refresh").append("<div class='icon'>" + icons.refresh + "</div>");
+	$(".hello-home").append("<div class='icon'>" + icons.helloHome + "</div>");
+	
+	$(".humidity").append("<div class='footer'>" + icons.humidity + "</div>");
+	$(".temperature").append("<div class='footer'>" + icons.temperature + "</div>");
+	$(".energy").append("<div class='footer'>" + icons.energy + "</div>");
+	$(".power").append("<div class='footer'>" + icons.power + "</div>");
+	$(".battery").append("<div class='footer'>" + icons.battery + "</div>");
+	
+	$(".link").find("a").html(icons.link);
+	$(".dashboard").find("a").html(icons.dashboard);
 	
 	$(".tile[data-is-value=true]").each(function(){renderValue($(this))});
 }
@@ -194,6 +204,7 @@ function doPoll(func) {
 	if (access_token) request["access_token"] = access_token;
 	
 	$.get("ping", request).done(function( data ) {
+		if (data.status == "refresh") refresh();
 		clearWTFCloud();
 		if (func) {
 			func();
@@ -343,26 +354,3 @@ function checkTime(i) {
 
 var cellSize = getUrlParameter("t") || tileSize;
 var cellGutter = getUrlParameter("g") || 4;
-
-$(function() {
-  var wall = new freewall(".tiles");
-  wall.fitWidth();
-  
-  wall.reset({
-			draggable: false,
-			selector: '.tile',
-		animate: true,
-		gutterX:cellGutter,
-		gutterY:cellGutter,
-		cellW:cellSize,
-		cellH:cellSize,
-		fixSize:null,
-		onResize: function() {
-			wall.fitWidth();
-			wall.refresh();
-		}
-	});
-	wall.fitWidth();
-	// for scroll bar appear;
-	$(window).trigger("resize");
-});
