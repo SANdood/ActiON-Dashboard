@@ -6,17 +6,17 @@ If you like this app, please support the developer:<br/> [![PayPal](https://www.
 ======
 ActiON Dashboard is a web client for SmartThings. It is designed to run in any modern browser, regardless of operating system or screen size.
 
-ActiON Dashboard SmartApp easily installs in 2 minutes. Create as many instances as you need and pick relevant devices for each dashboard.
+ActiON Dashboard SmartApp easily installs in 2 minutes. Create as many different instances as you need and pick relevant devices for each dashboard.
 
-ActiON Dashboard has no dependency on the SmartThings Mobile app or third party services.
+ActiON Dashboard has no dependency on third party services.
 
 [Download SmartApp](https://github.com/625alex/ActiON-Dashboard/blob/master/app-v4/ActiON4SmartApp.groovy)
 
 Uses
 ======
-* Install as a native app to your smartphone to for a quick, user friendly access to your devices.
+* Install as a native app on your smartphone for a quick, user friendly access to your devices.
 * Install on a wall-mounted tablet as a whole-house control panel.
-* Create dashboards as needed for your family and friends and decide what they are allowed to view and control.
+* Create dashboards, as needed, for your family and friends and decide what they are allowed to view and control.
 
 Install SmartApp in the IDE
 ======
@@ -43,28 +43,14 @@ Install app via SmartThings Mobile app (recommended method)
 * Follow through SmartApp preferences and copy the dashboard URL
 * Don't forget to click "Done"
 
-Install app via SmartThings IDE (no longer supported)
-======
-
-1. Login to [IDE](https://graph.api.smartthings.com/)
-* Click on [My SmartApps]( https://graph.api.smartthings.com/ide/apps)
-* Click on the name of the app you want to install
-* Pick location in the drop-down on top right
-* Click "Set Location" button
-* ***Don't click "Install" button***
-* Follow through SmartApp preferences. Click "Next" button finally click "Done".
-* Dashboard URL is printed in the logs
-
-Please not that I no longer support this feature. Installing via the IDE works, but people will have to figure it out on their own.
-
 Android and iOS native apps
 =====
-To install Action Dashboard as a native app, open the URL in Safari on iOS or Chrome on Android device, then add shortcut to the home screen. When the shortcut icon is tapped, the dashboard launches as a full screen native application (without toolbars).
+To install ActiON Dashboard as a native app, open the URL in Safari on iOS or Chrome on Android device, then add shortcut to the home screen. When the shortcut icon is tapped, the dashboard launches as a full screen native application (without tool bars).
 
 OAuth
 =====
 * If you don’t want to expose the access_token, you can omit it from the URL. You will be prompted to login with your SmartThings account.
-* If you need to invalidate the access_token, you can reset it via the SmartApp preferences, uninstall the SmartApp or change OAuth details in the App Settings (IDE).
+* If you need to invalidate the access_token, you can reset it via the SmartApp preferences. Go to SmartThings Mobile App > My Apps > tap the instance you want to change > Preferences
 
 Dropcam Stream
 =====
@@ -78,21 +64,17 @@ https://www.dropcam.com/e/1234abcd?autoplay=true
 
 Troubleshooting
 =====
-If you encountering errors during installation you either
--	You didn’t enable OAuth when you installed the app in the IDE (see above).
--	You tried to install via the IDE and clicked "Install" rather than "Done" (see above).
--	You are upgrading from version 3 and you didn’t step through app preferences.
+-	Make sure you didn’t forget to enable OAuth when you installed the app in the IDE (see above).
+-	If you are upgrading from a previous version, make sure to step through app preferences and tap "Done". You don't actually need to make any changes to the preferences.
 
 If neither of these is applicable, please contact the developer.
 
 Tips and tricks
 =====
 *	If you think your tiles are too small/big you can try to change app preferences. If you don't achieve a desired result, add "&t=120" at the end of your dashboard's URL and play with the value to see what works best for you. If you are using a desktop browser you can also use zoom in/out.
-*	There were feature requests for one switch control a group of switches. This can be achieved with Big Switch app by ST. You can find it on your mobile app. Tap (+) > More > Convenience > Scroll to the bottom and find "The Big Switch" app. Then setup the master and slave switches.
+*	There were feature requests for one switch to control a group of switches. This can be achieved with Big Switch app by ST. You can find it on your mobile app. Tap (+) > More > Convenience > Scroll to the bottom and find "The Big Switch" app. Then set up the master and slave switches.
 * If you want to create a virtual (master) switches, go to IDE > My Devices > New Device. Enter required fields and choose "On/Off Button Tile" in the type election box. Then you can use it as any other switch and put it on the dashboard.
 *	If you want multiple instances of the dashboard, install SmartApp only once in the IDE. Then, create as many instances as necessary in the ST Mobile App. Each instance has its own set of preferences.
 *	Since the app is designed to scale across a range of screen sizes, you get to define only linear order, the tiles will wrap to the next line depending on available space. If you want certain tile to appear on certain row/column for a particular screen size, just count the position considering sizes of other tiles.
-*	If you want to change the style, I added a block of code for your custom CSS overrides. Add your style within customCSS() method. I will always keep it at the end of the SmartApp
+*	If you want to change the style, I added a block of code for your custom CSS overrides. Add your style within customCSS() method. I will always keep it at the end of the SmartApp.
 *	To add weather tile, do to IDE > My Devices, add SmartWeather Tile. It will be listed as one of your devices and you could pick it when you configure preferences of ActiON Dashboard.
-
-
