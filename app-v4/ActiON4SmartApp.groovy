@@ -1,5 +1,5 @@
 /**
- *  ActiON Dashboard 4.6.1
+ *  ActiON Dashboard 4.6.2
  *
  *  Visit Home Page for more information:
  *  http://action-dashboard.github.io/
@@ -20,7 +20,7 @@
  *
  */
 definition(
-    name: "ActiON4.6.1",
+    name: "ActiON4.6.2",
     namespace: "625alex",
     author: "Alex Malikov",
     description: "ActiON Dashboard, a SmartThings web client.",
@@ -35,7 +35,7 @@ preferences {
     
         section("About") {
             paragraph "ActiON Dashboard, a SmartThings web client.\n\nYour home has a Home Page!™"
-            paragraph "Version 4.6.1\n\n" +
+            paragraph "Version 4.6.2\n\n" +
             "If you like this app, please support the developer via PayPal:\n\nalex.smart.things@gmail.com\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
@@ -213,9 +213,9 @@ def authenticationPreferences() {
 			input "disableDashboard", "bool", title: "Disable temporarily (hide all tiles)?", defaultValue: false, required:false
 			input "readOnlyMode", "bool", title: "View only mode?", defaultValue: false, required:false
 		}
-		section("Reset AOuth Access Token...") {
+		section("Reset Access Token...") {
         	paragraph "Activating this option will invalidate access token. Access to all authenticated instances of this dashboard will be permanently revoked."
-        	input "resetOauth", "bool", title: "Reset AOuth Access Token?", defaultValue: false
+        	input "resetOauth", "bool", title: "Reset Access Token?", defaultValue: false
         }
 	}
 }
@@ -225,9 +225,9 @@ def viewURL() {
 		if (resetOauth) {
 			generateURL(null)
 			
-			section("Reset AOuth Access Token...") {
-				paragraph "You chose to reset AOuth Access Token in ActiON Dashboard preferences."
-				href "authenticationPreferences", title:"Reset AOuth Access Token", description: "Tap to set this option to \"OFF\""
+			section("Reset Access Token...") {
+				paragraph "You chose to reset Access Token in ActiON Dashboard preferences."
+				href "authenticationPreferences", title:"Reset Access Token", description: "Tap to set this option to \"OFF\""
 			}
 		} else {
 			section() {
@@ -473,7 +473,7 @@ var stateTS = ${getStateTS()};
 var tileSize = ${getTSize()};
 var readOnlyMode = ${readOnlyMode ?: false};
 var icons = ${getTileIcons().encodeAsJSON()};
-var smartAppVersion = "4.6";
+var smartAppVersion = "4.6.2";
 </script>
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
@@ -528,7 +528,7 @@ def headList() {
 <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css" />
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.3.2/css/weather-icons.min.css" />
-<link href="https://625alex.github.io/ActiON-Dashboard/style.min.4.4.css?v=4" rel="stylesheet">
+<link href="https://625alex.github.io/ActiON-Dashboard/prod/style.4.6.0.min.css?u=0" rel="stylesheet">
 <link href='https://fonts.googleapis.com/css?family=Mallanna' rel='stylesheet' type='text/css'>
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
@@ -578,6 +578,7 @@ ul{list-style-type: none;padding-left:0;}
 .item {cursor:grab; padding:5px; margin:8px;border-radius:2px}
 .list {width: 75%; margin: 0 auto 60px auto;}
 .list i {margin-right:5px;}
+${getHolidayIcon().css}
 </style>
 """
 }  
@@ -699,25 +700,25 @@ def renderTile(data) {
 
 def getTileIcons() {
 	[
-		dimmer : [off : "<i class='inactive fa fa-toggle-off'></i>", on : "<i class='active fa fa-toggle-on'></i>"],
-		switch : [off : "<i class='inactive fa fa-toggle-off'></i>", on : "<i class='active fa fa-toggle-on'></i>"],
-		light : [off : "<i class='inactive opaque fa fa-lightbulb-o'></i>", on : "<i class='active fa fa-lightbulb-o'></i>"],
-		lock : [locked : "<i class='inactive fa fa-lock'></i>", unlocked : "<i class='active fa fa-unlock-alt'></i>"],
-		motion : [active : "<i class='active fa fa-exchange'></i>", inactive: "<i class='inactive opaque fa fa-exchange'></i>"],
-		presence : [present : "<i class='active fa fa-map-marker'></i>", notPresent: "<i class='inactive opaque fa fa-map-marker'></i>"],
-		contact : [open : "<i class='active r45 fa fa-expand'></i>", closed: "<i class='inactive r45 fa fa-compress'></i>"],
-		water : [dry : "<i class='inactive fa fa-tint'></i>", wet: "<i class='active fa fa-tint'></i>"],
-		momentary : "<i class='fa fa-circle-o'></i>",
-		camera : "<i class='fa fa-camera'></i>",
-		refresh : "<i class='fa fa-refresh'></i>",
+		dimmer : [off : "<i class='inactive fa fa-fw fa-toggle-off'></i>", on : "<i class='active fa fa-fw fa-toggle-on'></i>"],
+		switch : [off : "<i class='inactive fa fa-fw fa-toggle-off'></i>", on : "<i class='active fa fa-fw fa-fw fa-toggle-on'></i>"],
+		light : [off : "<i class='inactive opaque fa fa-fw fa-lightbulb-o'></i>", on : "<i class='active fa fa-fw fa-lightbulb-o'></i>"],
+		lock : [locked : "<i class='inactive fa fa-fw fa-lock'></i>", unlocked : "<i class='active fa fa-fw fa-unlock-alt'></i>"],
+		motion : [active : "<i class='active fa fa-fw fa-exchange'></i>", inactive: "<i class='inactive opaque fa fa-fw fa-exchange'></i>"],
+		presence : [present : "<i class='active fa fa-fw fa-map-marker'></i>", notPresent: "<i class='inactive opaque fa fa-fw fa-map-marker'></i>"],
+		contact : [open : "<i class='active r45 fa fa-fw fa-expand'></i>", closed: "<i class='inactive r45 fa fa-fw fa-compress'></i>"],
+		water : [dry : "<i class='inactive fa fa-fw fa-tint'></i>", wet: "<i class='active fa fa-fw fa-tint'></i>"],
+		momentary : "<i class='fa fa-fw fa-circle-o'></i>",
+		camera : "<i class='fa fa-fw fa-camera'></i>",
+		refresh : "<i class='fa fa-fw fa-refresh'></i>",
 		humidity : "<i class='fa fa-fw wi wi-sprinkles'></i>",
 		temperature : "<i class='fa fa-fw wi wi-thermometer'></i>",
 		energy : "<i class='fa fa-fw wi wi-lightning'></i>",
 		power : "<i class='fa fa-fw fa-bolt'></i>",
-		battery : "<i class='fa fa-fw batt'></i>",
-        helloHome : "<i class='fa fa-comment-o'></i>",
-        link : "<i class='fa fa-link'></i>",
-        dashboard : "<i class='fa fa-th'></i>",
+		battery : "<i class='fa fa-fw fa-fw batt'></i>",
+        helloHome : "<i class='fa fa-fw fa-comment-o'></i>",
+        link : "<i class='fa fa-fw fa-link'></i>",
+        dashboard : "<i class='fa fa-fw fa-th'></i>",
 		holiday: getHolidayIcon()
 	]
 }
@@ -756,11 +757,11 @@ def getListIcon(type) {
 
 def getHolidayIcon() {
 	def icons = [
-	"Valentine's" : [on : """<i class="active fa fa-fw fa-heart"></i>""", off : """<i class="inactive fa fa-fw fa-heart-o"></i>""", css: """.holiday {background-color: #FF82B2;} /*pink*/ .holiday.active {background-color: #A90000} .holiday.active .icon i {color:#EA001F}"""],
-	"Christmas" : [on: """<i class="active fa fa-fw fa-tree"></i>""", off: """<i class="inactive fa fa-fw fa-tree"></i>""", css: """.holiday {background-color: #11772D;} /*green*/ .holiday.active {background-color: #AB0F0B} .holiday.active .icon i {color:#11772D}"""],
+	"Valentine's" : [on : "<i class='active fa fa-fw fa-heart'></i>", off : "<i class='inactive fa fa-fw fa-heart-o'></i>", css: ".holiday {background-color: #FF82B2;} /*pink*/ .holiday.active {background-color: #A90000} .holiday.active .icon i {color:#EA001F}"],
+	"Christmas" : [on: "<i class='active fa fa-fw fa-tree'></i>", off: "<i class='inactive fa fa-fw fa-tree'></i>", css: ".holiday {background-color: #11772D;} /*green*/ .holiday.active {background-color: #AB0F0B} .holiday.active .icon i {color:#11772D}"],
+	"default" : [off : "<i class='inactive opaque fa fa-fw fa-lightbulb-o'></i>", on : "<i class='active fa fa-fw fa-lightbulb-o'></i>", css : ""]
     ]
-	
-	icons[holidayType] ?: [off : "<i class='inactive opaque fa fa-lightbulb-o'></i>", on : "<i class='active fa fa-lightbulb-o'></i>", css : ""]
+	icons[holidayType ?: "default"]
 }
 
 def renderListItem(data) {return """<li class="item $data.type" data-type="$data.type" data-device="$data.device" id="$data.type|$data.device">${getListIcon(data.type)}$data.name</li>"""}
@@ -855,7 +856,7 @@ def allDeviceData() {
 	battery?.each{data << getDeviceData(it, "battery")}
 	
 	(1..10).each{if (settings["linkUrl$it"]) {data << [tile: "link", link: settings["linkUrl$it"], name: settings["linkTitle$it"] ?: "Link $it", i: it, type: "link"]}}
-	(1..10).each{if (settings["dashboardUrl$it"]) {data << [tile: "dashboard", link: settings["dashboardUrl$it"], name: settings["dashboardTitle$it"] ?: "Dashboard $it", i: it, type: "link"]}}
+	(1..10).each{if (settings["dashboardUrl$it"]) {data << [tile: "dashboard", link: settings["dashboardUrl$it"], name: settings["dashboardTitle$it"] ?: "Dashboard $it", i: it, type: "dashboard"]}}
 	
 	data << refresh
 	
