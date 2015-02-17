@@ -1,4 +1,4 @@
-.version-4-6-0 {}
+.version-4-6-3 {display: none}
 
 .tile {background-color: grey}
 .weather {background-color: #a20025;}
@@ -6,7 +6,7 @@
 .presence {background-color: #3f51b5;}/*indigo*/
 .lock {background-color: #f44336;/*red*/}
 .hello-home {background-color: #9c27b0;}/*purple*/
-.switch, .dimmer, .momentary, .light {background-color: #4caf50;} /*green*/
+.switch, .dimmer, .momentary, .light, .dimmerLight, .themeLight {background-color: #4caf50;} /*green*/
 .contact {background-color: #e91e63;}/*pink*/
 .refresh {background-color: #607d8b;} /*blue gray*/
 .temperature {background-color: #ff6f00;} /*amber 900*/
@@ -26,13 +26,15 @@
 .dashboard {background-color: #FE0002;} /* red */
 
 .dimmer .ui-slider-bg.ui-btn-active, .music .ui-slider-bg.ui-btn-active {background-color:grey;}
+.dimmerLight .ui-slider-bg.ui-btn-active, .music .ui-slider-bg.ui-btn-active {background-color:grey;}
 .dimmer.active .ui-slider-bg.ui-btn-active {background-color:#81c784;}
+.dimmerLight.active .ui-slider-bg.ui-btn-active {background-color:#81c784;}
 .music.active .ui-slider-bg.ui-btn-active {background-color:#ab47bc;}
 
 body {background-color: #1d1d1d!important;}
 .tile {border-radius:2px;color:white}
 .tiles {margin:2px;}
-.switch, .dimmer, .momentary, .clock, .lock, .refresh, .link, .dashboard, .menu, .thermostat, .music i, .holiday, .camera, .light {cursor: pointer;}
+.switch, .dimmer, .dimmerLight, .momentary, .clock, .lock, .refresh, .link, .dashboard, .menu, .thermostat, .music i, .themeLight, .camera, .light {cursor: pointer;}
 .tiles {overflow:hidden}
 .tile {width: 120px; height: 120px;}
 .w2 {width: 240px;}
@@ -59,8 +61,9 @@ html body .spinCold .ui-group-theme-a .ui-btn, .ui-page-theme-a .ui-btn{border:0
 .wtfcloud .icon.cloud {margin-left: -100px;font-size: 200px;color:white;}
 .wtfcloud .icon.message {margin-left:-50px;margin-top: -65px;color:grey;}
 
+.weather .icon i {font-size: 0.9em;}
 /* tiles *************************/
-.title {font-size:0.9em;line-height:1em;height:2em;overflow:ellipsis;position:absolute;top:5px;left:5px}
+.title {font-size:0.9em;line-height:1em;height:2em;overflow:ellipsis;position:absolute;top:2px;left:4px}
 .title2 {font-size: 12px}
 
 /** icons **/
@@ -75,7 +78,7 @@ html body .spinCold .ui-group-theme-a .ui-btn, .ui-page-theme-a .ui-btn{border:0
 .footer {bottom: 5px;color: white;font-size: 11px;left: 5px;position: absolute;line-height:10px;}
 .footer.right {right:5px;text-align:right;}
 .footer i {font-size:16px}
-.spinner {bottom: 5px;right:5px;color: white;font-size: 10px;line-height:10px;position: absolute; display:none}
+.spinner {bottom: 2px;right:2px;color: white;font-size: 10px;line-height:10px;position: absolute; display:none}
 .opaque {opacity: 0.3;}
 
 .mode:not(.Home) .icon.Home {display:none}
@@ -100,7 +103,7 @@ html body .spinCold .ui-group-theme-a .ui-btn, .ui-page-theme-a .ui-btn{border:0
 .ui-slider-popup { /*do not change*/height:12px;width:18px;padding-top:0px;padding-bottom:2px;font-size:12px;}
 div.ui-slider{height:21px;}
 .ui-slider-track{margin:0!important}
-.full-width-slider {position:absolute;bottom:5px;width:100%;}
+.full-width-slider {position:absolute;bottom:-2px;width:100%;}
 .full-width-slider input {display: none;}
 .ui-slider-track.ui-mini .ui-slider-handle {height:20px;width:20px;margin:-11px 0 0 -11px;}
 .ui-slider.ui-mini{padding:0 10px 0 12px;}
@@ -115,7 +118,7 @@ box-shadow: 0px 4px 3px rgba(0,0,0,0.4), 0px 8px 13px rgba(0,0,0,0.1), 0px 18px 
 /** music ****/
 
 .music .ui-slider.ui-mini{padding:0 10px 0 40px;}
-.music .footer {bottom: 14px; z-index:100}
+.music .footer {bottom: 6px; z-index:100}
 .music .full-width-slider {z-inndex:99}
 
 .music.muted .unmuted {display:none}
