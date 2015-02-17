@@ -1,5 +1,5 @@
 /**
- *  ActiON Dashboard 4.6.2
+ *  ActiON Dashboard 4.6.3
  *
  *  Visit Home Page for more information:
  *  http://action-dashboard.github.io/
@@ -20,7 +20,7 @@
  *
  */
 definition(
-    name: "ActiON4.6.2",
+    name: "ActiON4.6.3",
     namespace: "625alex",
     author: "Alex Malikov",
     description: "ActiON Dashboard, a SmartThings web client.",
@@ -35,7 +35,7 @@ preferences {
     
         section("About") {
             paragraph "ActiON Dashboard, a SmartThings web client.\n\nYour home has a Home Page!™"
-            paragraph "Version 4.6.2\n\n" +
+            paragraph "Version 4.6.3\n\n" +
             "If you like this app, please support the developer via PayPal:\n\nalex.smart.things@gmail.com\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://action-dashboard.github.io", style:"embedded", required:false, title:"More information...", description:"http://action-dashboard.github.io"
@@ -56,7 +56,6 @@ preferences {
 		}
 		
 		section("More Tiles and Preferences...") {
-			href "moreTiles", title:"Clock, Mode, Hello Home!"
 			href "preferences", title: "Preferences"
 		}
     }
@@ -66,7 +65,6 @@ preferences {
 	page(name: "videoStreamsMJPEG", title: "videoStreamsMJPEG")
 	page(name: "dashboards", title: "dashboards")
 	page(name: "links", title: "links")
-	page(name: "moreTiles", title: "moreTiles")
 	page(name: "preferences", title: "preferences")
 	page(name: "authenticationPreferences", title: "authenticationPreferences")
 	page(name: "viewURL", title: "viewURL")
@@ -74,12 +72,16 @@ preferences {
 
 def controlThings() {
 	dynamicPage(name: "controlThings", title: "Things", install: false) {
-		section("Control these things...") {
-			input "holiday", "capability.switch", title: "Which Holiday Lights?", multiple: true, required: false
+		section("Control these lights...") {
 			input "lights", "capability.switch", title: "Which Lights?", multiple: true, required: false
 			input "switches", "capability.switch", title: "Which Switches?", multiple: true, required: false
-			input "dimmers", "capability.switchLevel", title: "Which Dimmers?", multiple: true, required: false
+			input "dimmerLights", "capability.switchLevel", title: "Which Dimmable Lights?", multiple: true, required: false
+			input "dimmers", "capability.switchLevel", title: "Which Dimmable Switches?", multiple: true, required: false
 			input "momentaries", "capability.momentary", title: "Which Momentary Switches?", multiple: true, required: false
+			input "holiday", "capability.switch", title: "Which Theme Lights?", multiple: true, required: false
+		}
+		
+		section("Control these things...") {
 			input "locks", "capability.lock", title: "Which Locks?", multiple: true, required: false
 			input "camera", "capability.imageCapture", title: "Which Cameras?", multiple: true, required: false
 			input "music", "capability.musicPlayer", title: "Which Music Players?", multiple: true, required: false
@@ -174,25 +176,21 @@ def dashboards() {
 	}
 }
 
-def moreTiles() {
-	dynamicPage(name: "moreTiles", title: "More Tiles...", install: false) {
-		section() {
-			input "showMode", title: "Mode", "bool", required: true, defaultValue: true
-			input "showHelloHome", title: "Hello, Home! Actions", "bool", required: true, defaultValue: true
-			input "showClock", title: "Clock", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
-		}
-	}
-}
-
 def preferences() {
-	dynamicPage(name: "preferences", title: "Preferences...", install: false) {
+	dynamicPage(name: "preferences", title: "Preferences", install: false) {
 		section("Preferences...") {
 			label title: "Title", required: false, defaultValue: "ActiON4"
 			input "roundNumbers", title: "Round Off Decimals", "bool", required: true, defaultValue:true
 			input "dropShadow", title: "Drop Shadow", "bool", required: true, defaultValue: true
 			input "tileSize", title: "Tile Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Small", "Normal", "Large"]
 			input "fontSize", title: "Font Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Normal", "Larger", "Largest"]
-			input "holidayType", title: "Holiday Lights Theme", "enum", multiple: false, required: true, defaultValue: "Christmas", options: ["Christmas", "Valentine's"]
+			input "holidayType", title: "Theme Lights", "enum", multiple: false, required: true, options: ["Default", "Christmas", "Valentine's Day"]
+		}
+		
+		section("More Tiles...") {
+			input "showMode", title: "Mode", "bool", required: true, defaultValue: true
+			input "showHelloHome", title: "Hello, Home! Actions", "bool", required: true, defaultValue: true
+			input "showClock", title: "Clock", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
 		}
 		
 		if (state) {
@@ -287,26 +285,9 @@ def command() {
 
 	def device
     
-	if (type == "switch") {
-		device = switches?.find{it.id == id}
-		if (device) {
-			if(device.currentValue('switch') == "on") {
-				device.off()
-			} else {
-				device.on()
-			}
-		}
-	} else if (type == "light") {
-		device = lights?.find{it.id == id}
-		if (device) {
-			if(device.currentValue('switch') == "on") {
-				device.off()
-			} else {
-				device.on()
-			}
-		}
-	} else if (type == "holiday") {
-		device = holiday?.find{it.id == id}
+	if (type == "switch" || type == "light" || type == "themeLight") {
+		def deviceSet = (type == "switch" ? switches : (type == "light" ? lights : holiday))
+		device = deviceSet?.find{it.id == id}
 		if (device) {
 			if(device.currentValue('switch') == "on") {
 				device.off()
@@ -323,8 +304,9 @@ def command() {
                 device.lock()
             }
 		}
-	} else if (type == "dimmer") {
-		device = dimmers?.find{it.id == id}
+	} else if (type == "dimmer" || type == "dimmerLight") {
+		def deviceSet = (type == "dimmer" ? dimmers : dimmerLights)
+		device = deviceSet?.find{it.id == id}
 		if (device) {
 			if (command == "toggle") {
 				if(device.currentValue('switch') == "on") {
@@ -396,6 +378,8 @@ def initialize() {
     subscribe(switches, "switch", handler, [filterEvents: false])
     subscribe(dimmers, "level", handler, [filterEvents: false])
 	subscribe(dimmers, "switch", handler, [filterEvents: false])
+    subscribe(dimmerLights, "level", handler, [filterEvents: false])
+	subscribe(dimmerLights, "switch", handler, [filterEvents: false])
     subscribe(locks, "lock", handler, [filterEvents: false])
     subscribe(contacts, "contact", handler, [filterEvents: false])
     subscribe(presence, "presence", handler, [filterEvents: false])
@@ -465,7 +449,7 @@ def head() {
 <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css" />
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.3.2/css/weather-icons.min.css" />
-<link href="https://625alex.github.io/ActiON-Dashboard/prod/style.4.6.0.min.css?u=0" rel="stylesheet">
+<link href="https://625alex.github.io/ActiON-Dashboard/prod/style.4.6.3.min.css?u=0" rel="stylesheet">
 <link href='https://fonts.googleapis.com/css?family=Mallanna' rel='stylesheet' type='text/css'>
 
 <script>
@@ -473,12 +457,12 @@ var stateTS = ${getStateTS()};
 var tileSize = ${getTSize()};
 var readOnlyMode = ${readOnlyMode ?: false};
 var icons = ${getTileIcons().encodeAsJSON()};
-var smartAppVersion = "4.6.2";
+var smartAppVersion = "4.6.3";
 </script>
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
 <script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
-<script src="https://625alex.github.io/ActiON-Dashboard/prod/script.4.6.0.min.js?u=0" type="text/javascript"></script>
+<script src="https://625alex.github.io/ActiON-Dashboard/prod/script.4.6.3.min.js?u=0" type="text/javascript"></script>
 
 <style>
 .tile {width: ${getTSize()}px; height: ${getTSize()}px;}
@@ -487,7 +471,7 @@ var smartAppVersion = "4.6.2";
 ${!dropShadow ? ".icon, .icon * {text-shadow: none;} .ui-slider-handle.ui-btn.ui-shadow {box-shadow: none; -webkit-box-shadow: none; -moz-box-shadow: none;}" : ""}
 body {font-size: ${getFSize()}%;}
 ${readOnlyMode ? """.tile, .music i {cursor: default} .clock, .refresh{cursor: pointer}""" : ""}
-${getHolidayIcon().css}
+${getThemeLightIcon().css}
 </style>
 """
 }                                                              
@@ -578,7 +562,7 @@ ul{list-style-type: none;padding-left:0;}
 .item {cursor:grab; padding:5px; margin:8px;border-radius:2px}
 .list {width: 75%; margin: 0 auto 60px auto;}
 .list i {margin-right:5px;}
-${getHolidayIcon().css}
+${getThemeLightIcon().css}
 </style>
 """
 }  
@@ -667,7 +651,7 @@ def renderTile(data) {
 		return """
 		<div class="music tile w2 $data.active ${data.mute ? "muted" : ""}" data-type="music" data-device="$data.device" data-level="$data.level" data-track-description="$data.trackDescription" data-mute="$data.mute">
 			<div class="title"><span class="name">$data.name</span><br/><span class='title2 track'>$data.trackDescription</span></div>
-			<div class="icon text"><i class="fa fa-fw fa-backward back"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-pause pause"></i><i class="fa fa-fw fa-play play"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-forward forward"></i></div>
+			<div class="icon text"><i class="fa fa-fw fa-backward back"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-pause pause"></i><i class="fa fa-fw fa-play play"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-fw fa-forward forward"></i></div>
 			<div class="footer"><i class='fa fa-fw fa-volume-down unmuted'></i><i class='fa fa-fw fa-volume-off muted'></i></div>
 		</div>
 		"""
@@ -701,6 +685,7 @@ def renderTile(data) {
 def getTileIcons() {
 	[
 		dimmer : [off : "<i class='inactive fa fa-fw fa-toggle-off'></i>", on : "<i class='active fa fa-fw fa-toggle-on'></i>"],
+		dimmerLight : [off : "<i class='inactive opaque fa fa-fw fa-lightbulb-o'></i>", on : "<i class='active fa fa-fw fa-lightbulb-o'></i>"],
 		switch : [off : "<i class='inactive fa fa-fw fa-toggle-off'></i>", on : "<i class='active fa fa-fw fa-fw fa-toggle-on'></i>"],
 		light : [off : "<i class='inactive opaque fa fa-fw fa-lightbulb-o'></i>", on : "<i class='active fa fa-fw fa-lightbulb-o'></i>"],
 		lock : [locked : "<i class='inactive fa fa-fw fa-lock'></i>", unlocked : "<i class='active fa fa-fw fa-unlock-alt'></i>"],
@@ -719,7 +704,7 @@ def getTileIcons() {
         helloHome : "<i class='fa fa-fw fa-comment-o'></i>",
         link : "<i class='fa fa-fw fa-link'></i>",
         dashboard : "<i class='fa fa-fw fa-th'></i>",
-		holiday: getHolidayIcon()
+		themeLight: getThemeLightIcon()
 	]
 }
 
@@ -734,8 +719,9 @@ def getListIcon(type) {
 		lock: getTileIcons().lock.locked,
 		switch: getTileIcons().switch.on,
 		light: getTileIcons().light.on,
-		holiday: getTileIcons().holiday.on,
+		themeLight: getTileIcons().themeLight.on,
 		dimmer: getTileIcons().dimmer.on,
+		dimmerLight: getTileIcons().dimmerLight.on,
 		momentary: getTileIcons().momentary,
 		contact: getTileIcons().contact.open,
 		presence: getTileIcons().presence.present,
@@ -755,13 +741,12 @@ def getListIcon(type) {
 	icons[type]
 }
 
-def getHolidayIcon() {
+def getThemeLightIcon() {
 	def icons = [
-	"Valentine's" : [on : "<i class='active fa fa-fw fa-heart'></i>", off : "<i class='inactive fa fa-fw fa-heart-o'></i>", css: ".holiday {background-color: #FF82B2;} /*pink*/ .holiday.active {background-color: #A90000} .holiday.active .icon i {color:#EA001F}"],
-	"Christmas" : [on: "<i class='active fa fa-fw fa-tree'></i>", off: "<i class='inactive fa fa-fw fa-tree'></i>", css: ".holiday {background-color: #11772D;} /*green*/ .holiday.active {background-color: #AB0F0B} .holiday.active .icon i {color:#11772D}"],
-	"default" : [off : "<i class='inactive opaque fa fa-fw fa-lightbulb-o'></i>", on : "<i class='active fa fa-fw fa-lightbulb-o'></i>", css : ""]
+	"Valentine's Day" : [on : "<i class='active fa fa-fw fa-heart'></i>", off : "<i class='inactive fa fa-fw fa-heart-o'></i>", css: ".themeLight {background-color: #FF82B2;} /*pink*/ .themeLight.active {background-color: #A90000} .themeLight.active .icon i {color:#EA001F}"],
+	"Christmas" : [on: "<i class='active fa fa-fw fa-tree'></i>", off: "<i class='inactive fa fa-fw fa-tree'></i>", css: ".themeLight {background-color: #11772D;} /*green*/ .themeLight.active {background-color: #AB0F0B} .themeLight.active .icon i {color:#11772D}"],
     ]
-	icons[holidayType ?: "default"]
+	icons[holidayType] ?: [off : "<i class='inactive opaque fa fa-fw fa-lightbulb-o'></i>", on : "<i class='active fa fa-fw fa-lightbulb-o'></i>", css : ""]
 }
 
 def renderListItem(data) {return """<li class="item $data.type" data-type="$data.type" data-device="$data.device" id="$data.type|$data.device">${getListIcon(data.type)}$data.name</li>"""}
@@ -770,9 +755,9 @@ def getMusicPlayerData(device) {[tile: "device", type: "music", device: device.i
 
 def getDeviceData(device, type) {[tile: "device",  active: isActive(device, type), type: type, device: device.id, name: device.displayName, value: getDeviceValue(device, type), level: getDeviceLevel(device, type), isValue: isValue(device, type)]}
 
-def getDeviceFieldMap() {[lock: "lock", holiday: "switch", light: "switch", "switch": "switch", dimmer: "switch", contact: "contact", presence: "presence", temperature: "temperature", humidity: "humidity", motion: "motion", water: "water", power: "power", energy: "energy", battery: "battery"]}
+def getDeviceFieldMap() {[lock: "lock", themeLight: "switch", light: "switch", "switch": "switch", dimmer: "switch", dimmerLight: "switch", contact: "contact", presence: "presence", temperature: "temperature", humidity: "humidity", motion: "motion", water: "water", power: "power", energy: "energy", battery: "battery"]}
 
-def getActiveDeviceMap() {[lock: "unlocked", holiday: "on", light: "on", "switch": "on", dimmer: "on", contact: "open", presence: "present", motion: "active", water: "wet"]}
+def getActiveDeviceMap() {[lock: "unlocked", themeLight: "on", light: "on", "switch": "on", dimmer: "on", dimmerLight: "on", contact: "open", presence: "present", motion: "active", water: "wet"]}
 
 def isValue(device, type) {!(["momentary", "camera"] << getActiveDeviceMap().keySet()).flatten().contains(type)}
 
@@ -800,8 +785,7 @@ def getDeviceValue(device, type) {
 	else return "${roundNumber(value)}${unitMap[type] ?: ""}"
 }
 
-def getDeviceLevel(device, type) {
-if (type == "dimmer" ||  type == "music") return "${(device.currentValue("level") ?: 0) / 10.0}".toDouble().round() ?: 1}
+def getDeviceLevel(device, type) {if (type == "dimmer" || type == "dimmerLight" || type == "music") return "${(device.currentValue("level") ?: 0) / 10.0}".toDouble().round() ?: 1}
 
 def handler(e) {
 	log.debug "event happened $e.description"
@@ -835,12 +819,13 @@ def allDeviceData() {
 	
 	weather?.each{data << getWeatherData(it)}
 	
-	holiday?.each{data << getDeviceData(it, "holiday")}
-	lights?.each{data << getDeviceData(it, "light")}
+	holiday?.each{data << getDeviceData(it, "themeLight")}
 	locks?.each{data << getDeviceData(it, "lock")}
 	music?.each{data << getMusicPlayerData(it)}
 	switches?.each{data << getDeviceData(it, "switch")}
+	lights?.each{data << getDeviceData(it, "light")}
 	dimmers?.each{data << getDeviceData(it, "dimmer")}
+	dimmerLights?.each{data << getDeviceData(it, "dimmerLight")}
 	momentaries?.each{data << getDeviceData(it, "momentary")}
 	contacts?.each{data << getDeviceData(it, "contact")}
 	presence?.each{data << getDeviceData(it, "presence")}
