@@ -110,8 +110,8 @@ def videoStreams() {
 		}
 		
 		(1..10).each{
-			def title = "dropcamStreamT$it"
-			def link = "dropcamStreamUrl$it"
+			def vsTitle = "dropcamStreamT$it"
+			def vsLink = "dropcamStreamUrl$it"
 			section("Dropcam Video Stream $it") {
 				input vsTitle, "text", title:"Title", required: false
 				input vsLink, "text", title:"URL", required: false
@@ -131,8 +131,8 @@ def videoStreamsMJPEG() {
 		}
 		
 		(1..10).each{
-			def title = "mjpegStreamTitile$it"
-			def link = "mjpegStreamUrl$it"
+			def gvsTitle = "mjpegStreamTitile$it"
+			def gvsLink = "mjpegStreamUrl$it"
 			section("Generic MJPEG Video Stream $it") {
 				input gvsTitle, "text", title:"Title", required: false
 				input gvsLink, "text", title:"URL", required: false
@@ -148,8 +148,8 @@ def links() {
 		}
 		
 		(1..10).each{
-			def title = "linkTitle$it"
-			def link = "linkUrl$it"
+			def lTitle = "linkTitle$it"
+			def lLink = "linkUrl$it"
 			log.debug "t: $t, l: $l"
 			section("Link $it") {
 				input lTitle, "text", title:"Title", required: false
@@ -169,8 +169,8 @@ def dashboards() {
 			def dLink = "dashboardUrl$it"
 			log.debug "t: $t, l: $l"
 			section("Dashboard $it") {
-				input title, "text", title:"Title", required: false
-				input link, "text", title:"URL", required: false
+				input dTitle, "text", title:"Title", required: false
+				input dLink, "text", title:"URL", required: false
 			}
 		}
 	}
