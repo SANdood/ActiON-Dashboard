@@ -113,8 +113,8 @@ def videoStreams() {
 			def title = "dropcamStreamT$it"
 			def link = "dropcamStreamUrl$it"
 			section("Dropcam Video Stream $it") {
-				input title, "text", title:"Title", required: false
-				input link, "text", title:"URL", required: false
+				input vsTitle, "text", title:"Title", required: false
+				input vsLink, "text", title:"URL", required: false
 			}
 		}
 	}
@@ -134,8 +134,8 @@ def videoStreamsMJPEG() {
 			def title = "mjpegStreamTitile$it"
 			def link = "mjpegStreamUrl$it"
 			section("Generic MJPEG Video Stream $it") {
-				input title, "text", title:"Title", required: false
-				input link, "text", title:"URL", required: false
+				input gvsTitle, "text", title:"Title", required: false
+				input gvsLink, "text", title:"URL", required: false
 			}
 		}
 	}
@@ -152,8 +152,8 @@ def links() {
 			def link = "linkUrl$it"
 			log.debug "t: $t, l: $l"
 			section("Link $it") {
-				input title, "text", title:"Title", required: false
-				input link, "text", title:"URL", required: false
+				input lTitle, "text", title:"Title", required: false
+				input lLink, "text", title:"URL", required: false
 			}
 		}
 	}
@@ -165,8 +165,8 @@ def dashboards() {
 			paragraph "Enter absolute URL starting with https..."
 		}
 		(1..10).each{
-			def title = "dashboardTitle$it"
-			def link = "dashboardUrl$it"
+			def dTitle = "dashboardTitle$it"
+			def dLink = "dashboardUrl$it"
 			log.debug "t: $t, l: $l"
 			section("Dashboard $it") {
 				input title, "text", title:"Title", required: false
