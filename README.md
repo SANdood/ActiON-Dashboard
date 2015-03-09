@@ -1,3 +1,6 @@
+[SmartTiles.click]http://SmartTiles.click
+=====
+
 ActiON Dashboard, a SmartThings web client
 ======
 **Your home has a Home Page!™**
