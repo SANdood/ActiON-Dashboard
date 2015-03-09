@@ -1,4 +1,4 @@
-[SmartTiles.click]http://SmartTiles.click
+[SmartTiles.click](http://SmartTiles.click)
 =====
 
 ActiON Dashboard, a SmartThings web client
