@@ -7,10 +7,7 @@ ActiON Dashboard, a SmartThings web client
 
 If you like this app, please support the developer:<br/> [![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif) donate@SmartTiles.click](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A5K5L44TEF77U)
 
-This README contains installation instructions. For complete documentation and resources, please see project's home page:
-
-http://SmartTiles.click
-=====
+This README contains IDE installation instructions. For complete documentation please visit [SmartTiles.click](http://SmartTiles.click).
 
 <img src="https://raw.githubusercontent.com/625alex/ActiON-Dashboard/gh-pages/sample.png" width="50%" height="50%"></img>
 
