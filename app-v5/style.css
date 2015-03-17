@@ -33,6 +33,7 @@
 
 .switch, .dimmer, .dimmerLight, .momentary, .clock, .lock, .refresh, .link, .dashboard, .menu,
 .thermostatHeat .icon.up, .thermostatHeat .icon.down,
+.thermostatCool .icon.up, .thermostatCool .icon.down,
 .music i, .themeLight, .camera, .light {cursor: pointer;}
 
 /* reset ***********************/
