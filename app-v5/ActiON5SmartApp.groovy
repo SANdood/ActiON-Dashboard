@@ -193,6 +193,7 @@ def moretiles() {
 		section() {
 			input "showMode", title: "Mode", "bool", required: true, defaultValue: true
 			input "showHelloHome", title: "Hello, Home! Actions", "bool", required: true, defaultValue: true
+			input "showRefresh", title: "Refresh Button", "bool", required: true, defaultValue: true
 			input "showClock", title: "Clock", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
 		}
 	}
@@ -732,7 +733,11 @@ def renderTile(data) {
 	} else if (data.tile == "genericMJPEGvideo") {
 		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><img src="$data.link" width="240" height="164"></object></div></div>"""
 	} else if (data.tile == "refresh") {
-		return """<div class="refresh tile clickable"><div class="title">Refresh</div><div class="footer">Updated $data.ts</div></div>"""
+		if (showRefresh) {
+			return """<div class="refresh tile clickable"><div class="title">Refresh</div><div class="footer">Updated $data.ts</div></div>"""
+		} else {
+			return ""
+		}
 	} else if (data.tile == "mode") {
 		return renderModeTile(data)
 	} else if (data.tile == "clock") {
