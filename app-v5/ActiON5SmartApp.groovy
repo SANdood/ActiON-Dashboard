@@ -217,10 +217,10 @@ def dashboards() {
 def moretiles() {
 	dynamicPage(name: "moretiles", title: "More Tiles", install: false) {
 		section() {
-			input "showMode", title: "Mode Tile", "bool", required: true, defaultValue: true
-			input "showHelloHome", title: "Hello, Home! Tile", "bool", required: true, defaultValue: true
-			input "showClock", title: "Clock Tile", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
-			input "showRefresh", title: "Refresh Tile", "bool", required: true, defaultValue: true
+			input "showMode", title: "Mode", "bool", required: true, defaultValue: true
+			input "showHelloHome", title: "Hello, Home!", "bool", required: true, defaultValue: true
+			input "showClock", title: "Clock", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
+			input "showRefresh", title: "Refresh", "bool", required: true, defaultValue: true
 		}
 	}
 }
