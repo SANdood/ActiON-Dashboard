@@ -1,5 +1,5 @@
 ﻿/**
- *  ActiON Dashboard 5.1.0
+ *  ActiON Dashboard 5.1.1
  *
  *  Visit Home Page for more information:
  *  http://action-dashboard.github.io/
@@ -75,7 +75,7 @@ preferences {
 	page(name: "viewURL", title: "viewURL")
 }
 
-def appVersion() {"5.1.0"}
+def appVersion() {"5.1.1"}
 
 def controlThings() {
 	dynamicPage(name: "controlThings", title: "Things", install: false) {
