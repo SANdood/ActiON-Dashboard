@@ -421,13 +421,13 @@ def installed() {
 
 def updated() {
 	log.debug "Updated with settings: ${settings}"
+	unsubscribe()
+	unschedule()
+	
 	initialize()
 }
 
 def initialize() {
-	unsubscribe()
-	unschedule()
-	
     weatherRefresh()
 	runEvery15Minutes(updateStateTS)
 	runEvery30Minutes(weatherRefresh)
