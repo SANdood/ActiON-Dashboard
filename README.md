@@ -1,7 +1,7 @@
 [SmartTiles.click](http://SmartTiles.click)
 =====
 
-ActiON Dashboard, a SmartThings web client
+SmartTiles, a SmartThings web client
 ======
 **Your home has a Home Page!™**
 
@@ -9,7 +9,7 @@ If you like this app, please support the developer:<br/> [![PayPal](https://www.
 
 This README contains IDE installation instructions. For complete documentation please visit [SmartTiles.click](http://SmartTiles.click).
 
-<img src="https://raw.githubusercontent.com/625alex/ActiON-Dashboard/gh-pages/sample.png" width="50%" height="50%"></img>
+<img src="https://raw.githubusercontent.com/625alex/SmartTiles/gh-pages/sample.png" width="50%" height="50%"></img>
 
 Install SmartApp in the IDE
 ======
