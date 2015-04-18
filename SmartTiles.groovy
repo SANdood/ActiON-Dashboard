@@ -931,7 +931,7 @@ def allDeviceData() {
 	
 	if (showMode && location.modes) data << [tile: "mode", mode: "$location.mode", isStandardMode: ("$location.mode" == "Home" || "$location.mode" == "Away" || "$location.mode" == "Night"), modes: location?.modes?.name?.sort(), name: "Mode", type: "mode"]
 	
-	def phrases = location?.helloHome?.getPhrases()*.label?.sort()
+	def phrases = location?.helloHome?.getPhrases() ? location?.helloHome?.getPhrases()*.label?.sort() : []
 	if (showHelloHome && phrases) data << [tile: "helloHome", phrases: phrases, name: "Hello, Home!", type: "hello-home"]
 	
 	weather?.each{data << getWeatherData(it)}
