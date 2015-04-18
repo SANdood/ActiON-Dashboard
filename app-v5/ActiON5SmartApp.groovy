@@ -93,7 +93,7 @@ preferences {
             input "energy", "capability.energyMeter", title: "Energy Meters...", multiple: true, required: false
             input "power", "capability.powerMeter", title: "Power Meters...", multiple: true, required: false
             input "acceleration", "capability.accelerationSensor", title: "Vibration Sensors...", multiple: true, required: false
-            input "luminosity", "capability.illuminanceMeasurement", title: "Luminosity Sensor...", multiple: true, required: false
+            input "luminosity", "capability.illuminanceMeasurement", title: "Luminosity Sensors...", multiple: true, required: false
             input "weather", "device.smartweatherStationTile", title: "Weather...", multiple: true, required: false
         }
 	}
