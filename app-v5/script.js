@@ -1,4 +1,4 @@
-var scriptVersion = "5.1.0";
+var scriptVersion = "5.2.0";
 
 $(function() {
 	
@@ -161,6 +161,7 @@ function setIcons() {
 	$(".themeLight").append("<div class='icon'>" + icons.themeLight.on + icons.themeLight.off + "</div>");
 	$(".lock").append("<div class='icon'>" + icons.lock.locked + icons.lock.unlocked + "</div>");
 	$(".motion").append("<div class='icon'>" + icons.motion.active + icons.motion.inactive + "</div>");
+	$(".acceleration").append("<div class='icon'>" + icons.acceleration.active + icons.acceleration.inactive + "</div>");
 	$(".presence").append("<div class='icon'>" + icons.presence.present + icons.presence.notPresent + "</div>");
 	$(".contact").append("<div class='icon'>" + icons.contact.open + icons.contact.closed + "</div>");
 	$(".water").append("<div class='icon'>" + icons.water.dry + icons.water.wet + "</div>");
@@ -173,6 +174,7 @@ function setIcons() {
 	$(".hello-home").append("<div class='icon'>" + icons["hello-home"] + "</div>");
 	
 	$(".humidity").append("<div class='footer'>" + icons.humidity + "</div>");
+	$(".luminosity").append("<div class='footer'>" + icons.luminosity + "</div>");
 	$(".temperature").append("<div class='footer'>" + icons.temperature + "</div>");
 	$(".energy").append("<div class='footer'>" + icons.energy + "</div>");
 	$(".power").append("<div class='footer'>" + icons.power + "</div>");

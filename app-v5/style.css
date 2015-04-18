@@ -1,4 +1,4 @@
-.version-5-1-0 {display: none}
+.version-5-2-0 {display: none}
 
 .tile {background-color: grey}
 .weather {background-color: #a20025;}
@@ -12,14 +12,16 @@
 .temperature {background-color: #ff6f00;} /*amber 900*/
 .mode {background-color: #673ab7;}/*deep purple*/
 .motion {background-color: #2196f3;}/*blue*/
+.acceleration {background-color: #a3a328;}/*olive*/
 .humidity {background-color: #795548;}/*brown*/
-.link {background-color: #263B44;}
+.luminocity {background-color: #906b8d;}/*violet-blue*/*/
+.link {background-color: #263B44;} /*slate*/
 .thermostat {background-color: #009688} /*teal*/
 .energy {background-color: #558b2f} /*l green 800*/
 .power {background-color: #33691e} /*l green 900*/
 .water {background-color: #006064} /*cyan a900*/
 .music {background-color: #aa00ff} /*purple a700*/
-.battery {background-color: #954469}
+.battery {background-color: #954469} /*eggplant*/
 .camera{background-color: #cddc39} /*lime*/
 .video {background-color:#8E8E8E} /*dropcam grey*/
 .blank.tile{background:none!important}
