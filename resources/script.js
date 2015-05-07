@@ -1,4 +1,4 @@
-var scriptVersion = "5.3.0";
+var scriptVersion = "5.2.0";
 
 $(function() {
 	
@@ -18,13 +18,6 @@ $(function() {
 		e.preventDefault();
 		$(".refresh .icon").addClass("fa-spin");
 		window.location = $(this).find("a").attr("href");
-	});
-	
-	$(".history.tile").click(function(e) {
-		animateClick($(this));
-		e.stopImmediatePropagation();
-		e.preventDefault();
-		window.location = "history" + (getUrlParameter("access_token") ? "?access_token=" + getUrlParameter("access_token") : "");
 	});
 	
 	if (readOnlyMode) {return false;}
@@ -178,7 +171,6 @@ function setIcons() {
 	$(".momentary").append("<div class='icon'>" + icons.momentary + "</div>");
 	$(".camera").append("<div class='icon'>" + icons.camera + "</div>");
 	$(".refresh").append("<div class='icon'>" + icons.refresh + "</div>");
-	$(".history").append("<div class='icon'>" + icons.history + "</div>");
 	$(".hello-home").append("<div class='icon'>" + icons["hello-home"] + "</div>");
 	
 	$(".humidity").append("<div class='footer'>" + icons.humidity + "</div>");
