@@ -1,5 +1,5 @@
 ﻿/**
- *  SmartTiles 5.2.0
+ *  SmartTiles 5.3.0
  *
  *  Visit Home Page for more information:
  *  http://SmartTiles.click
@@ -16,11 +16,9 @@
  *
  *  Copyright © 2014 Alex Malikov
  *
- *  Support for Foscam and Generic MJPEG video streams by k3v0
- *
  */
 definition(
-    name: "SmartTiles ${appVersion()}",
+    name: "SmartTiles ${appVersion()}-${appStream()}",
     namespace: "625alex",
     author: "Alex Malikov",
     description: "SmartTiles Dashboard, a SmartThings web client.",
@@ -29,12 +27,14 @@ definition(
     iconX2Url: "https://625alex.github.io/SmartTiles/prod/icon.png",
     oauth: true)
 
+def appVersion() {"5.3.0"}
+def appStream() {"M"}
 
 preferences {
 	page(name: "selectDevices", install: false, uninstall: true, nextPage: "nextPage") {
         section("About") {
             paragraph "SmartTiles Dashboard, a SmartThings web client.\n\nYour home has a Home Page!™"
-            paragraph "Version ${appVersion()}\n\n" +
+            paragraph "Version ${appVersion()}-${appStream()}\n\n" +
             "If you like this app, please support the developer via PayPal:\n\ndonate@SmartTiles.click\n\n" +
             "Copyright © 2014 Alex Malikov"
 			href url:"http://SmartTiles.click", style:"embedded", required:false, title:"More information...", description:"www.SmartTiles.click"
@@ -53,11 +53,11 @@ preferences {
 		}
 		
 		section() {
-			href "moreTiles", title: "Other Tiles", params: [main:true]
+			href "moreTiles", title: "Other Tiles"
 		}
 		
 		section() {
-			href "prefs", title: "Preferences", params: [main:true]
+			href "prefs", title: "Preferences"
 		}
     }
 	
@@ -111,8 +111,6 @@ preferences {
 	page(name: "viewURL")
 	page(name: "nextPage")
 }
-
-def appVersion() {"5.2.0"}
 
 def videos() {
 	dynamicPage(name: "videos", title: "Video Streams", install: false) {
@@ -215,18 +213,21 @@ def dashboards() {
 }
 
 def moreTiles(params) {
-	dynamicPage(name: "moreTiles", title: "More Tiles", install: false, nextPage: params?.main ? null : "nextPage") {
+	log.debug "entering moreTiles $params"
+	dynamicPage(name: "moreTiles", title: "More Tiles", install: false) {
 		section() {
 			input "showMode", title: "Mode", "bool", required: true, defaultValue: true
 			input "showHelloHome", title: "Hello, Home!", "bool", required: true, defaultValue: true
-			input "showClock", title: "Clock", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
 			input "showRefresh", title: "Refresh", "bool", required: true, defaultValue: true
+			input "showHistory", title: "Event History", "bool", required: true, defaultValue: true
+			input "showClock", title: "Clock", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
 		}
 	}
 }
 
 def prefs(params) {
-	dynamicPage(name: "prefs", title: "Preferences", install: false, nextPage: params?.main ? null : "nextPage") {
+	log.debug "entering prefs $params"
+	dynamicPage(name: "prefs", title: "Preferences", install: false) {
 		section() {
 			label title: "Title", required: false, defaultValue: "$location SmartTiles"
 		}
@@ -248,7 +249,11 @@ def prefs(params) {
 		
 		if (state) {
 			section() {
-				href url:"${generateURL("list").join()}", style:"embedded", required:false, title:"Device Order", description:"Tap to change, then click \"Done\""
+				href url:"${generateURL("list").join()}", style:"embedded", required:false, title:"Device Order", description: "Tap to change, then click \"Done\""
+			}
+			
+			section() {
+				href url:"${generateURL("css").join()}", style:"embedded", required:false, title:"Custom CSS", description: "Tap to change, then click \"Done\""
 			}
 		}
 		
@@ -272,7 +277,7 @@ def authenticationPreferences() {
 }
 
 def resetOauth() {
-	dynamicPage(name: "resetOauth", title: "Reset Access Token", install:false, nextPage: "nextPage") {
+	dynamicPage(name: "resetOauth", title: "Reset Access Token", install:false) {
 		generateURL(null)
 		
 		section() {
@@ -289,21 +294,25 @@ def viewURL() {
 			href url:"${generateURL("link").join()}", style:"embedded", required:false, title:"URL", description:"Tap to view, then click \"Done\""
 		}
 		
-		section("Send URL via SMS...") {
+		section() {
 			paragraph "Optionally, send SMS containing the URL of ${title ?: location.name} SmartTiles to a phone number. The URL will be sent in two parts because it's too long."
 			input "phone", "phone", title: "Which phone?", required: false
+		}
+		
+		section() {
+			href "selectDevices", title:"Return to settings"
 		}
 	}
 }
 
 def nextPage() {
-	if (settings.resetOauth) {log.debug "WTF!? $settings.resetOauth"}
-	
-	if (!showClock) {
+	if (state?.appVersionT != appVersion()) {
 		log.debug "nextPage moreTiles"
+		state.appVersionT = appVersion()
 		moreTiles()
-	} else if (!theme) {
+	} else if (state?.appVersionP != appVersion()) {
 		log.debug "nextPage prefs"
+		state.appVersionP = appVersion()
 		prefs()
 	} else if (settings.resetOauth) {
 		log.debug "nextPage resetOauth"
@@ -315,22 +324,18 @@ def nextPage() {
 }
 
 mappings {
+	log.debug "incoming request $params"
 	if (params.access_token && params.access_token != state.accessToken) {
-        path("/ui") {action: [GET: "oauthError"]}
-        path("/command") {action: [GET: "oauthError"]}
-        path("/data") {action: [GET: "oauthError"]}
-        path("/ping") {action: [GET: "oauthError"]}
-        path("/link") {action: [GET: "oauthError"]}
-        path("/list") {action: [GET: "oauthError"]}
-        path("/position") {action: [GET: "oauthError"]}
-	} else if (!params.access_token) {
-		path("/ui") {action: [GET: "html"]}
-        path("/command") {action: [GET: "command"]}
-        path("/data") {action: [GET: "allDeviceData"]}
-        path("/ping") {action: [GET: "ping"]}
-        path("/link") {action: [GET: "viewLinkError"]}
-        path("/list") {action: [GET: "list"]}
-		path("/position") {action: [GET: "position"]}
+		def oauthError = [GET: "oauthError"]
+        path("/ui") {action: oauthError}
+        path("/command") {action: oauthError}
+        path("/data") {action: oauthError}
+        path("/ping") {action: oauthError}
+        path("/link") {action: oauthError}
+        path("/list") {action: oauthError}
+        path("/history") {action: oauthError}
+        path("/position") {action: oauthError}
+        path("/css") {action: [GET: "oauthError", POST: "oauthError"]}
 	} else {
         path("/ui") {action: [GET: "html"]}
         path("/command") {action: [GET: "command"]}
@@ -338,15 +343,15 @@ mappings {
         path("/ping") {action: [GET: "ping"]}
         path("/link") {action: [GET: "link"]}
 		path("/list") {action: [GET: "list"]}
+		path("/history") {action: [GET: "history"]}
 		path("/position") {action: [GET: "position"]}
+		path("/css") {action: [GET: "css", POST: "saveCSS"]}
     }
 }
 
 def oauthError() {[error: "OAuth token is invalid or access has been revoked"]}
 
-def viewLinkError() {[error: "You are not authorized to view OAuth access token"]}
-
-def getMinTemp() {getTemperatureScale() == "F" ? 50 : 10}
+def getMinTemp() {getTemperatureScale() == "F" ? 45 : 7}
 def getMaxTemp() {getTemperatureScale() == "F" ? 90 : 30}
 
 def command() {
@@ -498,6 +503,8 @@ def initialize() {
 	subscribe(thermostatsCool, "coolingSetpoint", handler, [filterEvents: false])
 	subscribe(thermostatsCool, "thermostatFanMode", handler, [filterEvents: false])
 	subscribe(thermostatsCool, "thermostatOperatingState", handler, [filterEvents: false])
+	
+	state.appVersion = appVersion()
 }
 
 def weatherRefresh() {
@@ -608,6 +615,26 @@ def footer() {
 </script>"""
 }
 
+def headHistory() {
+"""
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+<title>${app.label ?: location.name} Event History</title>
+<link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.css" />
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.3.2/css/weather-icons.min.css" />
+<link href="https://625alex.github.io/SmartTiles/prod/style.${appVersion()}.min.css?u=0" rel="stylesheet">
+<link href='https://fonts.googleapis.com/css?family=Mallanna' rel='stylesheet' type='text/css'>
+<script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
+<script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
+<script src="https://625alex.github.io/SmartTiles/jquery.ui.touch-punch.min.js" type="text/javascript"></script>
+<style>
+.batt {background-size: 20px 20px;}
+${getThemeLightIcon().css}
+</style>
+"""
+}
+
 def headList() {
 """
 <meta charset="UTF-8" />
@@ -661,12 +688,7 @@ def headList() {
 	}
 </script>
 <style>
-ul{list-style-type: none;padding-left:0;}
-* {color: white;font-size:20px;}
 .batt {background-size: 20px 20px;}
-.item {cursor:grab; padding:5px; margin:8px;border-radius:2px}
-.list {width: 75%; margin: 0 auto 60px auto;}
-.list i {margin-right:5px;}
 ${getThemeLightIcon().css}
 </style>
 """
@@ -694,6 +716,12 @@ def getDate() {
 	def tf = new java.text.SimpleDateFormat("MMMMM d")
     if (location?.timeZone) tf.setTimeZone(location.timeZone)
     "${tf.format(new Date())}"
+}
+
+def formatDate(date) {
+	def tf = new java.text.SimpleDateFormat("h:mm:ss a, dd MMMMM")
+    if (location?.timeZone) tf.setTimeZone(location.timeZone)
+    return tf.format(date)
 }
 
 def getDOW() {
@@ -781,11 +809,9 @@ def renderTile(data) {
 	} else if (data.tile == "genericMJPEGvideo") {
 		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><img src="$data.link" width="240" height="164"></object></div></div>"""
 	} else if (data.tile == "refresh") {
-		if (showRefresh) {
-			return """<div class="refresh tile clickable"><div class="title">Refresh</div><div class="footer">Updated $data.ts</div></div>"""
-		} else {
-			return ""
-		}
+		return """<div class="refresh tile clickable"><div class="title">Refresh</div><div class="footer">Updated $data.ts</div></div>"""
+	} else if (data.tile == "history") {
+		return """<div class="history tile"><div class="title">Event History</div></div>"""
 	} else if (data.tile == "mode") {
 		return renderModeTile(data)
 	} else if (data.tile == "clock") {
@@ -810,12 +836,13 @@ def getTileIcons() {
 		lock : [locked : "<i class='inactive fa fa-fw fa-lock st-lock'></i>", unlocked : "<i class='active fa fa-fw fa-unlock-alt st-unlock'></i>"],
 		motion : [active : "<i class='active fa fa-fw fa-exchange st-motion-active'></i>", inactive: "<i class='inactive fa fa-fw fa-exchange st-motion-inactive'></i>"],
 		acceleration : [active : "<i class='active fa fa-fw st-acceleration-active'>&#8779</i>", inactive: "<i class='inactive fa fa-fw st-acceleration-inactive'>&#8779</i>"],
-		presence : [present : "<i class='active fa fa-fw fa-map-marker st-present'></i>", notPresent: "<i class='inactive fa fa-fw fa-map-marker st-not-present'></i>"],
+		presence : [present : "<i class='active fa fa-fw fa-map-marker st-present'></i>", notPresent: "<i class='inactive fa fa-fw fa-map-marker st-not-present'></i>", "not present": "<i class='inactive fa fa-fw fa-map-marker st-not-present'></i>"],
 		contact : [open : "<i class='active r45 fa fa-fw fa-expand st-opened'></i>", closed: "<i class='inactive r45 fa fa-fw fa-compress st-closed'></i>"],
 		water : [dry : "<i class='inactive fa fa-fw fa-tint st-dry'></i>", wet: "<i class='active fa fa-fw fa-tint st-wet'></i>"],
 		momentary : "<i class='fa fa-fw fa-circle-o st-momentary'></i>",
 		camera : "<i class='fa fa-fw fa-camera st-camera'></i>",
 		refresh : "<i class='fa fa-fw fa-refresh st-refresh'></i>",
+        history : "<i class='fa fa-fw fa-history st-history'></i>",		
 		humidity : "<i class='fa fa-fw wi wi-sprinkles st-humidity'></i>",
 		luminosity : "<i class='fa fa-fw st-luminosity'>&#9728;</i>",
 		temperature : "<i class='fa fa-fw wi wi-thermometer st-temperature'></i>",
@@ -855,6 +882,13 @@ def getListIcon(type) {
 	icons[type] ?: getTileIcons()[type]
 }
 
+def getEventIcon(event) {
+	def eventValues = getTileIcons()[event.deviceType]
+	//log.debug "eventValues for $event.deviceType: ${"$eventValues".replaceAll("<", "[")}"
+	if (eventValues instanceof String) return eventValues
+	eventValues ? eventValues[event.value] : "[icon]"
+}
+
 def getThemeLightIcon() {
 	def icons = [
 	"Valentine's Day" : [on : "<i class='active fa fa-fw fa-heart st-valentines-on'></i>", off : "<i class='inactive fa fa-fw fa-heart-o st-valentines-off'></i>", css: ".themeLight {background-color: #FF82B2;} /*pink*/ .themeLight.active {background-color: #A90000} .themeLight.active .icon i {color:#EA001F}"],
@@ -863,7 +897,9 @@ def getThemeLightIcon() {
 	icons[themeLightType] ?: [off : "<i class='inactive fa fa-fw fa-lightbulb-o st-light-off'></i>", on : "<i class='active fa fa-fw fa-lightbulb-o st-light-on'></i>", css : ""]
 }
 
-def renderListItem(data) {return """<li class="item $data.type" data-type="$data.type" data-device="$data.device" id="$data.type|$data.device">${getListIcon(data.type)}$data.name</li>"""}
+def renderListItem(data) {return """<li class="item tile $data.type" data-type="$data.type" data-device="$data.device" id="$data.type|$data.device">${getListIcon(data.type)}$data.name</li>"""}
+
+def renderEvent(data) {return """<li class="item tile $data.deviceType" data-name="$data.name" data-value="$data.value"><div class="event-icon">${getEventIcon(data)}</div><div class="event">$data.displayName &nbsp;<i class="fa fa-long-arrow-right"></i> $data.value${data.unit ?: ""}</div><div class="date">${formatDate(data.date)}</div></li>"""}
 
 def getMusicPlayerData(device) {[tile: "device", type: "music", device: device.id, name: device.displayName, status: device.currentValue("status"), level: getDeviceLevel(device, "music"), trackDescription: device.currentValue("trackDescription"), mute: device.currentValue("mute") == "muted", active: device.currentValue("status") == "playing" ? "active" : ""]}
 
@@ -918,6 +954,11 @@ def ping() {
 	else [status: "update", updated: getTS(), ts: getStateTS(), data: allDeviceData()]
 }
 
+def saveCSS() {
+	state.customCSS = params.css
+	css()
+}
+
 def allDeviceData() {
 	def refresh = [tile: "refresh", ts: getTS(), name: "Refresh", type: "refresh"]
 	if (disableDashboard) return [refresh]
@@ -964,20 +1005,116 @@ def allDeviceData() {
 	(1..10).each{if (settings["linkUrl$it"]) {data << [tile: "link", device: "$it", link: settings["linkUrl$it"], name: settings["linkTitle$it"] ?: "Link $it", i: it, type: "link"]}}
 	(1..10).each{if (settings["dashboardUrl$it"]) {data << [tile: "dashboard", device: "$it", link: settings["dashboardUrl$it"], name: settings["dashboardTitle$it"] ?: "Dashboard $it", i: it, type: "dashboard"]}}
 	
-	data << refresh
+	if (showRefresh) data << refresh
+	if (showHistory) data << [tile: "history", name: "Event History", link: "/history", type: "link"]
 	
 	data.sort{state?.sortOrder?."$it.type-$it.device"}
 }
 
-def html() {render contentType: "text/html", data: "<!DOCTYPE html><html><head>${head()}${customCSS()}</head><body class='theme-$theme'>\n${renderTiles()}\n${renderWTFCloud()}${footer()}</body></html>"}
+def getEventsOfDevice(device) {
+	def today = new Date()
+	def then = timeToday(today.format("HH:mm"), TimeZone.getTimeZone('UTC')) - 1
+	device.eventsBetween(then, today, [max: 200])?.findAll{"$it.source" == "DEVICE"}?.collect{[description: it.description, descriptionText: it.descriptionText, displayName: it.displayName, date: it.date, name: it.name, unit: it.unit, source: it.source, value: it.value]}
+}
+
+def filterEventsPerCapability(events, deviceType) {
+	def acceptableEventsPerCapability = [
+		light           : ["switch"],
+		dimmerLight     : ["switch", "level"],
+		switch          : ["switch"],
+		dimmer          : ["switch", "level"],
+		momentary       : ["switch"],
+		themeLight      : ["switch"],
+		thermostatHeat  : ["temperature", "heatingSetpoint", "thermostatFanMode", "thermostatOperatingState",],
+		thermostatCool  : ["temperature", "coolingSetpoint", "thermostatFanMode", "thermostatOperatingState",],
+		lock            : ["lock"],
+		music           : ["status", "level", "trackDescription", "mute"],
+		camera          : [],
+		presence        : ["presence"],
+		contact         : ["contact"],
+		motion          : ["motion"],
+		temperature     : ["temperature"],
+		humidity        : ["humidity"],
+		water           : ["water"],
+		battery         : ["battery"],
+		energy          : ["energy"],
+		power           : ["power"],
+		acceleration    : ["acceleration"],
+		luminosity      : ["illuminance"],
+		weather         : ["temperature", "weather"],
+	]
+	//events?.each{
+	//	log.debug "checking event $it for deviceType $deviceType | ${it.name in acceptableEventsPerCapability[deviceType]}"
+	//}
+	
+	if (events) events*.deviceType = deviceType
+	events?.findAll{it.name in acceptableEventsPerCapability[deviceType]}
+}
+
+def getAllDeviceEvents() {
+	def eventsPerCapability = [
+		light           : lights                ?.collect{getEventsOfDevice(it)},
+		dimmerLight     : dimmerLights          ?.collect{getEventsOfDevice(it)},
+		switch          : switches              ?.collect{getEventsOfDevice(it)},
+		dimmer          : dimmers               ?.collect{getEventsOfDevice(it)},
+		momentary       : momentaries           ?.collect{getEventsOfDevice(it)},
+		themeLight      : themeLights           ?.collect{getEventsOfDevice(it)},
+		thermostatHeat  : thermostatsHeat       ?.collect{getEventsOfDevice(it)},
+		thermostatCool  : thermostatsCool       ?.collect{getEventsOfDevice(it)},
+		lock            : locks                 ?.collect{getEventsOfDevice(it)},
+		music           : music                 ?.collect{getEventsOfDevice(it)},
+		camera          : camera                ?.collect{getEventsOfDevice(it)},
+		presence        : presence              ?.collect{getEventsOfDevice(it)},
+		contact         : contacts              ?.collect{getEventsOfDevice(it)},
+		motion          : motion                ?.collect{getEventsOfDevice(it)},
+		temperature     : temperature           ?.collect{getEventsOfDevice(it)},
+		humidity        : humidity              ?.collect{getEventsOfDevice(it)},
+		water           : water                 ?.collect{getEventsOfDevice(it)},
+		battery         : battery               ?.collect{getEventsOfDevice(it)},
+		energy          : energy                ?.collect{getEventsOfDevice(it)},
+		power           : power                 ?.collect{getEventsOfDevice(it)},
+		acceleration    : acceleration          ?.collect{getEventsOfDevice(it)},
+		luminosity      : luminosity            ?.collect{getEventsOfDevice(it)},
+		weather         : weather               ?.collect{getEventsOfDevice(it)},
+	]
+	
+	def filteredEvents = [:]
+	
+	eventsPerCapability.each {deviceType, events ->
+		filteredEvents[deviceType] = filterEventsPerCapability(events?.flatten(), deviceType)
+	}
+	//log.debug "filteredEvents: $filteredEvents"
+	filteredEvents.values()?.flatten()?.findAll{it}?.sort{"$it.date.time" + "$it.deviceType"}.reverse()
+}
+
+def html() {render contentType: "text/html", data: "<!DOCTYPE html><html><head>${head()}${customCSS()} \n<style>${state.customCSS ?: ""}</style></head><body class='theme-$theme'>\n${renderTiles()}\n${renderWTFCloud()}${footer()}</body></html>"}
 def renderTiles() {"""<div class="tiles">\n${allDeviceData()?.collect{renderTile(it)}.join("\n")}<div class="blank tile"></div></div>"""}
 
 def renderWTFCloud() {"""<div data-role="popup" id="wtfcloud-popup" data-overlay-theme="b" class="wtfcloud"><div class="icon cloud" onclick="clearWTFCloud()"><i class="fa fa-cloud"></i></div><div class="icon message" onclick="clearWTFCloud()"><i class="fa fa-question"></i><i class="fa fa-exclamation"></i><i class='fa fa-refresh'></i></div></div>"""}
 
-def link() {render contentType: "text/html", data: """<!DOCTYPE html><html><head><meta charset="UTF-8" />
-<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /></head><body>${title ?: location.name} SmartTiles URL:<br/><textarea rows="9" cols="30" style="font-size:10px;">${generateURL("ui").join()}</textarea><br/><br/>Copy the URL above and click Done.<br/></body></html>"""}
+def link() {
+	if (!params.access_token) return ["You are not authorized to view OAuth access token"]
+	render contentType: "text/html", data: """<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /></head><body style="margin: 0;"><div style="padding:10px">${title ?: location.name} SmartTiles URL:</div><textarea rows="9" cols="30" style="font-size:10px; width: 100%">${generateURL("ui").join()}</textarea><div style="padding:10px">Copy the URL above and tap Done.</div></body></html>"""
+}
 
-def list() {render contentType: "text/html", data: """<!DOCTYPE html><html><head>${headList()}</head><body style='background-color:black; color: white'><ul class="list">\n${allDeviceData()?.collect{renderListItem(it)}.join("\n")}</ul></body></html>"""}
+def  css() {render contentType: "text/html", data: """<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /></head><body style="margin: 0;"><form action="css?access_token=$state.accessToken" method="post"><textarea rows="10" cols="30" style="font-size:12pt; width: 100%;" name="css">${state.customCSS ?: "custom css here"}</textarea><br/><input type="submit" value="Save" style="margin-left:10px"></form><br/><div style="padding:10px">Enter custom CSS and tap "Save", then tap "Done".<br/><br/>Please note that invalid CSS may break the dashboard. Use at your discretion.</div></body></html>"""}
+
+def list() {render contentType: "text/html", data: """<!DOCTYPE html><html><head>${headList()}</head><body class='theme-$theme'><ul class="list">\n${allDeviceData()?.collect{renderListItem(it)}.join("\n")}</ul></body></html>"""}
+
+def historyNav() {
+"""
+<div style="" class="historyNav">
+<i class="fa fa-fw fa-arrow-left" onclick="window.history.back();"></i>
+<i class="fa fa-fw fa-refresh" onclick="this.className = this.className + ' fa-spin'; location.reload();"></i>
+<i class="fa fa-fw fa-chevron-up" onclick="window.scrollTo(0, 0);"></i>
+</div>
+"""
+}
+
+def history() {
+	if (!showHistory || disableDashboard) return ["history disabled"]
+	render contentType: "text/html", data: """<!DOCTYPE html><html><head>${headHistory()}</head><body class='theme-$theme'>${historyNav()}<ul class="history-list list">\n${getAllDeviceEvents()?.collect{renderEvent(it)}.join("\n")}</ul></body></html>"""
+}
 
 def customCSS() {
 """
