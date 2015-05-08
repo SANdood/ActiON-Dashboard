@@ -212,8 +212,7 @@ def dashboards() {
 	}
 }
 
-def moreTiles(params) {
-	log.debug "entering moreTiles $params"
+def moreTiles() {
 	dynamicPage(name: "moreTiles", title: "More Tiles", install: false) {
 		section() {
 			input "showMode", title: "Mode", "bool", required: true, defaultValue: true
@@ -225,8 +224,7 @@ def moreTiles(params) {
 	}
 }
 
-def prefs(params) {
-	log.debug "entering prefs $params"
+def prefs() {
 	dynamicPage(name: "prefs", title: "Preferences", install: false) {
 		section() {
 			label title: "Title", required: false, defaultValue: "$location SmartTiles"
@@ -324,7 +322,6 @@ def nextPage() {
 }
 
 mappings {
-	log.debug "incoming request $params"
 	if (params.access_token && params.access_token != state.accessToken) {
 		def oauthError = [GET: "oauthError"]
         path("/ui") {action: oauthError}
@@ -1043,9 +1040,6 @@ def filterEventsPerCapability(events, deviceType) {
 		luminosity      : ["illuminance"],
 		weather         : ["temperature", "weather"],
 	]
-	//events?.each{
-	//	log.debug "checking event $it for deviceType $deviceType | ${it.name in acceptableEventsPerCapability[deviceType]}"
-	//}
 	
 	if (events) events*.deviceType = deviceType
 	events?.findAll{it.name in acceptableEventsPerCapability[deviceType]}
@@ -1083,7 +1077,6 @@ def getAllDeviceEvents() {
 	eventsPerCapability.each {deviceType, events ->
 		filteredEvents[deviceType] = filterEventsPerCapability(events?.flatten(), deviceType)
 	}
-	//log.debug "filteredEvents: $filteredEvents"
 	filteredEvents.values()?.flatten()?.findAll{it}?.sort{"$it.date.time" + "$it.deviceType"}.reverse()
 }
 
