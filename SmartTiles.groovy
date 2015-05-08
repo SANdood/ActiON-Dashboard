@@ -1,5 +1,5 @@
 ﻿/**
- *  SmartTiles 5.3.0
+ *  SmartTiles 5.3.1
  *
  *  Visit Home Page for more information:
  *  http://SmartTiles.click
@@ -27,7 +27,7 @@ definition(
     iconX2Url: "https://625alex.github.io/SmartTiles/prod/icon.png",
     oauth: true)
 
-def appVersion() {"5.3.0"}
+def appVersion() {"5.3.1"}
 def appStream() {"M"}
 
 preferences {
@@ -857,6 +857,7 @@ def getTileIcons() {
 		weather: """<i class="fa fa-fw wi wi-day-rain-mix st-weather"></i>""",
 		music: """<i class="fa fa-fw fa-music st-music"></i>""",
 		video: """<i class="fa fa-fw fa-video-camera st-video"></i>""",
+		"?": """<i class="fa fa-fw fa-question st-unknown"></i>""",
 	]
 }
 
@@ -882,8 +883,12 @@ def getListIcon(type) {
 def getEventIcon(event) {
 	if (event.name == "level" && (event.deviceType == "dimmerLight" || event.deviceType == "dimmer")) return (getTileIcons()["light"]).on
 	def eventValues = getTileIcons()[event.deviceType]
+
+	if (!eventValues) return getTileIcons()["?"]
+	
 	if (eventValues instanceof String) return eventValues
-	eventValues ? eventValues[event.value] : "[icon]"
+	
+	eventValues[event.value] ?: getTileIcons()["?"]
 }
 
 def getThemeLightIcon() {
@@ -1003,7 +1008,7 @@ def allDeviceData() {
 	(1..10).each{if (settings["dashboardUrl$it"]) {data << [tile: "dashboard", device: "$it", link: settings["dashboardUrl$it"], name: settings["dashboardTitle$it"] ?: "Dashboard $it", i: it, type: "dashboard"]}}
 	
 	if (showRefresh) data << refresh
-	if (showHistory) data << [tile: "history", name: "Event History", link: "/history", type: "link"]
+	if (showHistory) data << [tile: "history", name: "Event History", type: "history"]
 	
 	data.sort{state?.sortOrder?."$it.type-$it.device"}
 }
@@ -1090,7 +1095,7 @@ def link() {
 	render contentType: "text/html", data: """<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /></head><body style="margin: 0;"><div style="padding:10px">${title ?: location.name} SmartTiles URL:</div><textarea rows="9" cols="30" style="font-size:10px; width: 100%">${generateURL("ui").join()}</textarea><div style="padding:10px">Copy the URL above and tap Done.</div></body></html>"""
 }
 
-def  css() {render contentType: "text/html", data: """<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /></head><body style="margin: 0;"><form action="css?access_token=$state.accessToken" method="post"><textarea rows="10" cols="30" style="font-size:12pt; width: 100%;" name="css">${state.customCSS ?: "custom css here"}</textarea><br/><input type="submit" value="Save" style="margin-left:10px"></form><br/><div style="padding:10px">Enter custom CSS and tap "Save", then tap "Done".<br/><br/>Please note that invalid CSS may break the dashboard. Use at your discretion.</div></body></html>"""}
+def css() {render contentType: "text/html", data: """<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /></head><body style="margin: 0;"><form action="css?access_token=$state.accessToken" method="post"><textarea rows="10" cols="30" style="font-size:12pt; width: 100%;" name="css">${state.customCSS ?: "/*enter custom css here*/"}</textarea><br/><input type="submit" value="Save" style="margin-left:10px"></form><br/><div style="padding:10px">Enter custom CSS and tap "Save", then tap "Done".<br/><br/>Please note that invalid CSS may break the dashboard. Use at your discretion.</div></body></html>"""}
 
 def list() {render contentType: "text/html", data: """<!DOCTYPE html><html><head>${headList()}</head><body class='theme-$theme'><ul class="list">\n${allDeviceData()?.collect{renderListItem(it)}.join("\n")}</ul></body></html>"""}
 
