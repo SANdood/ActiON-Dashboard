@@ -880,8 +880,8 @@ def getListIcon(type) {
 }
 
 def getEventIcon(event) {
+	if (event.name == "level" && (event.deviceType == "dimmerLight" || event.deviceType == "dimmer")) return (getTileIcons()["light"]).on
 	def eventValues = getTileIcons()[event.deviceType]
-	//log.debug "eventValues for $event.deviceType: ${"$eventValues".replaceAll("<", "[")}"
 	if (eventValues instanceof String) return eventValues
 	eventValues ? eventValues[event.value] : "[icon]"
 }
