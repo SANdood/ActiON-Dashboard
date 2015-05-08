@@ -1,5 +1,5 @@
 ﻿/**
- *  SmartTiles 5.3.1
+ *  SmartTiles 5.3.2
  *
  *  Visit Home Page for more information:
  *  http://SmartTiles.click
@@ -27,7 +27,7 @@ definition(
     iconX2Url: "https://625alex.github.io/SmartTiles/prod/icon.png",
     oauth: true)
 
-def appVersion() {"5.3.1"}
+def appVersion() {"5.3.2"}
 def appStream() {"M"}
 
 preferences {
