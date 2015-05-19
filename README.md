@@ -20,8 +20,8 @@ Install SmartApp in the IDE
 * Paste the SmartApp code
 * Click "Create" button on the bottom of the page
 * Click "App Settings" button on top right of the page
-* Click on "OAuth" link toward the bottom of the page
-* Click on "Enable OAuth in Smart App"
+* <b>Click on "OAuth" link toward the bottom of the page</b>
+* <b>Click on "Enable OAuth in Smart App"</b>
 * Click "Update" button
 * Click on "Code" button on top right of the page
 * Click "Publish" button then "For Me" option
