@@ -27,7 +27,7 @@ definition(
     iconX2Url: "https://625alex.github.io/SmartTiles/prod/icon.png",
     oauth: true)
 
-def appVersion() {"5.3.2"}
+def appVersion() {"5.3.3"}
 def appStream() {"M"}
 
 preferences {
