@@ -1,5 +1,5 @@
-﻿/**
- *  SmartTiles 5.3.3
+/**
+ *  SmartTiles 5.4.0
  *
  *  Visit Home Page for more information:
  *  http://SmartTiles.click
@@ -27,11 +27,11 @@ definition(
     iconX2Url: "https://625alex.github.io/SmartTiles/prod/icon.png",
     oauth: true)
 
-def appVersion() {"5.3.3"}
+def appVersion() {"5.4.0"}
 def appStream() {"M"}
 
 preferences {
-	page(name: "selectDevices", install: false, uninstall: true, nextPage: "nextPage") {
+	page(name: "selectDevices", install: true, uninstall: true) {
         section("About") {
             paragraph "SmartTiles Dashboard, a SmartThings web client.\n\nYour home has a Home Page!™"
             paragraph "Version ${appVersion()}-${appStream()}\n\n" +
@@ -49,15 +49,15 @@ preferences {
 		}
 		
 		section() {
-			href "shortcuts", title:"Shortcuts"
-		}
-		
-		section() {
-			href "moreTiles", title: "Other Tiles"
+			href "moreTiles", title: "More Tiles"
 		}
 		
 		section() {
 			href "prefs", title: "Preferences"
+		}
+		
+		section() {
+			href "viewURL", title: "SmartTiles URL", description: "Obtain dashboard URL to use in a browser"
 		}
     }
 	
@@ -101,7 +101,7 @@ preferences {
 	page(name: "videos")
 	page(name: "videoStreams")
 	page(name: "videoStreamsMJPEG")
-	page(name: "shortcuts")
+	page(name: "videoStreamsSMotion")
 	page(name: "dashboards")
 	page(name: "links")
 	page(name: "prefs")
@@ -109,7 +109,6 @@ preferences {
 	page(name: "authenticationPreferences")
 	page(name: "resetOauth")
 	page(name: "viewURL")
-	page(name: "nextPage")
 }
 
 def videos() {
@@ -124,6 +123,10 @@ def videos() {
 		
 		section() {
 			href "videoStreamsMJPEG", title:"Generic MJPEG video streams", description: "Foscam, Blue Iris, etc"
+		}
+		
+		section() {
+			href "videoStreamsSMotion", title:"Stop Motion video streams", description: "Load image and refresh every 5 seconds"
 		}
 	}
 }
@@ -165,14 +168,21 @@ def videoStreamsMJPEG() {
 	}
 }
 
-def shortcuts() {
-	dynamicPage(name: "links", title: "Shortcuts", install: false) {
-		section() {
-			href "dashboards", title: "Links to other dashboards"
+def videoStreamsSMotion() {
+	dynamicPage(name: "videoStreamsSMotion", title: "Stop Motion Video Streams", install: false) {
+		section("About") {
+			paragraph "Enter absolute URL starting with http..."
+			paragraph "Image is refreshed every 5 seconds."
+			paragraph "For details, refer to http://www.smarttiles.click/info."
 		}
 		
-		section() {
-			href "links", title: "Links to other websites"
+		(1..10).each{
+			def smvTitle = "smvStreamTitile$it"
+			def smvLink = "smvStreamUrl$it"
+			section("Generic MJPEG Video Stream $it") {
+				input smvTitle, "text", title:"Title", required: false
+				input smvLink, "text", title:"Image URL", required: false
+			}
 		}
 	}
 }
@@ -219,7 +229,15 @@ def moreTiles() {
 			input "showHelloHome", title: "Hello, Home!", "bool", required: true, defaultValue: true
 			input "showRefresh", title: "Refresh", "bool", required: true, defaultValue: true
 			input "showHistory", title: "Event History", "bool", required: true, defaultValue: true
-			input "showClock", title: "Clock", "enum", multiple: false, required: true, defaultValue: "Small Analog", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
+			input "showClock", title: "Clock", "enum", multiple: false, required: true, defaultValue: "Small Digital", options: ["Small Analog", "Small Digital", "Large Analog", "Large Digital", "None"]
+		}
+		
+		section() {
+			href "dashboards", title: "Links to other dashboards"
+		}
+		
+		section() {
+			href "links", title: "Links to other websites"
 		}
 	}
 }
@@ -286,7 +304,7 @@ def resetOauth() {
 }
 
 def viewURL() {
-	dynamicPage(name: "viewURL", title: "${title ?: location.name} SmartTiles URL", install:true, nextPage: null) {
+	dynamicPage(name: "viewURL", title: "${title ?: location.name} SmartTiles URL", install:false) {
 		section() {
 			paragraph "Copy the URL below to any modern browser to view ${title ?: location.name} SmartTiles. Add a shortcut to home screen of your mobile device to run as a native app."
 			href url:"${generateURL("link").join()}", style:"embedded", required:false, title:"URL", description:"Tap to view, then click \"Done\""
@@ -303,22 +321,26 @@ def viewURL() {
 	}
 }
 
-def nextPage() {
-	if (state?.appVersionT != appVersion()) {
-		log.debug "nextPage moreTiles"
-		state.appVersionT = appVersion()
-		moreTiles()
-	} else if (state?.appVersionP != appVersion()) {
-		log.debug "nextPage prefs"
-		state.appVersionP = appVersion()
-		prefs()
-	} else if (settings.resetOauth) {
-		log.debug "nextPage resetOauth"
-		resetOauth()
-	} else {
-		log.debug "nextPage viewURL"
-		viewURL()
-    }
+def defaultPrefs(name) {
+	if (settings.containsKey(name)) {
+		if (settings[name] == "false") return false
+		return settings[name]
+	}
+	
+	def defaults = [
+		showMode		: true,
+		showHelloHome 	: true,
+		showRefresh 	: true,
+		showHistory 	: true,
+		showClock 		: "Small Digital",
+		theme		 	: "default",
+		tileSize 		: "Medium",
+		fontSize	 	: "Normal",
+		roundNumbers 	: true,
+		themeLightType 	: "Default"
+	]
+	
+	defaults[name]
 }
 
 mappings {
@@ -353,7 +375,7 @@ def getMaxTemp() {getTemperatureScale() == "F" ? 90 : 30}
 
 def command() {
 	log.debug "command received with params $params"
-	if (disableDashboard || readOnlyMode) return [status: "disabled"]
+	if (defaultPrefs("disableDashboard") || defaultPrefs("readOnlyMode")) return [status: "disabled"]
 
     def id = params.device
     def type = params.type
@@ -453,10 +475,12 @@ def initialize() {
     weatherRefresh()
 	runEvery15Minutes(updateStateTS)
 	runEvery30Minutes(weatherRefresh)
+	runEvery30Minutes(updateStateID)
     
 	sendURL_SMS("ui")
 	
 	updateStateTS()
+	updateStateID()
 	
 	subscribe(location, handler)
 	subscribe(themeLights, "switch.on", handler, [filterEvents: false])
@@ -559,14 +583,15 @@ def head() {
 
 <script>
 window.location.hash = "";
+var stateID = ${state.stateID};
 var stateTS = ${getStateTS()};
 var tileSize = ${getTSize()};
-var readOnlyMode = ${readOnlyMode ?: false};
+var readOnlyMode = ${defaultPrefs("readOnlyMode")};
 var icons = ${getTileIcons().encodeAsJSON()};
-var appVersion = "${appVersion()}";
+var appVersion = "${appVersion()}-${appStream()}";
 var minTemp = ${getMinTemp()};
 var maxTemp = ${getMaxTemp()};
-var theme = "$theme";
+var theme = "${defaultPrefs("theme")}";
 </script>
 
 <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
@@ -576,10 +601,12 @@ var theme = "$theme";
 <style>
 .tile {width: ${getTSize()}px; height: ${getTSize()}px;}
 .w2 {width: ${getTSize() * 2}px;}
+.w3 {width: ${getTSize() * 3}px;}
 .h2 {height: ${getTSize() * 2}px;}
-${!dropShadow ? ".icon, .icon * {text-shadow: none;} .ui-slider-handle.ui-btn.ui-shadow {box-shadow: none; -webkit-box-shadow: none; -moz-box-shadow: none;}" : ""}
+.h3 {height: ${getTSize() * 3}px;}
+${!defaultPrefs("dropShadow") ? ".icon, .icon * {text-shadow: none;} .ui-slider-handle.ui-btn.ui-shadow {box-shadow: none; -webkit-box-shadow: none; -moz-box-shadow: none;}" : ""}
 body {font-size: ${getFSize()}%;}
-${readOnlyMode ? """.tile, .music i {cursor: default} .clock, .refresh{cursor: pointer}""" : ""}
+${defaultPrefs("readOnlyMode") ? """.tile, .music i {cursor: default} .clock, .refresh{cursor: pointer}""" : ""}
 ${getThemeLightIcon().css}
 </style>
 """
@@ -592,9 +619,9 @@ def footer() {
   wall.fitWidth();
   
   wall.reset({
-			draggable: false,
-			selector: '.tile',
+		draggable: false,
 		animate: true,
+		selector: '.tile',
 		gutterX:cellGutter,
 		gutterY:cellGutter,
 		cellW:cellSize,
@@ -626,7 +653,6 @@ def headHistory() {
 <script src="https://code.jquery.com/mobile/1.4.4/jquery.mobile-1.4.4.min.js" type="text/javascript"></script>
 <script src="https://625alex.github.io/SmartTiles/jquery.ui.touch-punch.min.js" type="text/javascript"></script>
 <style>
-.batt {background-size: 20px 20px;}
 ${getThemeLightIcon().css}
 </style>
 """
@@ -685,7 +711,6 @@ def headList() {
 	}
 </script>
 <style>
-.batt {background-size: 20px 20px;}
 ${getThemeLightIcon().css}
 </style>
 """
@@ -756,7 +781,7 @@ def renderHelloHomeTile(data) {
 }
 
 def roundNumber(num) {
-	if (!roundNumbers || !"$num".isNumber()) return num
+	if (!defaultPrefs("roundNumbers") || !"$num".isNumber()) return num
 	if (num == null || num == "") return "n/a"
 	else {
     	try {
@@ -779,12 +804,31 @@ def getThermostatData(device, type) {
 			deviceData << [("$it" as String): device.currentValue("$it")]
 		} catch (e) {}
 	}
-	[tile: "device", type: type, device: device.id, name: device.displayName, humidity: deviceData.humidity, temperature: deviceData.temperature, thermostatFanMode: deviceData.thermostatFanMode, thermostatOperatingState: deviceData.thermostatOperatingState, setpoint: type == "thermostatHeat" ? deviceData.heatingSetpoint : deviceData.coolingSetpoint]
+	def setpoint = roundThermostatSetpoint(type == "thermostatHeat" ? deviceData.heatingSetpoint : deviceData.coolingSetpoint)
+	[tile: "device", type: type, device: device.id, name: device.displayName, humidity: deviceData.humidity, temperature: deviceData.temperature, thermostatFanMode: deviceData.thermostatFanMode, thermostatOperatingState: deviceData.thermostatOperatingState, setpoint: setpoint.whole, fraction: setpoint.fraction]
+}
+
+def roundThermostatSetpoint(setpoint) {
+	def whole = setpoint
+	def fraction = 0
+	if (setpoint) {
+		if (getTemperatureScale() == "F") {
+			whole = Math.round(setpoint)
+		} else {
+			setpoint = Math.round(setpoint * 2.0) / 2.0
+			whole = setpoint as int
+			fraction = (setpoint - whole) as int
+			
+			whole = Math.round(setpoint) // remove this line when ready
+		}
+	}
+	
+	[whole: whole, fraction: fraction]
 }
 
 def renderTile(data) {
 	if (data.type == "thermostatHeat" || data.type == "thermostatCool") {
-		return  """<div class="$data.type tile h2" data-type="$data.type" data-device="$data.device" data-setpoint="$data.setpoint"><div class="title">$data.name ${getTileIcons()[data.type]}<br/><span class="title2">${data.temperature}&deg;, $data.thermostatOperatingState</span></div><div class="icon setpoint">$data.setpoint&deg;</div><div class="icon up"><i class="fa fa-fw fa-chevron-up"></i></div><div class="icon down"><i class="fa fa-fw fa-chevron-down"></i></div><div class="footer">&#10044; $data.thermostatFanMode ${data.humidity ? ",<i class='fa fa-fw wi wi-sprinkles'></i>" + data.humidity  + "%" : ""}</div></div>"""
+		return  """<div class="$data.type tile h2 thermostat ${data.setpoint ? "" : "null-setpoint"}" data-type="$data.type" data-scale="${getTemperatureScale()}" data-device="$data.device" data-setpoint="$data.setpoint" data-fraction="$data.fraction"><div class="title">$data.name ${getTileIcons()[data.type]}<br/><span class="title2">${data.temperature}&deg;, $data.thermostatOperatingState</span></div><div class="icon setpoint"><span class="whole">$data.setpoint</span><span class="fraction">.$data.fraction</span><span class="degree">&deg;</span></div><div class="icon null-setpoint">--</div><div class="icon up"><i class="fa fa-fw fa-chevron-up"></i></div><div class="icon down"><i class="fa fa-fw fa-chevron-down"></i></div><div class="footer">&#10044; $data.thermostatFanMode ${data.humidity ? ",<i class='fa fa-fw wi wi-sprinkles'></i>" + data.humidity  + "%" : ""}</div></div>"""
 	} else if (data.type == "weather"){
 		return """<div class="weather tile w2" data-type="weather" data-device="$data.device" data-weather="$data.weatherIcon"><div class="title">$data.city<br/><span class="title2">$data.weather, feels like $data.feelsLike&deg;</span></div><div class="icon"><span class="text">$data.temperature&deg;</span><i class="wi $data.icon"></i></span></div><div class="footer">$data.localSunrise <i class="fa fa-fw wi wi-horizon-alt"></i> $data.localSunset</div><div class="footer right">$data.percentPrecip%<i class="fa fa-fw fa-umbrella"></i><br>$data.humidity%<i class="fa fa-fw wi wi-sprinkles"></i></div></div>"""
 	} else if (data.type == "music") {
@@ -795,16 +839,20 @@ def renderTile(data) {
 			<div class="footer"><i class='fa fa-fw fa-volume-down unmuted'></i><i class='fa fa-fw fa-volume-off muted'></i></div>
 		</div>
 		"""
+	} else if (data.tile == "video") {
+		 if (data.type == "dropcam") {
+			return """<div class="video dropcam tile h2 w2" data-link-i="$data.i" data-fixSize="0"><div class="title">$data.name</div><div class="video-container"><object width="240" height="164"><param name="movie" value="$data.link"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="$data.link" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="240" height="164" wmode="opaque"></embed></object></div></div>"""
+		} else if (data.type == "mjpeg") {
+			return """<div class="video mjpeg tile h2 w2" data-link-i="$data.i" data-fixSize="0"><div class="title">$data.name</div><div class="video-container"><img src="$data.link"/></div></div>"""
+		} else if (data.type == "smv") {
+			return """<div class="video smv tile h2 w2" data-link-i="$data.i" data-fixSize="0"><div class="title">$data.name</div><div class="video-container"><img src="$data.link" data-src="$data.link"/></div></div>"""
+		}
 	} else if (data.tile == "device") {
 		return """<div class="$data.type tile $data.active" data-active="$data.active" data-type="$data.type" data-device="$data.device" data-value="$data.value" data-level="$data.level" data-is-value="$data.isValue"><div class="title">$data.name</div></div>"""
 	} else if (data.tile == "link") {
-		return """<div class="link tile" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon"><a href="$data.link" data-ajax="false" style="color:white"><i class="fa fa-th"></i></a></div></div>"""
+		return """<div class="link tile" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon"><a href="$data.link" data-ajax="false"><i class="fa fa-th"></i></a></div></div>"""
 	} else if (data.tile == "dashboard") {
-		return """<div class="dashboard tile" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon"><a href="$data.link" data-ajax="false" style="color:white"><i class="fa fa-link"></i></a></div></div>"""
-	} else if (data.tile == "video") {
-		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><param name="movie" value="$data.link"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="$data.link" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="240" height="164" wmode="opaque"></embed></object></div></div>"""
-	} else if (data.tile == "genericMJPEGvideo") {
-		return """<div class="video tile h2 w2" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon" style="margin-top:-82px;"><object width="240" height="164"><img src="$data.link" width="240" height="164"></object></div></div>"""
+		return """<div class="dashboard tile" data-link-i="$data.i"><div class="title">$data.name</div><div class="icon"><a href="$data.link" data-ajax="false"><i class="fa fa-link"></i></a></div></div>"""
 	} else if (data.tile == "refresh") {
 		return """<div class="refresh tile clickable"><div class="title">Refresh</div><div class="footer">Updated $data.ts</div></div>"""
 	} else if (data.tile == "history") {
@@ -845,7 +893,7 @@ def getTileIcons() {
 		temperature : "<i class='fa fa-fw wi wi-thermometer st-temperature'></i>",
 		energy : "<i class='fa fa-fw wi wi-lightning st-energy'></i>",
 		power : "<i class='fa fa-fw fa-bolt st-power'></i>",
-		battery : "<i class='fa fa-fw fa-fw batt st-battery'></i>",
+		battery : """<i class='fa fa-fw fa-fw batt st-battery'><?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg enable-background="new 0 0 96 96" height="96px" id="battery" version="1.1" viewBox="0 0 96 96" width="96px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M84,32c0-6.63-5.37-12-12-12H12C5.37,20,0,25.37,0,32v32c0,6.63,5.37,12,12,12h60c6.63,0,12-5.37,12-12  c6.63,0,12-5.37,12-12v-8C96,37.37,90.63,32,84,32z M76,64c0,2.21-1.79,4-4,4H12c-2.21,0-4-1.79-4-4V32c0-2.21,1.79-4,4-4h60  c2.21,0,4,1.79,4,4V64z M88,52c0,2.21-1.79,4-4,4V40c2.21,0,4,1.79,4,4V52z"/></svg></i>""",
         "hello-home" : "<i class='fa fa-fw fa-comment-o st-hello-home'></i>",
         link : "<i class='fa fa-fw fa-link st-link'></i>",
         dashboard : "<i class='fa fa-fw fa-th st-dashboard'></i>",
@@ -857,6 +905,9 @@ def getTileIcons() {
 		weather: """<i class="fa fa-fw wi wi-day-rain-mix st-weather"></i>""",
 		music: """<i class="fa fa-fw fa-music st-music"></i>""",
 		video: """<i class="fa fa-fw fa-video-camera st-video"></i>""",
+		smv: """<i class="fa fa-fw fa-video-camera st-video"></i>""",
+		dropcam: """<i class="fa fa-fw fa-video-camera st-video"></i>""",
+		mjpeg: """<i class="fa fa-fw fa-video-camera st-video"></i>""",
 		"?": """<i class="fa fa-fw fa-question st-unknown"></i>""",
 	]
 }
@@ -949,10 +1000,16 @@ def updateStateTS() {
 	state.ts = now()
 }
 
+def updateStateID() {
+	log.debug "updating stateID"
+	state.stateID = now()
+}
+
 def getStateTS() {state.ts}
 
 def ping() {
-	if ("$params.ts" == "${getStateTS()}") [status: "noop", updated: getTS(), ts: getStateTS()]
+	if ("$params.stateID" != "$state.stateID") [status: "reload"]
+	else if ("$params.ts" == "${getStateTS()}") [status: "noop", updated: getTS(), ts: getStateTS()]
 	else [status: "update", updated: getTS(), ts: getStateTS(), data: allDeviceData()]
 }
 
@@ -963,19 +1020,19 @@ def saveCSS() {
 
 def allDeviceData() {
 	def refresh = [tile: "refresh", ts: getTS(), name: "Refresh", type: "refresh"]
-	if (disableDashboard) return [refresh]
+	if (defaultPrefs("disableDashboard")) return [refresh]
 	
 	def data = []
 	
-	if (showClock == "Small Analog") data << [tile: "clock", size: 1, style: "a", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
-	else if (showClock == "Large Analog") data << [tile: "clock", size: 2, style: "a", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
-    else if (showClock == "Small Digital") data << [tile: "clock", size: 1, style: "d", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
-	else if (showClock == "Large Digital") data << [tile: "clock", size: 2, style: "d", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
+	if (defaultPrefs("showClock") == "Small Analog") data << [tile: "clock", size: 1, style: "a", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
+	else if (defaultPrefs("showClock") == "Large Analog") data << [tile: "clock", size: 2, style: "a", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
+    else if (defaultPrefs("showClock") == "Small Digital") data << [tile: "clock", size: 1, style: "d", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
+	else if (defaultPrefs("showClock") == "Large Digital") data << [tile: "clock", size: 2, style: "d", date: getDate(), dow: getDOW(), name: "Clock", type: "clock"]
 	
-	if (showMode && location.modes) data << [tile: "mode", mode: "$location.mode", isStandardMode: ("$location.mode" == "Home" || "$location.mode" == "Away" || "$location.mode" == "Night"), modes: location?.modes?.name?.sort(), name: "Mode", type: "mode"]
+	if (defaultPrefs("showMode") && location.modes) data << [tile: "mode", mode: "$location.mode", isStandardMode: ("$location.mode" == "Home" || "$location.mode" == "Away" || "$location.mode" == "Night"), modes: location?.modes?.name?.sort(), name: "Mode", type: "mode"]
 	
 	def phrases = location?.helloHome?.getPhrases() ? location?.helloHome?.getPhrases()*.label?.sort() : []
-	if (showHelloHome && phrases) data << [tile: "helloHome", phrases: phrases, name: "Hello, Home!", type: "hello-home"]
+	if (defaultPrefs("showHelloHome") && phrases) data << [tile: "helloHome", phrases: phrases, name: "Hello, Home!", type: "hello-home"]
 	
 	weather?.each{data << getWeatherData(it)}
 	
@@ -994,8 +1051,9 @@ def allDeviceData() {
 	motion?.each{data << getDeviceData(it, "motion")}
 	acceleration?.each{data << getDeviceData(it, "acceleration")}
 	camera?.each{data << getDeviceData(it, "camera")}
-	(1..10).each{if (settings["dropcamStreamUrl$it"]) {data << [tile: "video", device: "$it", link: settings["dropcamStreamUrl$it"], name: settings["dropcamStreamT$it"] ?: "Stream $it", i: it, type: "video"]}}
-	(1..10).each{if (settings["mjpegStreamUrl$it"]) {data << [tile: "genericMJPEGvideo", device: "$it", link: settings["mjpegStreamUrl$it"], name: settings["mjpegStreamTitile$it"] ?: "Stream $it", i: it, type: "video"]}}
+	(1..10).each{if (settings["dropcamStreamUrl$it"]) {data << [tile: "video", device: "$it", link: settings["dropcamStreamUrl$it"], name: settings["dropcamStreamT$it"] ?: "Dropcam Stream $it", i: it, type: "dropcam"]}}
+	(1..10).each{if (settings["mjpegStreamUrl$it"]) {data << [tile: "video", device: "$it", link: settings["mjpegStreamUrl$it"], name: settings["mjpegStreamTitile$it"] ?: "MJPEG Stream $it", i: it, type: "mjpeg"]}}
+	(1..10).each{if (settings["smvStreamUrl$it"]) {data << [tile: "video", device: "$it", link: settings["smvStreamUrl$it"], name: settings["smvStreamTitile$it"] ?: "Stop Motion Stream $it", i: it, type: "smv"]}}
 	temperature?.each{data << getDeviceData(it, "temperature")}
 	humidity?.each{data << getDeviceData(it, "humidity")}
 	luminosity?.each{data << getDeviceData(it, "luminosity")}
@@ -1006,10 +1064,8 @@ def allDeviceData() {
 	
 	(1..10).each{if (settings["linkUrl$it"]) {data << [tile: "link", device: "$it", link: settings["linkUrl$it"], name: settings["linkTitle$it"] ?: "Link $it", i: it, type: "link"]}}
 	(1..10).each{if (settings["dashboardUrl$it"]) {data << [tile: "dashboard", device: "$it", link: settings["dashboardUrl$it"], name: settings["dashboardTitle$it"] ?: "Dashboard $it", i: it, type: "dashboard"]}}
-	
-	if (showRefresh) data << refresh
-	if (showHistory) data << [tile: "history", name: "Event History", type: "history"]
-	
+	if (defaultPrefs("showRefresh")) data << refresh
+	if (defaultPrefs("showHistory")) data << [tile: "history", name: "Event History", type: "history"]
 	data.sort{state?.sortOrder?."$it.type-$it.device"}
 }
 
@@ -1085,8 +1141,11 @@ def getAllDeviceEvents() {
 	filteredEvents.values()?.flatten()?.findAll{it}?.sort{"$it.date.time" + "$it.deviceType"}.reverse()
 }
 
-def html() {render contentType: "text/html", data: "<!DOCTYPE html><html><head>${head()}${customCSS()} \n<style>${state.customCSS ?: ""}</style></head><body class='theme-$theme'>\n${renderTiles()}\n${renderWTFCloud()}${footer()}</body></html>"}
-def renderTiles() {"""<div class="tiles">\n${allDeviceData()?.collect{renderTile(it)}.join("\n")}<div class="blank tile"></div></div>"""}
+def html() {
+	log.info "loading SmartTiles"
+	render contentType: "text/html", data: "<!DOCTYPE html><html><head>${head()}${customCSS()} \n<style>${state.customCSS ?: ""}</style></head><body class='theme-${defaultPrefs("theme")}'>\n${renderTiles()}\n${renderWTFCloud()}${footer()}</body></html>"
+}
+def renderTiles() {"""<div class="tiles">\n${allDeviceData()?.collect{renderTile(it)}.join("\n")}</div>"""}
 
 def renderWTFCloud() {"""<div data-role="popup" id="wtfcloud-popup" data-overlay-theme="b" class="wtfcloud"><div class="icon cloud" onclick="clearWTFCloud()"><i class="fa fa-cloud"></i></div><div class="icon message" onclick="clearWTFCloud()"><i class="fa fa-question"></i><i class="fa fa-exclamation"></i><i class='fa fa-refresh'></i></div></div>"""}
 
@@ -1097,7 +1156,7 @@ def link() {
 
 def css() {render contentType: "text/html", data: """<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" /></head><body style="margin: 0;"><form action="css?access_token=$state.accessToken" method="post"><textarea rows="10" cols="30" style="font-size:12pt; width: 100%;" name="css">${state.customCSS ?: "/*enter custom css here*/"}</textarea><br/><input type="submit" value="Save" style="margin-left:10px"></form><br/><div style="padding:10px">Enter custom CSS and tap "Save", then tap "Done".<br/><br/>Please note that invalid CSS may break the dashboard. Use at your discretion.</div></body></html>"""}
 
-def list() {render contentType: "text/html", data: """<!DOCTYPE html><html><head>${headList()}</head><body class='theme-$theme'><ul class="list">\n${allDeviceData()?.collect{renderListItem(it)}.join("\n")}</ul></body></html>"""}
+def list() {render contentType: "text/html", data: """<!DOCTYPE html><html><head>${headList()}</head><body class='theme-${defaultPrefs("theme")}'><ul class="list">\n${allDeviceData()?.collect{renderListItem(it)}.join("\n")}</ul></body></html>"""}
 
 def historyNav() {
 """
@@ -1110,8 +1169,8 @@ def historyNav() {
 }
 
 def history() {
-	if (!showHistory || disableDashboard) return ["history disabled"]
-	render contentType: "text/html", data: """<!DOCTYPE html><html><head>${headHistory()}</head><body class='theme-$theme'>${historyNav()}<ul class="history-list list">\n${getAllDeviceEvents()?.collect{renderEvent(it)}.join("\n")}</ul></body></html>"""
+	if (!defaultPrefs("showHistory") || defaultPrefs("disableDashboard")) return ["history disabled"]
+	render contentType: "text/html", data: """<!DOCTYPE html><html><head>${headHistory()}${customCSS()} \n<style>${state.customCSS ?: ""}</style></head><body class='theme-${defaultPrefs("theme")}'>${historyNav()}<ul class="history-list list">\n${getAllDeviceEvents()?.collect{renderEvent(it)}.join("\n")}</ul></body></html>"""
 }
 
 def customCSS() {
