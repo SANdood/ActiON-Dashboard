@@ -1,4 +1,4 @@
-.version-5-3-3 {display: none}
+.version-5-4-0 {display: none}
 
 .tile {background-color: grey}
 .weather {background-color: #a20025;}
@@ -35,8 +35,7 @@
 .tiles {margin:2px;}
 
 .switch, .dimmer, .dimmerLight, .momentary, .clock, .lock, .refresh, .link, .dashboard, .menu,
-.thermostatHeat .icon.up, .thermostatHeat .icon.down,
-.thermostatCool .icon.up, .thermostatCool .icon.down,
+.thermostat .icon.up, .thermostat .icon.down,
 .music i, .themeLight, .camera, .light, .history {cursor: pointer;}
 
 /* reset ***********************/
@@ -89,8 +88,55 @@ html body .spinCold .ui-group-theme-a .ui-btn, .ui-page-theme-a .ui-btn{border:0
 .mode.Night .icon.text{display:none}
 .icon, .icon * {text-shadow: 0px 4px 3px rgba(0,0,0,0.4), 0px 8px 13px rgba(0,0,0,0.1), 0px 18px 23px rgba(0,0,0,0.1);}
 
-.thermostatHeat .icon.up, .thermostatCool .icon.up {margin-top: -3em; font-size:2em; line-height:2em;}
-.thermostatHeat .icon.down, .thermostatCool .icon.down {margin-top: 1em; font-size:2em; line-height:2em;}
+.thermostat .icon.up {margin-top: -3em; font-size:2em; line-height:2em;}
+.thermostat .icon.down {margin-top: 1em; font-size:2em; line-height:2em;}
+
+.icon.null-setpoint {display: none}
+.thermostat.null-setpoint  .icon.null-setpoint {display: block}
+.thermostat.null-setpoint .icon.setpoint {display: none}
+
+.thermostat.null-setpoint .icon.up, .thermostat.null-setpoint .icon.down {opacity:0.3}
+.thermostat.null-setpoint .icon{cursor:default}
+
+.thermostat .degree {
+  font-size: 50%;
+  left: -2px;
+  position: relative;
+  top: -0.5em;
+}
+
+.thermostat[fraction="0"] .fraction {display: none;}
+
+.thermostat .fraction {font-size: 50%; display: none;}
+
+/*video*/
+
+.video-container {
+	width:100%;
+	margin-top: -30%;
+	position: absolute;
+	text-align: right;
+	top: 50%;
+	white-space:nowrap;
+}
+
+.dropcam .video-container {
+	position: relative;
+	padding-bottom: 56.25%; /* 16:9 */
+	padding-top: 34px;
+	height: 0;
+}
+
+.dropcam object, .dropcam embed  {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+
+.video-container img {width: inherit}
 
 /*******/
 .r45 {
@@ -124,8 +170,15 @@ div.ui-slider{height:21px;}
 .ui-slider.ui-mini{padding:0 10px 0 12px;}
 
 /*********/
-.batt {content : "";background-image: url("battery.png"); background-size: 16px 16px; background-repeat: no-repeat;background-position:center center;}
-.batt:before {content: "\0000a0"}
+
+.batt svg {
+	width: 16px;
+	height: 16px;
+	transform: rotate(270deg);
+}
+
+.batt path {fill: white;}
+
 /** music ****/
 
 .music .ui-slider.ui-mini{padding:0 10px 0 40px;}
@@ -168,7 +221,7 @@ ul{list-style-type: none;padding-left:0;}
 
 .historyNav i {
 	font-size: 30pt;
-	margin: 5px 30px;
+	margin: 5px 25px;
 	cursor: pointer;
 }
 
@@ -177,18 +230,19 @@ ul{list-style-type: none;padding-left:0;}
 }
 
 /*  THEMES */
-.theme-default {color: white}
+.theme-default, a i {color: white}
 
 /* slate */
 .theme-slate .tile {background-color:#333333}
 .theme-slate  .ui-slider-handle.ui-btn.ui-shadow {background-color:white}
 .theme-slate .tile.active .icon i.active {color: blue}
-.theme-slate {color: white}
+.theme-slate, .theme-slate a i {color: white}
 
 /* quartz */
 .theme-quartz .ui-page.ui-page-theme-a.ui-page-active, .theme-quartz, .theme-quartz .historyNav {background-color:lightGrey}
 .theme-quartz .tile {background-color:white}
-.theme-quartz .tile {color: #555}
+.theme-quartz .tile, .theme-quartz a i {color: #555}
+.theme-quartz .batt path {fill: #555;}
 
 .theme-quartz .ui-page-theme-a .ui-bar-inherit {background-color:lightGrey;}
 .theme-quartz .ui-page-theme-a .ui-slider-track .ui-btn-active {background-color:#555;}
@@ -199,7 +253,8 @@ ul{list-style-type: none;padding-left:0;}
 /* onyx */
 .theme-onyx .ui-page.ui-page-theme-a.ui-page-active, .theme-onyx, .theme-onyx .historyNav {background-color:#444;}
 .theme-onyx .tile {background-color:black}
-.theme-onyx .tile {color: wheat}
+.theme-onyx .tile, .theme-onyx .tile a i  {color: wheat}
+.theme-onyx .batt path {fill: wheat;}
 
 .theme-onyx .ui-page-theme-a .ui-bar-inherit {background-color:#444;}
 .theme-onyx .ui-page-theme-a .ui-slider-track .ui-btn-active {background-color:wheat}
@@ -210,7 +265,7 @@ ul{list-style-type: none;padding-left:0;}
 /* cobalt */
 .theme-cobalt .ui-page.ui-page-theme-a.ui-page-active, .theme-cobalt, .theme-cobalt .historyNav {background-color:black}
 .theme-cobalt .tile {background-color:#324B6E}
-.theme-cobalt .tile {color: white}
+.theme-cobalt .tile, .theme-cobalt a i  {color: white}
 
 .theme-cobalt .ui-page-theme-a .ui-bar-inherit {background-color:black;}
 .theme-cobalt .ui-page-theme-a .ui-slider-track .ui-btn-active {background-color:white;}
