@@ -1,4 +1,4 @@
-.version-5-4-0 {display: none}
+.version-5-4-1 {display: none}
 
 .tile {background-color: grey}
 .weather {background-color: #a20025;}
@@ -61,7 +61,7 @@ html body .spinCold .ui-group-theme-a .ui-btn, .ui-page-theme-a .ui-btn{border:0
 
 .weather .icon i {font-size: 0.9em;}
 /* tiles *************************/
-.title {font-size:0.9em;line-height:1em;height:2em;overflow:ellipsis;position:absolute;top:2px;left:4px}
+.title {font-size:0.9em;line-height:1em;height:2em;overflow:ellipsis;position:absolute;top:2px;left:4px; z-index: 1000;}
 .title2 {font-size: 12px}
 
 /** icons **/
@@ -123,8 +123,14 @@ html body .spinCold .ui-group-theme-a .ui-btn, .ui-page-theme-a .ui-btn{border:0
 .dropcam .video-container {
 	position: relative;
 	padding-bottom: 56.25%; /* 16:9 */
-	padding-top: 34px;
-	height: 0;
+	padding-top: 300px;
+	height: auto;
+	margin-top: 0%;
+    top: 0%; 
+}
+
+.dropcam .title {
+	z-index:unset;
 }
 
 .dropcam object, .dropcam embed  {
@@ -137,6 +143,14 @@ html body .spinCold .ui-group-theme-a .ui-btn, .ui-page-theme-a .ui-btn{border:0
 
 
 .video-container img {width: inherit}
+
+.video.mjpeg .video-container, .video.smv .video-container {
+	height: 100%;
+    margin-top: 0%;
+    top: 0%; 
+}
+
+.video-container img {height: 100%}
 
 /*******/
 .r45 {
