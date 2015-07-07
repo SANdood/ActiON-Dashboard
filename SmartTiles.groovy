@@ -1,5 +1,5 @@
 /**
- *  SmartTiles 5.4.0
+ *  SmartTiles 5.4.1
  *
  *  Visit Home Page for more information:
  *  http://SmartTiles.click
@@ -27,7 +27,7 @@ definition(
     iconX2Url: "https://625alex.github.io/SmartTiles/prod/icon.png",
     oauth: true)
 
-def appVersion() {"5.4.0"}
+def appVersion() {"5.4.1"}
 def appStream() {"M"}
 
 preferences {
@@ -251,6 +251,7 @@ def prefs() {
 		section() {
 			input "theme", title: "Theme", "enum", multiple: false, required: true, defaultValue: "default", options: [default: "Metro (default)", slate: "Slate", quartz: "Quartz", onyx: "Onyx", cobalt: "Cobalt"]
 			input "tileSize", title: "Tile Size", "enum", multiple: false, required: true, defaultValue: "Medium", options: ["Small", "Medium", "Large"]
+			input "videoTileSize", title: "Video Tile Size", "enum", multiple: false, required: true, defaultValue: "Small", options: ["Small", "Medium"]
 			input "fontSize", title: "Font Size", "enum", multiple: false, required: true, defaultValue: "Normal", options: ["Normal", "Larger", "Largest"]
 			input "dropShadow", title: "Drop Shadow", "bool", required: true, defaultValue: false
 		}
@@ -335,6 +336,7 @@ def defaultPrefs(name) {
 		showClock 		: "Small Digital",
 		theme		 	: "default",
 		tileSize 		: "Medium",
+		videoTileSize	: "Small",
 		fontSize	 	: "Normal",
 		roundNumbers 	: true,
 		themeLightType 	: "Default"
@@ -474,7 +476,6 @@ def updated() {
 def initialize() {
     weatherRefresh()
 	runEvery15Minutes(updateStateTS)
-	runEvery30Minutes(weatherRefresh)
 	runEvery30Minutes(updateStateID)
     
 	sendURL_SMS("ui")
@@ -545,7 +546,6 @@ def sendURL_SMS(path) {
 }
 
 def generateURL(path) {
-	log.debug "resetOauth: $settings.resetOauth, $resetOauth, $settings.resetOauth"
 	if (settings.resetOauth) {
 		log.debug "Reseting Access Token"
 		state.accessToken = null
@@ -840,12 +840,15 @@ def renderTile(data) {
 		</div>
 		"""
 	} else if (data.tile == "video") {
-		 if (data.type == "dropcam") {
-			return """<div class="video dropcam tile h2 w2" data-link-i="$data.i" data-fixSize="0"><div class="title">$data.name</div><div class="video-container"><object width="240" height="164"><param name="movie" value="$data.link"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="$data.link" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="240" height="164" wmode="opaque"></embed></object></div></div>"""
+		if (data.type == "dropcam") {
+			def ts = defaultPrefs("videoTileSize") == "Small" ? "h2 w2" : "h2 w3"
+			return """<div class="video dropcam tile $ts" data-link-i="$data.i" data-fixSize="0"><div class="title">$data.name</div><div class="video-container"><object width="240" height="164"><param name="movie" value="$data.link"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="wmode" value="opaque"></param><embed src="$data.link" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="240" height="164" wmode="opaque"></embed></object></div></div>"""
 		} else if (data.type == "mjpeg") {
-			return """<div class="video mjpeg tile h2 w2" data-link-i="$data.i" data-fixSize="0"><div class="title">$data.name</div><div class="video-container"><img src="$data.link"/></div></div>"""
+			def ts = defaultPrefs("videoTileSize") == "Small" ? "h1 w2" : "h2 w3"
+			return """<div class="video mjpeg tile $ts" data-link-i="$data.i" data-fixSize="0"><div class="title">$data.name</div><div class="video-container"><img src="$data.link"/></div></div>"""
 		} else if (data.type == "smv") {
-			return """<div class="video smv tile h2 w2" data-link-i="$data.i" data-fixSize="0"><div class="title">$data.name</div><div class="video-container"><img src="$data.link" data-src="$data.link"/></div></div>"""
+			def ts = defaultPrefs("videoTileSize") == "Small" ? "h1 w2" : "h2 w3"
+			return """<div class="video smv tile $ts" data-link-i="$data.i" data-fixSize="0"><div class="title">$data.name</div><div class="video-container"><img src="$data.link" data-src="$data.link"/></div></div>"""
 		}
 	} else if (data.tile == "device") {
 		return """<div class="$data.type tile $data.active" data-active="$data.active" data-type="$data.type" data-device="$data.device" data-value="$data.value" data-level="$data.level" data-is-value="$data.isValue"><div class="title">$data.name</div></div>"""
@@ -1143,6 +1146,7 @@ def getAllDeviceEvents() {
 
 def html() {
 	log.info "loading SmartTiles"
+	runIn(20, weatherRefresh)
 	render contentType: "text/html", data: "<!DOCTYPE html><html><head>${head()}${customCSS()} \n<style>${state.customCSS ?: ""}</style></head><body class='theme-${defaultPrefs("theme")}'>\n${renderTiles()}\n${renderWTFCloud()}${footer()}</body></html>"
 }
 def renderTiles() {"""<div class="tiles">\n${allDeviceData()?.collect{renderTile(it)}.join("\n")}</div>"""}
