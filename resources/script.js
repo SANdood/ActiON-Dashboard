@@ -432,7 +432,7 @@ function startTime() {
     if (!document.getElementById('clock')) return;
     var today=new Date();
     var h=today.getHours();
-	var pm = h > 12;
+	var pm = h >= 12;
     if (h > 12) {
     	h = h - 12;
     }
