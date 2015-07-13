@@ -1,5 +1,5 @@
 /**
- *  SmartTiles 5.4.1
+ *  SmartTiles 5.4.2
  *
  *  Visit Home Page for more information:
  *  http://SmartTiles.click
@@ -27,7 +27,7 @@ definition(
     iconX2Url: "https://625alex.github.io/SmartTiles/prod/icon.png",
     oauth: true)
 
-def appVersion() {"5.4.1"}
+def appVersion() {"5.4.2"}
 def appStream() {"M"}
 
 preferences {
@@ -583,7 +583,7 @@ def head() {
 
 <script>
 window.location.hash = "";
-var stateID = ${state.stateID};
+var stateID = ${getStateID()};
 var stateTS = ${getStateTS()};
 var tileSize = ${getTSize()};
 var readOnlyMode = ${defaultPrefs("readOnlyMode")};
@@ -1008,12 +1008,17 @@ def updateStateID() {
 	state.stateID = now()
 }
 
-def getStateTS() {state.ts}
+def getStateTS() {state.ts ?: 0}
+def getStateID() {state.stateID ?: 0}
 
 def ping() {
-	if ("$params.stateID" != "$state.stateID") [status: "reload"]
-	else if ("$params.ts" == "${getStateTS()}") [status: "noop", updated: getTS(), ts: getStateTS()]
-	else [status: "update", updated: getTS(), ts: getStateTS(), data: allDeviceData()]
+	log.debug "params: $params"
+	def result
+	if (params.stateID as Long != getStateID()) result = [status: "reload"]
+	else if (params.ts as Long == getStateTS()) result = [status: "noop", updated: getTS(), ts: getStateTS()]
+	else result = [status: "update", updated: getTS(), ts: getStateTS(), data: allDeviceData()]
+	//log.debug "ping answer: $result"
+	result
 }
 
 def saveCSS() {
