@@ -1,5 +1,5 @@
 // created by Minh Nguyen;
-// version 1.04;
+// version 1.05;
 
 (function($) {
     
@@ -19,23 +19,27 @@
         // default setting;
         defaultConfig: {
             animate: false,
-            cache: true, // cache the size of blocks for performance;
             cellW: 100, // function(container) {return 100;}
             cellH: 100, // function(container) {return 100;}
             delay: 0, // slowdown active block;
             engine: 'giot', // 'giot' is a person name;
             fixSize: null, // resize + adjust = fill gap;
-            //fixSize: 0, allow adjust size = no fill gap;
+            //fixSize: 0, resize but keep ratio = no fill gap;
             //fixSize: 1, no resize + no adjust = no fill gap;
             gutterX: 15, // width spacing between blocks;
             gutterY: 15, // height spacing between blocks;
+            keepOrder: false,
             selector: '> div',
             draggable: false,
+            cacheSize: true, // caches the original size of block;
             rightToLeft: false,
             bottomToTop: false,
             onGapFound: function() {},
             onComplete: function() {},
             onResize: function() {},
+            onBlockDrag: function() {},
+            onBlockMove: function() {},
+            onBlockDrop: function() {},
             onBlockReady: function() {},
             onBlockFinish: function() {},
             onBlockActive: function() {},
@@ -58,7 +62,7 @@
             var blockId = runtime.lastId++ + '-' + runtime.totalGrid;
             
             //ignore dragging block;
-            if ($item.hasClass('fw-float')) return;
+            if ($item.hasClass('fw-float')) return null;
             $item.attr({id: blockId, 'data-delay': item.index});
 
             //remove animation for speed render;
@@ -68,7 +72,7 @@
 
             isNaN(fixSize) && (fixSize = null);
             (fixSize == null) && (fixSize = setting.fixSize);
-            var makeRound = (fixSize == 1) ? "ceil" : "round";
+            var makeRound = (!fixSize) ? "round" : "ceil";
             // store original size;
            
             $item.attr('data-height') == null && $item.attr('data-height', $item.height());
@@ -76,7 +80,7 @@
             var height = 1 * $item.attr('data-height');
             var width = 1 * $item.attr('data-width');
             
-            if (!setting.cache) {
+            if (!setting.cacheSize) {
                 item.style.width = "";
                 width = $item.width();
 
@@ -284,13 +288,14 @@
             var block = runtime.blocks[item.id];
             
             if (block) {
-                innerWall = new freewall($item);
+                innerWall = new Freewall($item);
                 innerWall.reset({
                     cellH: cellH,
                     cellW: cellW,
                     gutterX: 1 * gutterX,
                     gutterY: 1 * gutterY,
-                    selector: nested
+                    selector: nested,
+                    cacheSize: false
                 });
 
                 switch (method) {
@@ -390,6 +395,8 @@
                 runtime.gutterY = gutterY;
                 runtime.limitRow = 666666;
             }
+
+            runtime.keepOrder = setting.keepOrder;
         },
         resetGrid: function(runtime) {
             runtime.blocks = {};
@@ -584,7 +591,7 @@
                 fitWidth = col < row ? 1 : 0,
                 lastBlock = null,
                 smallLoop = Math.min(col, row);
-
+            
             // fill area with top, left, width, height;
             function fillMatrix(id, t, l, w, h) {
                 for (var y = t; y < t + h;) {
@@ -596,7 +603,7 @@
                 }
             }
             
-            // set a hole on the wall;
+            // set holes on the wall;
             for (var i in holes) {
                 if (holes.hasOwnProperty(i)) {
                     fillMatrix(holes[i]["id"] || true, holes[i]['top'], holes[i]['left'], holes[i]['width'], holes[i]['height']);
@@ -611,19 +618,13 @@
 
                 for (var s = 0; s < smallLoop; ++s) {
                     if (!items.length) break;
+                    block = null;
                     fitWidth ? (x = s) : (y = s);
                     if (runtime.matrix[y + '-' + x]) continue;
                     freeArea = layoutManager.getFreeArea(y, x, runtime);
-                    block = null;
-                    for (var i = 0; i < items.length; ++i) {
-                        if (items[i].height > freeArea.height) continue;
-                        if (items[i].width > freeArea.width) continue;
-                        block = items.splice(i, 1)[0];
-                        break;
-                    }
 
-                    // trying resize the other block to fit gap;
-                    if (block == null && setting.fixSize == null) {
+                    // trying resize last block to fit free area;
+                    if (setting.fixSize == null) {
                         // resize near block to fill gap;
                         if (lastBlock && !fitWidth && runtime.minHoB > freeArea.height) {
                             lastBlock.height += freeArea.height;
@@ -637,31 +638,53 @@
                             fillMatrix(lastBlock.id, lastBlock.y, lastBlock.x, lastBlock.width, lastBlock.height);
                             layoutManager.setBlock(lastBlock, setting);
                             continue;
-                        } else {
+                        }
+                    }
+                    
+                    // get the next block to keep order;
+                    if (runtime.keepOrder) {
+                        block = items.shift();
+                        block.resize = true;
+                    } else {
+                        // find a suitable block to fit gap;
+                        for (var i = 0; i < items.length; ++i) {
+                            if (items[i].height > freeArea.height) continue;
+                            if (items[i].width > freeArea.width) continue;
+                            block = items.splice(i, 1)[0];
+                            break;
+                        }
+
+                        // trying resize the other block to fit gap;
+                        if (block == null && setting.fixSize == null) {
                             // get other block fill to gap;
                             for (var i = 0; i < items.length; ++i) {
                                 if (items[i]['fixSize'] != null) continue;
                                 block = items.splice(i, 1)[0];
                                 block.resize = true;
-                                if (fitWidth) {
-                                    block.width = freeArea.width;
-                                    if (setting.cellH == 'auto') {
-                                        layoutManager.adjustBlock(block, setting);
-                                    }
-                                    // for fitZone;
-                                    block.height = Math.min(block.height, freeArea.height);
-                                } else {
-                                    block.height = freeArea.height;
-                                    // for fitZone;
-                                    block.width = Math.min(block.width, freeArea.width);
-                                }
                                 break;
+                            }
+                            
+                        }
+                    }
+
+                    
+                    if (block != null) {
+                        // resize block with free area;
+                        if (block.resize) {
+                            if (fitWidth) {
+                                block.width = freeArea.width;
+                                if (setting.cellH == 'auto') {
+                                    layoutManager.adjustBlock(block, setting);
+                                }
+                                // for fitZone;
+                                block.height = Math.min(block.height, freeArea.height);
+                            } else {
+                                block.height = freeArea.height;
+                                // for fitZone;
+                                block.width = Math.min(block.width, freeArea.width);
                             }
                         }
 
-                    }
-                    
-                    if (block != null) {
                         wall[block.id] = {
                             id: block.id,
                             x: x,
@@ -721,7 +744,7 @@
 
 
 
-    window.freewall = function(selector) {
+    function Freewall(selector) {
         
         var container = $(selector);
         if (container.css('position') == 'static') {
@@ -734,6 +757,7 @@
 
         var setting = $.extend({}, layoutManager.defaultConfig);
         var runtime = {
+            arguments: null,
             blocks: {}, // store all items;
             events: {}, // store custome events;
             matrix: {},
@@ -744,7 +768,6 @@
             cellS: 1, // unit scale;
             
             filter: '', // filter selector;
-            
             lastId: 0,
             length: 0,
 
@@ -763,9 +786,9 @@
 
             limitCol: 666666, // maximum column; 
             limitRow: 666666,
-            
-            currentMethod: null,
-            currentArguments: []
+
+            sortFunc: null,
+            keepOrder: false
         };
         setting.runtime = runtime;
         runtime.totalGrid = layoutManager.totalGrid;
@@ -797,8 +820,10 @@
                         layoutManager.setTransition(this, "");
                     }
                     $item.css('z-index', 9999).addClass('fw-float');
+                    
+                    setting.onBlockDrag.call(item, event);
                 },
-                onDrag: function(evt, tracker) {
+                onDrag: function(event, tracker) {
                     var position = $item.position();
                     var top = Math.round(position.top / cellH);
                     var left = Math.round(position.left / cellW);
@@ -808,8 +833,10 @@
                     left = Math.min(Math.max(0, left), runtime.limitCol - width);
                     klass.setHoles({top: top, left: left, width: width, height: height});
                     klass.refresh();
+
+                    setting.onBlockMove.call(item, event);
                 },
-                onDrop: function() {
+                onDrop: function(event) {
                     var position = $item.position();
                     var top = Math.round(position.top / cellH);
                     var left = Math.round(position.left / cellW);
@@ -846,6 +873,8 @@
                     });
 
                     klass.refresh();
+
+                    setting.onBlockDrop.call(item, event);
                 }
             });
         }
@@ -867,14 +896,18 @@
                 var block = null;
                 var activeBlock = [];
                 
-                if (runtime.currentMethod) {
+                if (runtime.arguments) {
+
+                    if ($.isFunction(runtime.sortFunc)) {
+                        allBlock.sort(runtime.sortFunc);
+                    }
+
                     allBlock.each(function(index, item) {
                         item.index = ++index;
-                        if (block = layoutManager.loadBlock(item, setting)) {
-                            activeBlock.push(block);
-                        }
+                        block = layoutManager.loadBlock(item, setting);
+                        block && activeBlock.push(block);
                     });
-                
+
                     engine[setting.engine](activeBlock, setting);
                     
                     layoutManager.setWallSize(runtime, container);
@@ -957,7 +990,9 @@
 
             filter: function(filter) {
                 runtime.filter = filter;
-                runtime.currentMethod && this.refresh();
+                if (runtime.arguments) {
+                    this.refresh();
+                }
                 return this;
             },
 
@@ -973,95 +1008,21 @@
             },
 
             fitHeight: function(height) {
-                var allBlock = container.find(setting.selector).removeAttr('id'),
-                    block = null,
-                    activeBlock = [];
 
-                height = height ? height : container.height() || $W.height();
+                var height = height ? height : container.height() || $W.height();
                 
-                runtime.currentMethod = arguments.callee;
-                runtime.currentArguments = arguments;
-                
-                layoutManager.resetGrid(runtime);
-                layoutManager.adjustUnit('auto', height, setting);
-                
-                if (runtime.filter) {
-                    allBlock.data('active', 0);
-                    allBlock.filter(runtime.filter).data('active', 1);
-                } else {
-                    allBlock.data('active', 1);
-                }
+                this.fitZone('auto', height);
 
-                allBlock.each(function(index, item) {
-                    var $item = $(item);
-                    item.index = ++index;
-                    if (block = layoutManager.loadBlock(item, setting)) {
-                        $item.data("active") && activeBlock.push(block);
-                    }
-                });
-                
-                klass.fireEvent('onGridReady', container, setting);
-
-                engine[setting.engine](activeBlock, setting);
-                
-                layoutManager.setWallSize(runtime, container);
-
-                klass.fireEvent('onGridArrange', container, setting);
-
-                runtime.length = allBlock.length;
-
-                allBlock.each(function(index, item) {
-                    layoutManager.showBlock(item, setting);
-                    if (setting.draggable || item.getAttribute('data-draggable')) {
-                        setDraggable(item);
-                    }
-                });
+                runtime.arguments = arguments;
             },
 
             fitWidth: function(width) {
-                var allBlock = container.find(setting.selector).removeAttr('id'),
-                    block = null,
-                    activeBlock = [];
 
-                width = width ? width : container.width() || $W.width();
+                var width = width ? width : container.width() || $W.width();
+                
+                this.fitZone(width, 'auto');
 
-                runtime.currentMethod = arguments.callee;
-                runtime.currentArguments = arguments;
-                
-                layoutManager.resetGrid(runtime);
-                layoutManager.adjustUnit(width, 'auto', setting);
-                
-                if (runtime.filter) {
-                    allBlock.data('active', 0);
-                    allBlock.filter(runtime.filter).data('active', 1);
-                } else {
-                    allBlock.data('active', 1);
-                }
-                
-                allBlock.each(function(index, item) {
-                    var $item = $(item);
-                    item.index = ++index;
-                    if (block = layoutManager.loadBlock(item, setting)) {
-                        $item.data("active") && activeBlock.push(block);
-                    }
-                });
-                
-                klass.fireEvent('onGridReady', container, setting);
-                
-                engine[setting.engine](activeBlock, setting);
-
-                layoutManager.setWallSize(runtime, container);
-                
-                klass.fireEvent('onGridArrange', container, setting);
-
-                runtime.length = allBlock.length;
-
-                allBlock.each(function(index, item) {
-                    layoutManager.showBlock(item, setting);
-                    if (setting.draggable || item.getAttribute('data-draggable')) {
-                        setDraggable(item);
-                    }
-                });
+                runtime.arguments = arguments;
             },
 
             fitZone: function(width, height) {
@@ -1072,10 +1033,10 @@
                 height = height ? height : container.height() || $W.height();
                 width = width ? width : container.width() || $W.width();
                 
-                runtime.currentMethod = arguments.callee;
-                runtime.currentArguments = arguments;
+                runtime.arguments = arguments;
                 
                 layoutManager.resetGrid(runtime);
+                
                 layoutManager.adjustUnit(width, height, setting);
 
                 if (runtime.filter) {
@@ -1085,12 +1046,15 @@
                     allBlock.data('active', 1);
                 }
                 
+                if ($.isFunction(runtime.sortFunc)) {
+                    allBlock.sort(runtime.sortFunc);
+                }
+
                 allBlock.each(function(index, item) {
                     var $item = $(item);
                     item.index = ++index;
-                    if (block = layoutManager.loadBlock(item, setting)) {
-                        $item.data("active") && activeBlock.push(block);
-                    }
+                    block = layoutManager.loadBlock(item, setting);
+                    block && $item.data("active") && activeBlock.push(block);
                 });
 
                 klass.fireEvent('onGridReady', container, setting);
@@ -1144,14 +1108,17 @@
 
             prepend: function(items) {
                 container.prepend(items);
-                runtime.currentMethod && this.refresh();
+                if (runtime.arguments) {
+                    this.refresh();
+                }
                 return this;
             },
 
             refresh: function() {
-                var params = arguments.length ? arguments : runtime.currentArguments;
-                runtime.currentMethod == null && (runtime.currentMethod = this.fitWidth);
-                runtime.currentMethod.apply(this, Array.prototype.slice.call(params, 0));
+                var params = arguments.length ? arguments : runtime.arguments;
+                var oldArg = runtime.arguments;
+                var method = oldArg ? oldArg.callee : this.fitWidth; 
+                method.apply(this, Array.prototype.slice.call(params, 0));
                 return this;
             },
 
@@ -1196,7 +1163,22 @@
                 }
                 return this;
             },
+            /*
+            sort items by using array sort function;
+            example:
 
+                wall.sortBy(function(itemA, itemB) {
+                    return $(itemA).width() - $(itemB).width();
+                });
+            */
+            sortBy: function(func) {
+                runtime.sortFunc = func;
+                if (runtime.arguments) {
+                    this.refresh();
+                }
+                return this;
+            },
+            
             unFilter: function() {
                 delete runtime.filter;
                 this.refresh();
@@ -1228,11 +1210,11 @@
     add default setting;
     example:
 
-        freewall.addConfig({
+        Freewall.addConfig({
             offsetLeft: 0
         });
     */
-    freewall.addConfig = function(newConfig) {
+    Freewall.addConfig = function(newConfig) {
         // add default setting;
         $.extend(layoutManager.defaultConfig, newConfig);    
     };
@@ -1242,13 +1224,13 @@
     support create new arrange algorithm;
     example:
 
-        freewall.createEngine({
+        Freewall.createEngine({
             slice: function(items, setting) {
                 // slice engine;
             }
         });
     */
-    freewall.createEngine = function(engineData) {
+    Freewall.createEngine = function(engineData) {
         // create new engine;
         $.extend(engine, engineData);
     };
@@ -1257,14 +1239,14 @@
     support create new plugin;
     example:
         
-        freewall.createPlugin({
+        Freewall.createPlugin({
             centering: function(setting, container) {
                 console.log(this);
                 console.log(setting);
             }
         })l
     */
-    freewall.createPlugin = function(pluginData) {
+    Freewall.createPlugin = function(pluginData) {
         // register new plugin;
         $.extend(layoutManager.plugin, pluginData);
     };
@@ -1273,11 +1255,13 @@
     support access helper function;
     example:
 
-        freewall.getMethod('setBlock')(block, setting);
+        Freewall.getMethod('setBlock')(block, setting);
     */
-    freewall.getMethod = function(method) {
+    Freewall.getMethod = function(method) {
         // get helper method;
         return layoutManager[method];
     };
+    
+    window.Freewall = window.freewall = Freewall;
  
 })(window.Zepto || window.jQuery);
